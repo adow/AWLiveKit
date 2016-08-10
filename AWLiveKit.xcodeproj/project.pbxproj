@@ -7,14 +7,45 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		68220A7D1D59761C00715E37 /* AWEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68220A7C1D59761C00715E37 /* AWEncoder.swift */; };
+		68220A8D1D59A30300715E37 /* amf.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A7F1D59A30300715E37 /* amf.c */; };
+		68220A8E1D59A30300715E37 /* aw_rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A811D59A30300715E37 /* aw_rtmp.c */; };
+		68220A8F1D59A30300715E37 /* hashswf.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A851D59A30300715E37 /* hashswf.c */; };
+		68220A901D59A30300715E37 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A871D59A30300715E37 /* log.c */; };
+		68220A911D59A30300715E37 /* parseurl.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A891D59A30300715E37 /* parseurl.c */; };
+		68220A921D59A30300715E37 /* rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A8A1D59A30300715E37 /* rtmp.c */; };
+		68220A971D59A5C900715E37 /* AWLivePush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68220A961D59A5C900715E37 /* AWLivePush.swift */; };
+		68220A991D59A93100715E37 /* AWLiveExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68220A981D59A93100715E37 /* AWLiveExtension.swift */; };
 		68348FFC1D58692E00C2A72E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68348FFB1D58692E00C2A72E /* AppDelegate.swift */; };
 		68348FFE1D58692E00C2A72E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68348FFD1D58692E00C2A72E /* ViewController.swift */; };
 		683490011D58692E00C2A72E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68348FFF1D58692E00C2A72E /* Main.storyboard */; };
 		683490031D58692E00C2A72E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 683490021D58692E00C2A72E /* Assets.xcassets */; };
 		683490061D58692E00C2A72E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 683490041D58692E00C2A72E /* LaunchScreen.storyboard */; };
+		6834900F1D586AA000C2A72E /* AWCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6834900E1D586AA000C2A72E /* AWCapture.swift */; };
+		683490111D587EA900C2A72E /* AWLivePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683490101D587EA900C2A72E /* AWLivePreview.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		68220A7C1D59761C00715E37 /* AWEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWEncoder.swift; path = AWLiveKit/AWEncoder.swift; sourceTree = "<group>"; };
+		68220A7F1D59A30300715E37 /* amf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = amf.c; sourceTree = "<group>"; };
+		68220A801D59A30300715E37 /* amf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amf.h; sourceTree = "<group>"; };
+		68220A811D59A30300715E37 /* aw_rtmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_rtmp.c; sourceTree = "<group>"; };
+		68220A821D59A30300715E37 /* aw_rtmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_rtmp.h; sourceTree = "<group>"; };
+		68220A831D59A30300715E37 /* dhgroups.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dhgroups.h; sourceTree = "<group>"; };
+		68220A841D59A30300715E37 /* handshake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = handshake.h; sourceTree = "<group>"; };
+		68220A851D59A30300715E37 /* hashswf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hashswf.c; sourceTree = "<group>"; };
+		68220A861D59A30300715E37 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http.h; sourceTree = "<group>"; };
+		68220A871D59A30300715E37 /* log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = log.c; sourceTree = "<group>"; };
+		68220A881D59A30300715E37 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
+		68220A891D59A30300715E37 /* parseurl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parseurl.c; sourceTree = "<group>"; };
+		68220A8A1D59A30300715E37 /* rtmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtmp.c; sourceTree = "<group>"; };
+		68220A8B1D59A30300715E37 /* rtmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp.h; sourceTree = "<group>"; };
+		68220A8C1D59A30300715E37 /* rtmp_sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp_sys.h; sourceTree = "<group>"; };
+		68220A931D59A32C00715E37 /* Bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-header.h"; sourceTree = "<group>"; };
+		68220A941D59A3BB00715E37 /* bytes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bytes.h; sourceTree = "<group>"; };
+		68220A951D59A3BB00715E37 /* dh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dh.h; sourceTree = "<group>"; };
+		68220A961D59A5C900715E37 /* AWLivePush.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLivePush.swift; path = AWLiveKit/AWLivePush.swift; sourceTree = "<group>"; };
+		68220A981D59A93100715E37 /* AWLiveExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLiveExtension.swift; path = AWLiveKit/AWLiveExtension.swift; sourceTree = "<group>"; };
 		68348FF81D58692E00C2A72E /* AWLiveKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWLiveKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		68348FFB1D58692E00C2A72E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		68348FFD1D58692E00C2A72E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +53,8 @@
 		683490021D58692E00C2A72E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		683490051D58692E00C2A72E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		683490071D58692E00C2A72E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6834900E1D586AA000C2A72E /* AWCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWCapture.swift; path = AWLiveKit/AWCapture.swift; sourceTree = "<group>"; };
+		683490101D587EA900C2A72E /* AWLivePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLivePreview.swift; path = AWLiveKit/AWLivePreview.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +68,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		68220A7E1D59A30300715E37 /* rtmp */ = {
+			isa = PBXGroup;
+			children = (
+				68220A941D59A3BB00715E37 /* bytes.h */,
+				68220A951D59A3BB00715E37 /* dh.h */,
+				68220A7F1D59A30300715E37 /* amf.c */,
+				68220A801D59A30300715E37 /* amf.h */,
+				68220A811D59A30300715E37 /* aw_rtmp.c */,
+				68220A821D59A30300715E37 /* aw_rtmp.h */,
+				68220A831D59A30300715E37 /* dhgroups.h */,
+				68220A841D59A30300715E37 /* handshake.h */,
+				68220A851D59A30300715E37 /* hashswf.c */,
+				68220A861D59A30300715E37 /* http.h */,
+				68220A871D59A30300715E37 /* log.c */,
+				68220A881D59A30300715E37 /* log.h */,
+				68220A891D59A30300715E37 /* parseurl.c */,
+				68220A8A1D59A30300715E37 /* rtmp.c */,
+				68220A8B1D59A30300715E37 /* rtmp.h */,
+				68220A8C1D59A30300715E37 /* rtmp_sys.h */,
+			);
+			name = rtmp;
+			path = AWLiveKit/rtmp;
+			sourceTree = "<group>";
+		};
 		68348FEF1D58692E00C2A72E = {
 			isa = PBXGroup;
 			children = (
@@ -54,14 +111,29 @@
 		68348FFA1D58692E00C2A72E /* AWLiveKit */ = {
 			isa = PBXGroup;
 			children = (
+				6834900D1D586A8200C2A72E /* AWLiveKit */,
 				68348FFB1D58692E00C2A72E /* AppDelegate.swift */,
 				68348FFD1D58692E00C2A72E /* ViewController.swift */,
 				68348FFF1D58692E00C2A72E /* Main.storyboard */,
 				683490021D58692E00C2A72E /* Assets.xcassets */,
 				683490041D58692E00C2A72E /* LaunchScreen.storyboard */,
 				683490071D58692E00C2A72E /* Info.plist */,
+				68220A931D59A32C00715E37 /* Bridging-header.h */,
 			);
 			path = AWLiveKit;
+			sourceTree = "<group>";
+		};
+		6834900D1D586A8200C2A72E /* AWLiveKit */ = {
+			isa = PBXGroup;
+			children = (
+				68220A7E1D59A30300715E37 /* rtmp */,
+				6834900E1D586AA000C2A72E /* AWCapture.swift */,
+				683490101D587EA900C2A72E /* AWLivePreview.swift */,
+				68220A7C1D59761C00715E37 /* AWEncoder.swift */,
+				68220A961D59A5C900715E37 /* AWLivePush.swift */,
+				68220A981D59A93100715E37 /* AWLiveExtension.swift */,
+			);
+			name = AWLiveKit;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,8 +207,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68220A901D59A30300715E37 /* log.c in Sources */,
+				68220A991D59A93100715E37 /* AWLiveExtension.swift in Sources */,
+				68220A8D1D59A30300715E37 /* amf.c in Sources */,
+				68220A8E1D59A30300715E37 /* aw_rtmp.c in Sources */,
+				68220A971D59A5C900715E37 /* AWLivePush.swift in Sources */,
+				68220A7D1D59761C00715E37 /* AWEncoder.swift in Sources */,
+				683490111D587EA900C2A72E /* AWLivePreview.swift in Sources */,
+				68220A911D59A30300715E37 /* parseurl.c in Sources */,
 				68348FFE1D58692E00C2A72E /* ViewController.swift in Sources */,
 				68348FFC1D58692E00C2A72E /* AppDelegate.swift in Sources */,
+				68220A8F1D59A30300715E37 /* hashswf.c in Sources */,
+				6834900F1D586AA000C2A72E /* AWCapture.swift in Sources */,
+				68220A921D59A30300715E37 /* rtmp.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +336,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AWLiveKit/Bridging-header.h";
 			};
 			name = Debug;
 		};
@@ -264,6 +348,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AWLiveKit/Bridging-header.h";
 			};
 			name = Release;
 		};
@@ -286,6 +371,7 @@
 				6834900C1D58692E00C2A72E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
