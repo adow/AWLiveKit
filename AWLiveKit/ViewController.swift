@@ -12,6 +12,7 @@ class ViewController: UIViewController {
 
     var capture : AWLiveCapture!
     var videoEncoder : AWVideoEncoder!
+    var audioEncoder : AWAudioEncoder!
     var push : AWLivePush!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +30,13 @@ class ViewController: UIViewController {
 //            print("video encoded")
             self?.push.pushVideoSampleBuffer(sampleBuffer)
         }
+        /// audioEncoder
+        audioEncoder = AWAudioEncoder()
+        audioEncoder.onEncoded = {
+            [weak self](bufferList) -> () in
+            self?.push.pushAudioBufferList(bufferList)
+        
+        }
         /// capture
         capture = AWLiveCapture(videoQuality: videoQuality,
                                 orientation: .Portrait)
@@ -38,8 +46,9 @@ class ViewController: UIViewController {
             
         }
         capture.onAudioSampleBuffer = {
-            (sampleBuffer) -> () in
+            [weak self](sampleBuffer) -> () in
 //            print("audio")
+            self?.audioEncoder.encodeSampleBuffer(sampleBuffer)
         }
         
         

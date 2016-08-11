@@ -11,6 +11,7 @@ import AVFoundation
 import VideoToolbox
 import AudioToolbox
 
+// MARK: Frame
 enum AWLivePushFrameType:Int {
     case SLICE = 0, SLICE_DPA, SLICE_DPB,SLICE_DPC, SLICE_IDR, SLICE_SEI, SLICE_SPS,SLICE_PPS,AUD, FILLER,UNKNOWN
     init(first_bit:UInt8) {
@@ -68,6 +69,7 @@ enum AWLivePushFrameType:Int {
     
 }
 
+// MARK: - Push
 class AWLivePush: NSObject {
    var rtmpQueue : dispatch_queue_t = dispatch_queue_create("adow.rtmp", DISPATCH_QUEUE_SERIAL)
     var sps_pps_sended : Bool = false
@@ -77,15 +79,17 @@ class AWLivePush: NSObject {
         super.init()
         if aw_rtmp_connection(url) == 1 {
             NSLog("rtmp connected")
+            aw_rtmp_send_audio_header()
+            NSLog("Send audio header")
         }
         else {
             NSLog("rtmp connect failed")
         }
-        
     }
     
 
 }
+// MARK: Video
 extension AWLivePush {
     /// 推送视频
     func pushVideoSampleBuffer(sampleBuffer:CMSampleBuffer) {
@@ -152,5 +156,21 @@ extension AWLivePush {
             bufferOffset = bufferOffset + avvc_header_length + Int(nal_unit_length)
 //            nTimeStamp += (1000 / 30)
         }
+    }
+}
+// MARK: Audio
+extension AWLivePush {
+    /// 推送音频内容
+    func pushAudioBufferList(bufferList: AudioBufferList) {
+        dispatch_async(self.rtmpQueue) { 
+            self.goto_pushAudioBufferList(bufferList)
+        }
+    }
+    /// 推送音频内容
+    private func goto_pushAudioBufferList(bufferList:AudioBufferList) {
+        let audio_data_length = bufferList.mBuffers.mDataByteSize
+        let audio_data_bytes = bufferList.mBuffers.mData
+        let timeOffset = abs(self.startTime.timeIntervalSinceNow) * 1000
+        aw_rtmp_send_audio(UnsafeMutablePointer<UInt8>(audio_data_bytes), audio_data_length, UInt32(timeOffset))
     }
 }
