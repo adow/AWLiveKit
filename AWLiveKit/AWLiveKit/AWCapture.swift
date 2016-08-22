@@ -113,7 +113,7 @@ class AWLiveCapture : NSObject{
     var ready : Bool = false
     init (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .Portrait) {
         super.init()
-        let start_time = NSDate()
+//        let start_time = NSDate()
         /// session
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = sessionPreset ///AVCaptureSessionPresetiFrame960x540
@@ -169,7 +169,7 @@ class AWLiveCapture : NSObject{
         }
         
         
-        NSLog("Capture Setup duration:\(abs(start_time.timeIntervalSinceNow))")
+//        NSLog("Capture Setup duration:\(abs(start_time.timeIntervalSinceNow))")
     }
     /// 预览界面
     var previewView : AWLivePreview {

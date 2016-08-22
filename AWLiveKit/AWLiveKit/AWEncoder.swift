@@ -146,10 +146,10 @@ class AWVideoEncoder: NSObject {
          fps : AWVideoEncoderFPS = ._30,
          profile : AWVideoEncoderProfile = .Main) {
         super.init()
-        NSLog("Encoder OutputSize:\(outputSize)")
-        NSLog("Encoder bitrate:\(bitrate)")
-        NSLog("Encoder fps:\(fps)")
-        NSLog("Encoder Profile:\(profile)")
+        NSLog("Video Encoder OutputSize:\(outputSize)")
+        NSLog("Video Encoder bitrate:\(bitrate)")
+        NSLog("Video Encoder fps:\(fps)")
+        NSLog("Video Encoder Profile:\(profile)")
 
         attributes = [
                 kCVPixelBufferPixelFormatTypeKey: Int(kCVPixelFormatType_32BGRA),

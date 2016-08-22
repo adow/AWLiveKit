@@ -82,7 +82,7 @@ class AWLivePush: NSObject {
     var ready : Bool = false
     init(url:String) {
         super.init()
-        let start_time = NSDate()
+//        let start_time = NSDate()
         dispatch_async(rtmpQueue) {
             let result = aw_rtmp_connection(url)
             if result == 1 {
@@ -95,7 +95,7 @@ class AWLivePush: NSObject {
                 NSLog("rtmp connect failed")
             }    
         }
-        NSLog("Rtmp Connect duration:\(abs(start_time.timeIntervalSinceNow))")
+//        NSLog("Rtmp Connect duration:\(abs(start_time.timeIntervalSinceNow))")
     }
     
 
@@ -111,7 +111,7 @@ extension AWLivePush {
     /// 推送视频内容
     private func _go_pushVideoSampleBuffer(sampleBuffer:CMSampleBuffer) {
         guard self.ready else {
-            NSLog("RTMP is not ready")
+//            NSLog("RTMP is not ready")
             return
         }
         guard sampleBuffer.isDataReady else {
@@ -183,7 +183,7 @@ extension AWLivePush {
     /// 推送音频内容
     private func _goto_pushAudioBufferList(bufferList:AudioBufferList) {
         guard self.ready else {
-            NSLog("RTMP is not ready")
+//            NSLog("RTMP is not ready")
             return
         }
         let audio_data_length = bufferList.mBuffers.mDataByteSize
