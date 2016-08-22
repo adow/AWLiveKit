@@ -95,7 +95,7 @@ class AWLivePush: NSObject {
                 NSLog("rtmp connect failed")
             }    
         }
-        NSLog("Rtmp Connect duration:\(start_time.timeIntervalSinceNow)")
+        NSLog("Rtmp Connect duration:\(abs(start_time.timeIntervalSinceNow))")
     }
     
 

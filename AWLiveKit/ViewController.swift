@@ -28,13 +28,17 @@ class ViewController: UIViewController {
                                 orientation: .Portrait)
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
-            self?.videoEncoder.encodeSampleBuffer(sampleBuffer)
+            self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
             
         }
         capture.onAudioSampleBuffer = {
             [weak self](sampleBuffer) -> () in
 //            print("audio")
-            self?.audioEncoder.encodeSampleBuffer(sampleBuffer)
+            self?.audioEncoder?.encodeSampleBuffer(sampleBuffer)
+        }
+        capture.onReady = {
+            [weak self] in
+            self?.capture.start()
         }
         /// videoEncoder
         videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(.Portrait),
@@ -44,14 +48,13 @@ class ViewController: UIViewController {
         videoEncoder.onEncoded = {
             [weak self](sampleBuffer) -> () in
 //            print("video encoded")
-            self?.push.pushVideoSampleBuffer(sampleBuffer) /// push
+            self?.push?.pushVideoSampleBuffer(sampleBuffer) /// push
         }
         /// audioEncoder
         audioEncoder = AWAudioEncoder()
         audioEncoder.onEncoded = {
             [weak self](bufferList) -> () in
-            self?.push.pushAudioBufferList(bufferList) /// push
-        
+            self?.push?.pushAudioBufferList(bufferList) /// push
         }
         
         /// preview
@@ -73,7 +76,7 @@ class ViewController: UIViewController {
     }
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        capture.start()
+//        capture.start()
         
         
     }

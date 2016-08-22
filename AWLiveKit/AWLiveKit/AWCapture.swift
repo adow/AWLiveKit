@@ -89,7 +89,7 @@ enum AWLiveCaptureVideoQuality :Int{
 
 // MARK: - Capture
 typealias AWLiveCaptureSampleBufferCallback = (CMSampleBuffer) -> ()
-
+typealias AWLiveCaptureReadyCallback = () -> ()
 
 class AWLiveCapture : NSObject{
     /// session
@@ -108,57 +108,68 @@ class AWLiveCapture : NSObject{
     var onVideoSampleBuffer : AWLiveCaptureSampleBufferCallback? = nil
     /// 获取音频采样内容后的回调
     var onAudioSampleBuffer : AWLiveCaptureSampleBufferCallback? = nil
-    
+    /// 准备好后发出回调
+    var onReady : AWLiveCaptureReadyCallback? = nil
+    var ready : Bool = false
     init (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .Portrait) {
         super.init()
         let start_time = NSDate()
         /// session
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = sessionPreset ///AVCaptureSessionPresetiFrame960x540
-        /// device
-        self.videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-        self.audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)
-        self.captureSession.beginConfiguration()
-        defer {
-            self.captureSession.commitConfiguration()
-        }
-        /// input
-        do {
-            let inputVideo = try AVCaptureDeviceInput(device: self.videoDevice)
-            self.captureSession.addInput(inputVideo)
-            let inputAudio = try AVCaptureDeviceInput(device: self.audioDevice)
-            self.captureSession.addInput(inputAudio)
+        dispatch_async(sessionQueue) { 
+            /// device
+            self.videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+            self.audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)
+            self.captureSession.beginConfiguration()
+            defer {
+                self.captureSession.commitConfiguration()
+                /// 如果准备好了，发出回调
+                if self.ready {
+                    self.onReady?()
+                }
+            }
+            /// input
+            do {
+                let inputVideo = try AVCaptureDeviceInput(device: self.videoDevice)
+                self.captureSession.addInput(inputVideo)
+                let inputAudio = try AVCaptureDeviceInput(device: self.audioDevice)
+                self.captureSession.addInput(inputAudio)
+                
+            }
+            catch let error as NSError {
+                NSLog("Input Device Error:%@", error)
+            }
+            /// videoOutput
+            self.videoOutput = AVCaptureVideoDataOutput()
+            self.videoOutput.setSampleBufferDelegate(self, queue: self.videoQueue)
+            let bgra = NSNumber(int: Int32(kCVPixelFormatType_32BGRA))
+            let captureSettings = [String(kCVPixelBufferPixelFormatTypeKey) : bgra]
+            self.videoOutput.videoSettings = captureSettings
+            self.videoOutput.alwaysDiscardsLateVideoFrames = false
+            if self.captureSession.canAddOutput(self.videoOutput) {
+                self.captureSession.addOutput(self.videoOutput)
+            }
+            else {
+                NSLog("Can not add Video Output")
+            }
+            self.videoOrientation = orientation
+    //        self.videoOrientation = .Portrait
+            /// audioOutput
+            self.audioOutput = AVCaptureAudioDataOutput()
+            self.audioOutput.setSampleBufferDelegate(self, queue: self.audioQueue)
+            if self.captureSession.canAddOutput(self.audioOutput) {
+                self.captureSession.addOutput(self.audioOutput)
+            }
+            else {
+                NSLog("Can not add Audio Output")
+            }
             
-        }
-        catch let error as NSError {
-            NSLog("Input Device Error:%@", error)
-        }
-        /// videoOutput
-        videoOutput = AVCaptureVideoDataOutput()
-        videoOutput.setSampleBufferDelegate(self, queue: self.videoQueue)
-        let bgra = NSNumber(int: Int32(kCVPixelFormatType_32BGRA))
-        let captureSettings = [String(kCVPixelBufferPixelFormatTypeKey) : bgra]
-        videoOutput.videoSettings = captureSettings
-        videoOutput.alwaysDiscardsLateVideoFrames = false
-        if self.captureSession.canAddOutput(self.videoOutput) {
-            self.captureSession.addOutput(self.videoOutput)
-        }
-        else {
-            NSLog("Can not add Video Output")
-        }
-        self.videoOrientation = orientation
-//        self.videoOrientation = .Portrait
-        /// audioOutput
-        audioOutput = AVCaptureAudioDataOutput()
-        audioOutput.setSampleBufferDelegate(self, queue: self.audioQueue)
-        if self.captureSession.canAddOutput(audioOutput) {
-            self.captureSession.addOutput(audioOutput)
-        }
-        else {
-            NSLog("Can not add Audio Output")
+            self.ready = true
         }
         
-        NSLog("Capture Setup duration:\(start_time.timeIntervalSinceNow)")
+        
+        NSLog("Capture Setup duration:\(abs(start_time.timeIntervalSinceNow))")
     }
     /// 预览界面
     var previewView : AWLivePreview {
@@ -198,9 +209,16 @@ class AWLiveCapture : NSObject{
 // MARK: start and stop
 extension AWLiveCapture {
     func start() {
+        guard self.ready else {
+            NSLog("Capture is not ready")
+            return
+        }
         self.captureSession.startRunning()
     }
     func stop() {
+        guard self.captureSession.running else {
+            return
+        }
         self.captureSession.stopRunning()
     }
 }
