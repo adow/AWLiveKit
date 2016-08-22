@@ -92,7 +92,6 @@ typealias AWLiveCaptureSampleBufferCallback = (CMSampleBuffer) -> ()
 
 
 class AWLiveCapture : NSObject{
-    private var videoQuality : AWLiveCaptureVideoQuality = ._540i
     /// session
     private var captureSession : AVCaptureSession!
     /// 设备
@@ -110,13 +109,11 @@ class AWLiveCapture : NSObject{
     /// 获取音频采样内容后的回调
     var onAudioSampleBuffer : AWLiveCaptureSampleBufferCallback? = nil
     
-    init (videoQuality : AWLiveCaptureVideoQuality = ._540i, orientation : AVCaptureVideoOrientation = .Portrait) {
+    init (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .Portrait) {
         super.init()
-        NSLog("Capture size:\(videoQuality.rawValue)")
-        self.videoQuality = videoQuality
         /// session
         captureSession = AVCaptureSession()
-        captureSession.sessionPreset = self.videoQuality.sessionPreset ///AVCaptureSessionPresetiFrame960x540
+        captureSession.sessionPreset = sessionPreset ///AVCaptureSessionPresetiFrame960x540
         /// device
         self.videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
         self.audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)

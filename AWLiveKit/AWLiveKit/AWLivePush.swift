@@ -12,7 +12,7 @@ import VideoToolbox
 import AudioToolbox
 
 // MARK: Frame
-enum AWLivePushFrameType:Int {
+enum AWLivePushFrameType:Int, CustomStringConvertible {
     case SLICE = 0, SLICE_DPA, SLICE_DPB,SLICE_DPC, SLICE_IDR, SLICE_SEI, SLICE_SPS,SLICE_PPS,AUD, FILLER,UNKNOWN
     init(first_bit:UInt8) {
         switch first_bit & 0x1f {
@@ -65,6 +65,9 @@ enum AWLivePushFrameType:Int {
         case .UNKNOWN:
             return "UNKNOWN"
         }
+    }
+    var description: String {
+        return self.name
     }
     
 }
@@ -142,7 +145,6 @@ extension AWLivePush {
 //            debugPrint(data_frame)
             let first_bit = (dataPointer_u + bufferOffset + avvc_header_length).memory
             let frame_type = AWLivePushFrameType(first_bit: first_bit)
-//            let idr_frame = (first_bit & 0x1f) == 5
             let idr_frame = frame_type == .SLICE_IDR
 //            print("frame type:\(frame_type),\(first_bit),\(first_bit & 0x1f),timeStamp:\(nTimeStamp)")
             
@@ -163,11 +165,11 @@ extension AWLivePush {
     /// 推送音频内容
     func pushAudioBufferList(bufferList: AudioBufferList) {
         dispatch_async(self.rtmpQueue) { 
-            self.goto_pushAudioBufferList(bufferList)
+            self._goto_pushAudioBufferList(bufferList)
         }
     }
     /// 推送音频内容
-    private func goto_pushAudioBufferList(bufferList:AudioBufferList) {
+    private func _goto_pushAudioBufferList(bufferList:AudioBufferList) {
         let audio_data_length = bufferList.mBuffers.mDataByteSize
         let audio_data_bytes = bufferList.mBuffers.mData
         let timeOffset = abs(self.startTime.timeIntervalSinceNow) * 1000

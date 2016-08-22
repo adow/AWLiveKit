@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     var videoEncoder : AWVideoEncoder!
     var audioEncoder : AWAudioEncoder!
     var push : AWLivePush!
+    var preview : AWLivePreview!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -21,24 +22,8 @@ class ViewController: UIViewController {
         /// push
         let push_url = "rtmp://m.push.wifiwx.com:1935/live?sign=0547f0bc0208e98f9dc89cdf443dc75e4e7a464a&id=62&timestamp=1470812052&nonce=99774&adow=adow/wifiwx-62"
         push = AWLivePush(url: push_url)
-        /// videoEncoder
-        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(.Portrait),
-                                      bitrate: videoQuality.recommandVideoBiterates,
-                                      fps:._30)
-        videoEncoder.onEncoded = {
-            [weak self](sampleBuffer) -> () in
-//            print("video encoded")
-            self?.push.pushVideoSampleBuffer(sampleBuffer)
-        }
-        /// audioEncoder
-        audioEncoder = AWAudioEncoder()
-        audioEncoder.onEncoded = {
-            [weak self](bufferList) -> () in
-            self?.push.pushAudioBufferList(bufferList)
-        
-        }
         /// capture
-        capture = AWLiveCapture(videoQuality: videoQuality,
+        capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
                                 orientation: .Portrait)
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
@@ -50,7 +35,35 @@ class ViewController: UIViewController {
 //            print("audio")
             self?.audioEncoder.encodeSampleBuffer(sampleBuffer)
         }
+        /// videoEncoder
+        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(.Portrait),
+                                      bitrate: videoQuality.recommandVideoBiterates,
+                                      fps:videoQuality.recommandVideoBiterates.recommandedFPS,
+                                      profile: videoQuality.recommandVideoBiterates.recommandedProfile)
+        videoEncoder.onEncoded = {
+            [weak self](sampleBuffer) -> () in
+//            print("video encoded")
+            self?.push.pushVideoSampleBuffer(sampleBuffer) /// push
+        }
+        /// audioEncoder
+        audioEncoder = AWAudioEncoder()
+        audioEncoder.onEncoded = {
+            [weak self](bufferList) -> () in
+            self?.push.pushAudioBufferList(bufferList) /// push
         
+        }
+        
+        /// preview
+        preview = capture.previewView
+        preview.frame = self.view.bounds
+        self.view.addSubview(preview)
+        self.view.translatesAutoresizingMaskIntoConstraints = false
+        preview.translatesAutoresizingMaskIntoConstraints = false
+        let layout_preview = ["preview":preview]
+        let preview_constraintsH = NSLayoutConstraint.constraintsWithVisualFormat("H:|-(-16.0)-[preview]-(-16.0)-|", options: .AlignAllCenterX, metrics: nil, views: layout_preview)
+        let preview_constraintsV = NSLayoutConstraint.constraintsWithVisualFormat("V:|-(-16.0)-[preview]-(-16.0)-|", options: .AlignAllCenterY, metrics: nil, views: layout_preview)
+        self.view.addConstraints(preview_constraintsH)
+        self.view.addConstraints(preview_constraintsV)
         
     }
     
@@ -59,9 +72,6 @@ class ViewController: UIViewController {
     }
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        let preview = capture.previewView
-        preview.frame = self.view.bounds
-        self.view.addSubview(preview)
         capture.start()
         
         

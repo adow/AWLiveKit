@@ -15,7 +15,7 @@ import VideoToolbox
 typealias AWVideoEncoderCallback = (CMSampleBuffer) -> ()
 
 // MARK: Bitrate
-enum AWVideoEncoderBitrate : Int {
+enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
     case _450kbs = 0, _500kbs,_600kbs, _800kbs, _1000kbs, _1200kbs, _1500kbs, _2000kbs, _2500kbs, _3000kbs, _4000kbs
     var bitrates : Int {
         switch self {
@@ -43,9 +43,57 @@ enum AWVideoEncoderBitrate : Int {
             return 4000 * 1024
         }
     }
+    /// 相关的 fps
+    var recommandedFPS : AWVideoEncoderFPS {
+        switch self {
+        case ._450kbs:
+            return AWVideoEncoderFPS._20
+        case ._500kbs:
+            return AWVideoEncoderFPS._25
+        default:
+            return AWVideoEncoderFPS._30
+        }
+    }
+    /// 相关的 profile
+    var recommandedProfile : AWVideoEncoderProfile {
+        switch self {
+        case ._450kbs, ._500kbs:
+            return AWVideoEncoderProfile.Baseline
+        case ._600kbs, ._800kbs, ._1000kbs:
+            return AWVideoEncoderProfile.Main
+        case ._1200kbs, ._1500kbs, ._2000kbs, ._2500kbs, ._3000kbs, ._4000kbs:
+            return AWVideoEncoderProfile.High
+        }
+    }
+    var description: String {
+        switch self {
+        case ._450kbs:
+            return "450kbs"
+        case ._500kbs:
+            return "500kbs"
+        case ._600kbs:
+            return "600kbs"
+        case ._800kbs:
+            return "800kbs"
+        case ._1000kbs:
+            return "1000kbs"
+        case ._1200kbs:
+            return "1200kbs"
+        case ._1500kbs:
+            return "1500kbs"
+        case ._2000kbs:
+            return "2000kbs"
+        case ._2500kbs:
+            return "2500kbs"
+        case ._3000kbs:
+            return "3000kbs"
+        case ._4000kbs:
+            return "4000kbs"
+        }
+    }
 }
 // MARK: fps
-enum AWVideoEncoderFPS : Int {
+enum AWVideoEncoderFPS : Int , CustomStringConvertible{
     case _20 = 20, _25 = 25, _30 = 30, _60 = 60
     var fps : Int {
         switch self {
@@ -59,9 +107,12 @@ enum AWVideoEncoderFPS : Int {
             return 60
         }
     }
+    var description: String {
+        return String(self.rawValue)
+    }
 }
 // MARK: profile
-enum AWVideoEncoderProfile : Int {
+enum AWVideoEncoderProfile : Int , CustomStringConvertible{
     case Baseline = 0, Main, High
     var profile : CFString {
         switch self {
@@ -73,6 +124,16 @@ enum AWVideoEncoderProfile : Int {
             return kVTProfileLevel_H264_High_AutoLevel
         }
     }
+    var description: String {
+        switch self {
+        case .Baseline:
+            return "kVTProfileLevel_H264_Baseline_AutoLevel"
+        case .Main:
+            return "kVTProfileLevel_H264_Main_AutoLevel"
+        case .High:
+            return "kVTProfileLevel_H264_High_AutoLevel"
+        }
+    }
 }
 
 // MARK: Video Encoder
@@ -80,24 +141,16 @@ class AWVideoEncoder: NSObject {
     private var videoCompressionSession : VTCompressionSession? = nil
     var attributes : [NSString:AnyObject]!
     var onEncoded : AWVideoEncoderCallback? = nil
-    init(outputSize:CGSize, bitrate : AWVideoEncoderBitrate = ._600kbs, fps : AWVideoEncoderFPS = ._30) {
+    init(outputSize:CGSize,
+         bitrate : AWVideoEncoderBitrate = ._600kbs,
+         fps : AWVideoEncoderFPS = ._30,
+         profile : AWVideoEncoderProfile = .Main) {
         super.init()
         NSLog("Encoder OutputSize:\(outputSize)")
-        NSLog("Encoder bitrate:\(bitrate.bitrates)")
-        NSLog("Encoder fps:\(fps.fps)")
-        var profile = AWVideoEncoderProfile.Main
-        if bitrate.bitrates >= 800 * 1024 {
-            profile = .High
-            NSLog("Encoder profile High")
-        }
-        else if bitrate.bitrates >= 500 * 1024 {
-            profile = .Main
-            NSLog("Encoder profile: Main")
-        }
-        else {
-            profile = .Baseline
-            NSLog("Encoder profile: Baseline")
-        }
+        NSLog("Encoder bitrate:\(bitrate)")
+        NSLog("Encoder fps:\(fps)")
+        NSLog("Encoder Profile:\(profile)")
+
         attributes = [
                 kCVPixelBufferPixelFormatTypeKey: Int(kCVPixelFormatType_32BGRA),
                 kCVPixelBufferIOSurfacePropertiesKey: [:],
