@@ -78,16 +78,24 @@ class AWLivePush: NSObject {
     var sps_pps_sended : Bool = false
     let avvc_header_length : size_t = 4
     var startTime : NSDate = NSDate()
+    /// 连接是否准备就绪, 必须连接完成，并且发送完音频头之后才算完成
+    var ready : Bool = false
     init(url:String) {
         super.init()
-        if aw_rtmp_connection(url) == 1 {
-            NSLog("rtmp connected")
-            aw_rtmp_send_audio_header()
-            NSLog("Send audio header")
+        let start_time = NSDate()
+        dispatch_async(rtmpQueue) {
+            let result = aw_rtmp_connection(url)
+            if result == 1 {
+                NSLog("rtmp connected")
+                aw_rtmp_send_audio_header()
+                NSLog("Send audio header")
+                self.ready = true /// 完成以上两步才可以后面操作
+            }
+            else {
+                NSLog("rtmp connect failed")
+            }    
         }
-        else {
-            NSLog("rtmp connect failed")
-        }
+        NSLog("Rtmp Connect duration:\(start_time.timeIntervalSinceNow)")
     }
     
 
@@ -102,6 +110,10 @@ extension AWLivePush {
     }
     /// 推送视频内容
     private func _go_pushVideoSampleBuffer(sampleBuffer:CMSampleBuffer) {
+        guard self.ready else {
+            NSLog("RTMP is not ready")
+            return
+        }
         guard sampleBuffer.isDataReady else {
             NSLog("Video Data is not ready")
             return
@@ -170,6 +182,10 @@ extension AWLivePush {
     }
     /// 推送音频内容
     private func _goto_pushAudioBufferList(bufferList:AudioBufferList) {
+        guard self.ready else {
+            NSLog("RTMP is not ready")
+            return
+        }
         let audio_data_length = bufferList.mBuffers.mDataByteSize
         let audio_data_bytes = bufferList.mBuffers.mData
         let timeOffset = abs(self.startTime.timeIntervalSinceNow) * 1000

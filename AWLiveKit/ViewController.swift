@@ -22,6 +22,7 @@ class ViewController: UIViewController {
         /// push
         let push_url = "rtmp://m.push.wifiwx.com:1935/live?sign=0547f0bc0208e98f9dc89cdf443dc75e4e7a464a&id=62&timestamp=1470812052&nonce=99774&adow=adow/wifiwx-62"
         push = AWLivePush(url: push_url)
+        
         /// capture
         capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
                                 orientation: .Portrait)

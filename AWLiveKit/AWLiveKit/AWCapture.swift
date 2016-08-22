@@ -111,6 +111,7 @@ class AWLiveCapture : NSObject{
     
     init (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .Portrait) {
         super.init()
+        let start_time = NSDate()
         /// session
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = sessionPreset ///AVCaptureSessionPresetiFrame960x540
@@ -156,6 +157,8 @@ class AWLiveCapture : NSObject{
         else {
             NSLog("Can not add Audio Output")
         }
+        
+        NSLog("Capture Setup duration:\(start_time.timeIntervalSinceNow)")
     }
     /// 预览界面
     var previewView : AWLivePreview {
