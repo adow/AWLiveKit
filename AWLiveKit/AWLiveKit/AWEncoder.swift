@@ -227,7 +227,7 @@ class AWVideoEncoder: NSObject {
         }
         
         /// Lock
-        if CVPixelBufferLockBaseAddress(pixelBuffer, 0) != kCVReturnSuccess {
+        if CVPixelBufferLockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0))) != kCVReturnSuccess {
             NSLog("Lock Pixel Buffer Base Address Error")
         }
         
@@ -240,7 +240,7 @@ class AWVideoEncoder: NSObject {
             NSLog("Encode Frame Error")
         }
         /// Unlock
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, 0)
+        CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
     }
     /// 编码回调
     var encodeCallback : VTCompressionOutputCallback = {

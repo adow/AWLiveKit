@@ -20,7 +20,9 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         let videoQuality = AWLiveCaptureVideoQuality._1080
         /// push
-        let push_url = "rtmp://m.push.wifiwx.com:1935/live?sign=0547f0bc0208e98f9dc89cdf443dc75e4e7a464a&id=62&timestamp=1470812052&nonce=99774&adow=adow/wifiwx-62"
+//        let push_url = "rtmp://m.push.wifiwx.com:1935/live?sign=0547f0bc0208e98f9dc89cdf443dc75e4e7a464a&id=62&timestamp=1470812052&nonce=99774&adow=adow/wifiwx-62"
+//        let push_url = "rtmp://m.push.wifiwx.com:1935/live?ukey=8mdwmb6zf&pub=0512688f0831a314594165131bbb3399/wifiwx-84"
+        let push_url = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
         push = AWLivePush(url: push_url)
         
         /// capture
@@ -76,6 +78,7 @@ class ViewController: UIViewController {
     }
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
+        UIApplication.sharedApplication().idleTimerDisabled = true
 //        capture.start()
         
         

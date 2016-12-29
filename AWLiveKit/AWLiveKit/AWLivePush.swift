@@ -128,7 +128,7 @@ extension AWLivePush {
         }
         /// sps, pps
         if keyFrame && !self.sps_pps_sended {
-            guard let sps_data = sampleBuffer.sps_data, pps_data = sampleBuffer.pps_data else {
+            guard let sps_data = sampleBuffer.sps_data, let pps_data = sampleBuffer.pps_data else {
                 NSLog("Video sps or pps is nil")
                 return
             }
