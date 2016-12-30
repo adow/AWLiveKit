@@ -220,7 +220,7 @@ int aw_rtmp_send_audio_header() {
     /*调用发送接口*/
     printf("audio header: ");
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
-//    aw_debug_print(body,4);
+    aw_debug_print(body,4);
     free(packet);
     if (!result) {
         printf("Send audio head failed");
@@ -250,7 +250,7 @@ int aw_rtmp_send_audio(unsigned char *data,
     packet->m_nBodySize = size + 2;
     
     /*调用发送接口*/
-//    printf("audio, %d: ",nTimeStamp);
+//    printf("audio %d: ",nTimeStamp);
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
 //    aw_debug_print(body,2 + size);
     free(packet);

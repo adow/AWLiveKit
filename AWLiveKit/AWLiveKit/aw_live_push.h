@@ -15,5 +15,6 @@
 int aw_push_video_samplebuffer(CMSampleBufferRef sample_buffer,
                                double start_time,
                                int *is_spspps_sent);
-
+int aw_push_audio_bufferlist(AudioBufferList buffer_list,
+                             double time_offset);
 #endif /* aw_live_push_h */

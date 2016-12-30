@@ -178,3 +178,11 @@ int aw_push_video_samplebuffer(CMSampleBufferRef sample_buffer,
     }
     return 0;
 }
+int aw_push_audio_bufferlist(AudioBufferList buffer_list,
+                             double time_offset) {
+    AudioBuffer buffer = buffer_list.mBuffers[0];
+    uint32_t audio_data_length = buffer.mDataByteSize;
+    unsigned char *data = buffer.mData;
+    aw_rtmp_send_audio(data, audio_data_length, time_offset);
+    return 0;
+}

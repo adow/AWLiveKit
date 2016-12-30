@@ -56,7 +56,7 @@ class ViewController: UIViewController {
         audioEncoder = AWAudioEncoder()
         audioEncoder.onEncoded = {
             [weak self](bufferList) -> () in
-//            self?.push?.pushAudioBufferList(bufferList) /// push
+            self?.push?.pushAudioBufferList(bufferList) /// push
         }
         
         /// preview
