@@ -137,7 +137,7 @@ int aw_rtmp_send_sps_pps(unsigned char *sps, int sps_length,
     /*调用发送接口*/
     printf("sps,pps: ");
     int nRet = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
-//    aw_debug_print(body, i);
+    aw_debug_print(body, i);
     free(packet);    //释放内存
     if (!nRet) {
         printf("Send sps, pps failed");
@@ -187,7 +187,7 @@ int aw_rtmp_send_h264_video(unsigned char *data,
     packet->m_nTimeStamp = nTimeStamp;
     
     /*调用发送接口*/
-//    printf("video, %d: ",nTimeStamp);
+    printf("video timeStamp:%d, keyFrame:%d,size:%d:\n",nTimeStamp, bIsKeyFrame, size);
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
 //    aw_debug_print(body,i + size);
     free(packet);

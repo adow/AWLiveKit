@@ -10,5 +10,6 @@
 #define Bridging_header_h
 
 #include "aw_rtmp.h"
+#include "aw_live_push.h"
 
 #endif /* Bridging_header_h */
