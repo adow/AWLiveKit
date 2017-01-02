@@ -214,8 +214,8 @@ int aw_rtmp_send_audio_header() {
     packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
     packet->m_nInfoField2 = aw_m_pRtmp ->m_stream_id;
     packet->m_nChannel = 0x04;
-//    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
-    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
+    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
+//    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
     packet->m_nTimeStamp = 0;
     packet->m_nBodySize = body_size;
     
@@ -248,8 +248,8 @@ int aw_rtmp_send_audio(unsigned char *data,
     packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
     packet->m_nInfoField2 = aw_m_pRtmp ->m_stream_id;
     packet->m_nChannel = 0x04;
-//    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
-    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
+    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
+//    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
     packet->m_nTimeStamp = nTimeStamp;
     packet->m_nBodySize = body_size;
     

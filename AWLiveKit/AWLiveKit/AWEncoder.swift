@@ -297,12 +297,12 @@ class AWAudioEncoder {
         let format = CMSampleBufferGetFormatDescription(sampleBuffer)
         let sourceFormat = CMAudioFormatDescriptionGetStreamBasicDescription(format!).memory
         g_audioInputFormat = sourceFormat
-        g_audioInputFormat.mFormatID = kAudioFormatLinearPCM
-        g_audioInputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked
-        g_audioInputFormat.mFramesPerPacket = 1
-        g_audioInputFormat.mBitsPerChannel = 16;
-        g_audioInputFormat.mBytesPerFrame = g_audioInputFormat.mBitsPerChannel / 8 * g_audioInputFormat.mChannelsPerFrame;
-        g_audioInputFormat.mBytesPerPacket = g_audioInputFormat.mBytesPerFrame * g_audioInputFormat.mFramesPerPacket;
+//        g_audioInputFormat.mFormatID = kAudioFormatLinearPCM
+//        g_audioInputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked
+//        g_audioInputFormat.mFramesPerPacket = 1
+//        g_audioInputFormat.mBitsPerChannel = 16;
+//        g_audioInputFormat.mBytesPerFrame = g_audioInputFormat.mBitsPerChannel / 8 * g_audioInputFormat.mChannelsPerFrame;
+//        g_audioInputFormat.mBytesPerPacket = g_audioInputFormat.mBytesPerFrame * g_audioInputFormat.mFramesPerPacket;
         
         self.setup()
         
