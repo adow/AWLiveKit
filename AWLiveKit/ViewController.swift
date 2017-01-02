@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController {
 
@@ -14,14 +15,12 @@ class ViewController: UIViewController {
     var videoEncoder : AWVideoEncoder!
     var audioEncoder : AWAudioEncoder!
     var push : AWLivePush2!
-    var preview : AWLivePreview!
+    @IBOutlet var preview : AWLivePreview!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         let videoQuality = AWLiveCaptureVideoQuality._720
         /// push
-//        let push_url = "rtmp://m.push.wifiwx.com:1935/live?sign=0547f0bc0208e98f9dc89cdf443dc75e4e7a464a&id=62&timestamp=1470812052&nonce=99774&adow=adow/wifiwx-62"
-//        let push_url = "rtmp://m.push.wifiwx.com:1935/live?ukey=8mdwmb6zf&pub=0512688f0831a314594165131bbb3399/wifiwx-84"
         let push_url = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
         push = AWLivePush2(url: push_url)
         
@@ -40,8 +39,14 @@ class ViewController: UIViewController {
         }
         capture.onReady = {
             [weak self] in
-            self?.capture.start()
+            guard let _self = self else {
+                return
+            }
+
+            _self.capture.connectPreView(_self.preview)
+            _self.capture.start()
         }
+        
         /// videoEncoder
         videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(.Portrait),
                                       bitrate: videoQuality.recommandVideoBiterates,
@@ -49,7 +54,7 @@ class ViewController: UIViewController {
                                       profile: videoQuality.recommandVideoBiterates.recommandedProfile)
         videoEncoder.onEncoded = {
             [weak self](sampleBuffer) -> () in
-//            print("video encoded")
+            //            print("video encoded")
             self?.push?.pushVideoSampleBuffer(sampleBuffer) /// push
         }
         /// audioEncoder
@@ -59,18 +64,6 @@ class ViewController: UIViewController {
             self?.push?.pushAudioBufferList(bufferList) /// push
         }
         
-        /// preview
-        preview = capture.previewView
-        preview.frame = self.view.bounds
-        self.view.addSubview(preview)
-        self.view.translatesAutoresizingMaskIntoConstraints = false
-        preview.translatesAutoresizingMaskIntoConstraints = false
-        let layout_preview = ["preview":preview]
-        let preview_constraintsH = NSLayoutConstraint.constraintsWithVisualFormat("H:|-(-16.0)-[preview]-(-16.0)-|", options: .AlignAllCenterX, metrics: nil, views: layout_preview)
-        let preview_constraintsV = NSLayoutConstraint.constraintsWithVisualFormat("V:|-(-16.0)-[preview]-(-16.0)-|", options: .AlignAllCenterY, metrics: nil, views: layout_preview)
-        self.view.addConstraints(preview_constraintsH)
-        self.view.addConstraints(preview_constraintsV)
-        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -79,9 +72,6 @@ class ViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         UIApplication.sharedApplication().idleTimerDisabled = true
-//        capture.start()
-        
-        
     }
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
@@ -91,16 +81,42 @@ class ViewController: UIViewController {
         videoEncoder?.close()
         capture?.stop()
     }
-    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        return .Portrait
-    }
-    override func shouldAutorotate() -> Bool {
-        return false
-    }
+//    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+//        return .LandscapeRight
+//    }
+//    override func shouldAutorotate() -> Bool {
+//        return true
+//    }
+//    override func preferredInterfaceOrientationForPresentation() -> UIInterfaceOrientation {
+//        return .LandscapeRight
+//    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let connection = (self.preview?.layer as? AVCaptureVideoPreviewLayer)?.connection {
+            let device_orientation = UIApplication.sharedApplication().statusBarOrientation
+            switch device_orientation {
+            case .LandscapeLeft:
+                connection.videoOrientation = .LandscapeLeft
+                self.capture.videoOrientation = .LandscapeLeft
+            case .LandscapeRight:
+                connection.videoOrientation = .LandscapeRight
+                self.capture.videoOrientation = .LandscapeRight
+            case .Portrait:
+                connection.videoOrientation = .Portrait
+                self.capture.videoOrientation = .Portrait
+            case .PortraitUpsideDown:
+                connection.videoOrientation = .PortraitUpsideDown
+                self.capture.videoOrientation = .PortraitUpsideDown
+            default:
+                connection.videoOrientation = .Portrait
+                self.capture.videoOrientation = .Portrait
+            }
+        }
     }
 
 

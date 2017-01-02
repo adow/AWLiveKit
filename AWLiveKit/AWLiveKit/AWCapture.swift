@@ -93,7 +93,7 @@ typealias AWLiveCaptureReadyCallback = () -> ()
 
 class AWLiveCapture : NSObject{
     /// session
-    private var captureSession : AVCaptureSession!
+    var captureSession : AVCaptureSession!
     /// 设备
     private var videoDevice : AVCaptureDevice!
     private var audioDevice : AVCaptureDevice!
@@ -126,7 +126,9 @@ class AWLiveCapture : NSObject{
                 self.captureSession.commitConfiguration()
                 /// 如果准备好了，发出回调
                 if self.ready {
-                    self.onReady?()
+                    dispatch_async(dispatch_get_main_queue(), { 
+                        self.onReady?()
+                    })
                 }
             }
             /// input
@@ -175,7 +177,17 @@ class AWLiveCapture : NSObject{
     var previewView : AWLivePreview {
         let view = AWLivePreview()
         view.session = self.captureSession
+        if let layer = view.layer as? AVCaptureVideoPreviewLayer, let orientation = self.videoOrientation {
+            layer.connection.videoOrientation = orientation
+        }
         return view
+    }
+    /// 连接preview
+    func connectPreView(preview : AWLivePreview) {
+        preview.session = self.captureSession
+        if let layer = preview.layer as? AVCaptureVideoPreviewLayer, let orientation = self.videoOrientation {
+            layer.connection.videoOrientation = orientation
+        }
     }
     /// 设置横屏竖屏
     var videoOrientation : AVCaptureVideoOrientation? {
@@ -183,11 +195,11 @@ class AWLiveCapture : NSObject{
             guard let _orientation = newValue else {
                 return
             }
-            let video_connection = videoOutput.connectionWithMediaType(AVMediaTypeVideo)
+            let video_connection = videoOutput?.connectionWithMediaType(AVMediaTypeVideo)
             video_connection?.videoOrientation = _orientation
         }
         get {
-            let video_connection = videoOutput.connectionWithMediaType(AVMediaTypeVideo)
+            let video_connection = videoOutput?.connectionWithMediaType(AVMediaTypeVideo)
             return video_connection?.videoOrientation
         }
     }
