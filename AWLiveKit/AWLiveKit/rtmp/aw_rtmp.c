@@ -199,23 +199,25 @@ int aw_rtmp_send_h264_video(unsigned char *data,
 
 int aw_rtmp_send_audio_header() {
     RTMPPacket * packet;
-    packet = (RTMPPacket *)malloc(AW_RTMP_HEAD_SIZE + 4);
+    int body_size = 4;
+    packet = (RTMPPacket *)malloc(AW_RTMP_HEAD_SIZE + body_size);
     memset(packet, 0, AW_RTMP_HEAD_SIZE);
     
     packet->m_body = (char *)packet + AW_RTMP_HEAD_SIZE;
     
     unsigned char *body = (unsigned char *)packet->m_body;
     body[0] = 0xAF;
-    body[1] = 0x01;
+    body[1] = 0x00;
     body[2] = 0x12;
     body[3] = 0x10;
     packet->m_hasAbsTimestamp = 0;
     packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
     packet->m_nInfoField2 = aw_m_pRtmp ->m_stream_id;
     packet->m_nChannel = 0x04;
-    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
+//    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
+    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
     packet->m_nTimeStamp = 0;
-    packet->m_nBodySize = 4;
+    packet->m_nBodySize = body_size;
     
     /*调用发送接口*/
     printf("audio header: ");
@@ -229,10 +231,11 @@ int aw_rtmp_send_audio_header() {
 }
 
 int aw_rtmp_send_audio(unsigned char *data, 
-		unsigned int size,
+		unsigned int data_size,
 		unsigned int nTimeStamp) {
     RTMPPacket * packet;
-    packet = (RTMPPacket *)malloc(AW_RTMP_HEAD_SIZE+size+2);
+    unsigned int body_size = data_size + 2;
+    packet = (RTMPPacket *)malloc(AW_RTMP_HEAD_SIZE+body_size);
     memset(packet, 0, AW_RTMP_HEAD_SIZE);
     
     packet->m_body = (char *)packet + AW_RTMP_HEAD_SIZE;
@@ -240,14 +243,15 @@ int aw_rtmp_send_audio(unsigned char *data,
     unsigned char *body = (unsigned char *)packet->m_body;
     body[0] = 0xAF;
     body[1] = 0x01;
-    memcpy(body + 2, data, size);
+    memcpy(body + 2, data, data_size);
     packet->m_hasAbsTimestamp = 0;
     packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
     packet->m_nInfoField2 = aw_m_pRtmp ->m_stream_id;
     packet->m_nChannel = 0x04;
-    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
+//    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
+    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
     packet->m_nTimeStamp = nTimeStamp;
-    packet->m_nBodySize = size + 2;
+    packet->m_nBodySize = body_size;
     
     /*调用发送接口*/
 //    printf("audio %d: ",nTimeStamp);
