@@ -51,7 +51,7 @@ enum AWLiveCaptureVideoQuality :Int{
                 return CGSizeMake(720.0, 1280.0)
             }
             else {
-                return CGSizeMake(1780.0, 720.0)
+                return CGSizeMake(1280.0, 720.0)
             }
         case ._1080:
             if orientation == .Portrait || orientation == .PortraitUpsideDown {
@@ -77,7 +77,7 @@ enum AWLiveCaptureVideoQuality :Int{
         case ._540i:
             return ._800kbs
         case ._720,._720i:
-            return ._1000kbs
+            return ._1200kbs
         case ._1080:
             return ._2000kbs
         case ._4k:

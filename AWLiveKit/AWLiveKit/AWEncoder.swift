@@ -297,12 +297,6 @@ class AWAudioEncoder {
         let format = CMSampleBufferGetFormatDescription(sampleBuffer)
         let sourceFormat = CMAudioFormatDescriptionGetStreamBasicDescription(format!).memory
         g_audioInputFormat = sourceFormat
-//        g_audioInputFormat.mFormatID = kAudioFormatLinearPCM
-//        g_audioInputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked
-//        g_audioInputFormat.mFramesPerPacket = 1
-//        g_audioInputFormat.mBitsPerChannel = 16;
-//        g_audioInputFormat.mBytesPerFrame = g_audioInputFormat.mBitsPerChannel / 8 * g_audioInputFormat.mChannelsPerFrame;
-//        g_audioInputFormat.mBytesPerPacket = g_audioInputFormat.mBytesPerFrame * g_audioInputFormat.mFramesPerPacket;
         
         self.setup()
         
@@ -346,12 +340,6 @@ class AWAudioEncoder {
             return
         }
         
-//        let audio_data_length = outBufferList.mBuffers.mDataByteSize
-//        let audio_data_bytes = outBufferList.mBuffers.mData
-//        let timeStamp = abs(self.startTime.timeIntervalSinceNow) * 1000
-        //        let audio_data = NSData(bytes: audio_data_bytes, length: Int(audio_data_length))
-        //        print("\(audio_data_length), \(timeStamp):\(audio_data)")
-//        aw_rtmp_send_audio(UnsafeMutablePointer<UInt8>(audio_data_bytes), audio_data_length, UInt32(timeStamp))
         self.onEncoded?(outBufferList)
     }
     var encoderCallback : AudioConverterComplexInputDataProc = {
