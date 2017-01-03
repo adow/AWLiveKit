@@ -161,4 +161,9 @@ extension ViewController {
         self.rotate()
         
     }
+    @IBAction func onButtonMirror(sender : UIButton!) {
+        sender.selected = !sender.selected
+        self.capture.videoMirror = sender.selected
+        self.preview.mirror = sender.selected
+    }
 }

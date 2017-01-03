@@ -65,6 +65,14 @@
                                             <action selector="onCameraChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="Xx0-Wm-rPl"/>
                                         </connections>
                                     </segmentedControl>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vR0-zD-EaZ">
+                                        <rect key="frame" x="218" y="613" width="31" height="30"/>
+                                        <state key="normal" title="镜像"/>
+                                        <state key="selected" title="正常"/>
+                                        <connections>
+                                            <action selector="onButtonMirror:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zBR-Dy-p14"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="4tN-e5-Xwo" firstAttribute="top" secondItem="w0S-bC-Dyh" secondAttribute="bottom" constant="13" id="3Qm-ib-iCB"/>
@@ -73,9 +81,11 @@
                                     <constraint firstAttribute="trailing" secondItem="w0S-bC-Dyh" secondAttribute="trailing" constant="30" id="OcR-Es-LZT"/>
                                     <constraint firstAttribute="bottom" secondItem="keK-AJ-Qas" secondAttribute="bottom" constant="24" id="OmT-1H-Eq3"/>
                                     <constraint firstAttribute="trailing" secondItem="4tN-e5-Xwo" secondAttribute="trailing" id="SO7-Ba-xQZ"/>
+                                    <constraint firstItem="vR0-zD-EaZ" firstAttribute="leading" secondItem="MLi-7U-7yb" secondAttribute="trailing" constant="18" id="VhE-ZG-YMO"/>
                                     <constraint firstItem="4tN-e5-Xwo" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" id="bBS-ea-8Kb"/>
                                     <constraint firstItem="MLi-7U-7yb" firstAttribute="leading" secondItem="keK-AJ-Qas" secondAttribute="trailing" constant="18" id="c5S-zd-8cz"/>
                                     <constraint firstItem="keK-AJ-Qas" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="30" id="hAT-Kx-vzZ"/>
+                                    <constraint firstItem="vR0-zD-EaZ" firstAttribute="centerY" secondItem="MLi-7U-7yb" secondAttribute="centerY" id="yYE-R9-Dcx"/>
                                 </constraints>
                             </view>
                         </subviews>
