@@ -47,6 +47,7 @@ class ViewController: UIViewController {
 
             _self.capture.connectPreView(_self.preview)
             _self.capture.start()
+            debugPrint("camera position:\(_self.capture.frontCammera)")
         }
         
         /// videoEncoder
@@ -99,6 +100,9 @@ class ViewController: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        self.rotate()
+    }
+    private func rotate() {
         if let connection = (self.preview?.layer as? AVCaptureVideoPreviewLayer)?.connection {
             let device_orientation = UIApplication.sharedApplication().statusBarOrientation
             switch device_orientation {
@@ -146,5 +150,15 @@ extension ViewController {
             sender.selected = false
             self.showInfo("Stop")
         }
+    }
+    @IBAction func onCameraChanged(sender : UISegmentedControl!) {
+        if sender.selectedSegmentIndex == 0 {
+            self.capture.frontCammera = false
+        }
+        else if sender.selectedSegmentIndex == 1 {
+            self.capture.frontCammera = true
+        }
+        self.rotate()
+        
     }
 }

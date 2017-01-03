@@ -61,6 +61,9 @@
                                             <segment title="后置"/>
                                             <segment title="前置"/>
                                         </segments>
+                                        <connections>
+                                            <action selector="onCameraChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="Xx0-Wm-rPl"/>
+                                        </connections>
                                     </segmentedControl>
                                 </subviews>
                                 <constraints>

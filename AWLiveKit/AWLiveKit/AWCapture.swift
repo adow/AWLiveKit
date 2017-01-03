@@ -97,6 +97,8 @@ class AWLiveCapture : NSObject{
     /// 设备
     private var videoDevice : AVCaptureDevice!
     private var audioDevice : AVCaptureDevice!
+    /// 输入
+    private var videoInput : AVCaptureInput!
     /// 输出
     private var videoOutput : AVCaptureVideoDataOutput!
     private var audioOutput : AVCaptureAudioDataOutput!
@@ -133,8 +135,8 @@ class AWLiveCapture : NSObject{
             }
             /// input
             do {
-                let inputVideo = try AVCaptureDeviceInput(device: self.videoDevice)
-                self.captureSession.addInput(inputVideo)
+                self.videoInput = try AVCaptureDeviceInput(device: self.videoDevice)
+                self.captureSession.addInput(self.videoInput)
                 let inputAudio = try AVCaptureDeviceInput(device: self.audioDevice)
                 self.captureSession.addInput(inputAudio)
                 
@@ -216,6 +218,40 @@ class AWLiveCapture : NSObject{
             let video_connection = videoOutput.connectionWithMediaType(AVMediaTypeVideo)
             return video_connection?.videoMirrored
         }
+    }
+    /// 切换摄像头
+    var frontCammera : Bool{
+        set {
+            let position = newValue ? AVCaptureDevicePosition.Front : AVCaptureDevicePosition.Back
+            do {
+                self.captureSession.beginConfiguration()
+                try self.videoDevice.lockForConfiguration()
+                self.captureSession.removeInput(self.videoInput)
+                self.videoDevice.unlockForConfiguration()
+                self.videoDevice = nil
+                if let devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as? [AVCaptureDevice] {
+                    if let camera = (devices.filter {
+                        return $0.position == position
+                    }).first {
+                        self.videoDevice = camera
+                        try camera.lockForConfiguration()
+                        videoInput = try AVCaptureDeviceInput(device: camera)
+                        self.captureSession.addInput(videoInput)
+                        camera.unlockForConfiguration()
+                    }
+                }
+                self.captureSession.commitConfiguration()
+            
+            }
+            catch let error as NSError {
+                NSLog("Input Device Error:%@", error)
+                self.captureSession.commitConfiguration()
+            }
+        }
+        get {
+            return self.videoDevice.position == .Front
+        }
+        
     }
 }
 // MARK: start and stop
