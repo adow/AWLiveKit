@@ -16,17 +16,19 @@ class ViewController: UIViewController {
     var audioEncoder : AWAudioEncoder!
     var push : AWLivePush2!
     @IBOutlet var preview : AWLivePreview!
+    @IBOutlet var infoLabel : UILabel!
+    @IBOutlet var startButton : UIButton!
+    var push_url : String! = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        self.showInfo(push_url, duration: 5.0)
         let videoQuality = AWLiveCaptureVideoQuality._720
         /// push
-        let push_url = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
         push = AWLivePush2(url: push_url)
-        
         /// capture
         capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
-                                orientation: .Portrait)
+                                orientation: .LandscapeRight)
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
             self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
@@ -48,7 +50,7 @@ class ViewController: UIViewController {
         }
         
         /// videoEncoder
-        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(.Portrait),
+        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(.LandscapeRight),
                                       bitrate: videoQuality.recommandVideoBiterates,
                                       fps:videoQuality.recommandVideoBiterates.recommandedFPS,
                                       profile: videoQuality.recommandVideoBiterates.recommandedProfile)
@@ -81,15 +83,15 @@ class ViewController: UIViewController {
         videoEncoder?.close()
         capture?.stop()
     }
-//    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-//        return .LandscapeRight
-//    }
-//    override func shouldAutorotate() -> Bool {
-//        return true
-//    }
-//    override func preferredInterfaceOrientationForPresentation() -> UIInterfaceOrientation {
-//        return .LandscapeRight
-//    }
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        return .LandscapeRight
+    }
+    override func shouldAutorotate() -> Bool {
+        return true
+    }
+    override func preferredInterfaceOrientationForPresentation() -> UIInterfaceOrientation {
+        return .LandscapeRight
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -118,7 +120,31 @@ class ViewController: UIViewController {
             }
         }
     }
-
-
 }
 
+extension ViewController {
+    private func showInfo(info:String, duration : NSTimeInterval = 0.0) {
+        self.infoLabel.text = info
+        self.infoLabel.alpha = 1.0
+        if duration > 0.0 {
+            UIView.animateWithDuration(duration, animations: {
+                self.infoLabel.alpha = 0.0
+            })
+        }
+    }
+    @IBAction func onButtonLive(sender : UIButton!) {
+        guard let _push = self.push else {
+            return
+        }
+        if !_push.live {
+            _push.start()
+            sender.selected = true
+            self.showInfo("Start", duration: 5.0)
+        }
+        else {
+            _push.stop()
+            sender.selected = false
+            self.showInfo("Stop")
+        }
+    }
+}

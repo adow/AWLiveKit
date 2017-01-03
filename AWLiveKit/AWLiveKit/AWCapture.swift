@@ -173,7 +173,7 @@ class AWLiveCapture : NSObject{
         
 //        NSLog("Capture Setup duration:\(abs(start_time.timeIntervalSinceNow))")
     }
-    /// 预览界面
+    /// 创建一个预览界面
     var previewView : AWLivePreview {
         let view = AWLivePreview()
         view.session = self.captureSession
@@ -182,7 +182,7 @@ class AWLiveCapture : NSObject{
         }
         return view
     }
-    /// 连接preview
+    /// 连接已经存在的 preview
     func connectPreView(preview : AWLivePreview) {
         preview.session = self.captureSession
         if let layer = preview.layer as? AVCaptureVideoPreviewLayer, let orientation = self.videoOrientation {

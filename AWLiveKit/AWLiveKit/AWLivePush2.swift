@@ -17,6 +17,8 @@ class AWLivePush2 {
     let avvc_header_length : size_t = 4
     var start_time : NSDate? = nil
     var connected : Bool = false
+    /// 播出
+    var live : Bool = false
     init(url:String) {
         self.connectURL(url)
     }
@@ -35,6 +37,12 @@ class AWLivePush2 {
             }
         }
     }
+    func start() {
+        self.live = true
+    }
+    func stop() {
+        self.live = false
+    }
 }
 extension AWLivePush2 {
     var timeOffset : Double {
@@ -42,7 +50,7 @@ extension AWLivePush2 {
     }
     func pushVideoSampleBuffer(sampleBuffer : CMSampleBuffer) {
         dispatch_async(rtmp_queue) {
-            guard self.connected else {
+            guard self.connected && self.live else {
                 return
             }
             aw_push_video_samplebuffer(sampleBuffer,
@@ -52,7 +60,7 @@ extension AWLivePush2 {
     }
     func pushAudioBufferList(audioList : AudioBufferList) {
         dispatch_async(rtmp_queue) { 
-            guard self.connected else {
+            guard self.connected && self.live else {
                 return
             }
             aw_push_audio_bufferlist(audioList, self.timeOffset)

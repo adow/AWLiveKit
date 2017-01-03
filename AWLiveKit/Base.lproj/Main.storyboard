@@ -23,31 +23,75 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J5W-TL-CIx" customClass="AWLivePreview" customModule="AWLiveKit" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VAJ-OE-gCN">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Live" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w0S-bC-Dyh">
-                                        <rect key="frame" x="314" y="37" width="31" height="21"/>
+                                        <rect key="frame" x="314" y="30" width="31" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="0.95872321510000003" green="0.95872321510000003" blue="0.95872321510000003" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="keK-AJ-Qas">
+                                        <rect key="frame" x="30" y="613" width="31" height="30"/>
+                                        <state key="normal" title="开始"/>
+                                        <state key="selected" title="结束"/>
+                                        <connections>
+                                            <action selector="onButtonLive:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nCI-R0-hKy"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4tN-e5-Xwo">
+                                        <rect key="frame" x="0.0" y="64" width="375" height="57"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="57" id="T2V-iR-Jfk"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" red="0.95872321510000003" green="0.95872321510000003" blue="0.95872321510000003" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="MLi-7U-7yb">
+                                        <rect key="frame" x="79" y="614" width="121" height="29"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="121" id="Nt5-pm-Yct"/>
+                                            <constraint firstAttribute="height" constant="28" id="YNt-JS-dYv"/>
+                                        </constraints>
+                                        <segments>
+                                            <segment title="后置"/>
+                                            <segment title="前置"/>
+                                        </segments>
+                                    </segmentedControl>
                                 </subviews>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="w0S-bC-Dyh" secondAttribute="trailing" constant="30" id="Dto-R7-oDf"/>
-                                    <constraint firstItem="w0S-bC-Dyh" firstAttribute="top" secondItem="J5W-TL-CIx" secondAttribute="top" constant="37" id="Wf5-9f-dOu"/>
+                                    <constraint firstItem="4tN-e5-Xwo" firstAttribute="top" secondItem="w0S-bC-Dyh" secondAttribute="bottom" constant="13" id="3Qm-ib-iCB"/>
+                                    <constraint firstItem="w0S-bC-Dyh" firstAttribute="top" secondItem="VAJ-OE-gCN" secondAttribute="top" constant="30" id="LoP-SU-Zcb"/>
+                                    <constraint firstItem="MLi-7U-7yb" firstAttribute="centerY" secondItem="keK-AJ-Qas" secondAttribute="centerY" id="ODW-Bc-hjv"/>
+                                    <constraint firstAttribute="trailing" secondItem="w0S-bC-Dyh" secondAttribute="trailing" constant="30" id="OcR-Es-LZT"/>
+                                    <constraint firstAttribute="bottom" secondItem="keK-AJ-Qas" secondAttribute="bottom" constant="24" id="OmT-1H-Eq3"/>
+                                    <constraint firstAttribute="trailing" secondItem="4tN-e5-Xwo" secondAttribute="trailing" id="SO7-Ba-xQZ"/>
+                                    <constraint firstItem="4tN-e5-Xwo" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" id="bBS-ea-8Kb"/>
+                                    <constraint firstItem="MLi-7U-7yb" firstAttribute="leading" secondItem="keK-AJ-Qas" secondAttribute="trailing" constant="18" id="c5S-zd-8cz"/>
+                                    <constraint firstItem="keK-AJ-Qas" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="30" id="hAT-Kx-vzZ"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="VAJ-OE-gCN" secondAttribute="bottom" id="4Xs-K8-gSf"/>
                             <constraint firstAttribute="trailing" secondItem="J5W-TL-CIx" secondAttribute="trailing" id="8iK-jQ-uoO"/>
+                            <constraint firstAttribute="trailing" secondItem="VAJ-OE-gCN" secondAttribute="trailing" id="H4u-uq-Huy"/>
+                            <constraint firstItem="VAJ-OE-gCN" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="KCu-05-iT3"/>
                             <constraint firstItem="J5W-TL-CIx" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="VaP-hc-BJ1"/>
                             <constraint firstItem="J5W-TL-CIx" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="czX-o3-Eui"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="J5W-TL-CIx" secondAttribute="bottom" id="haH-Se-bpw"/>
+                            <constraint firstItem="VAJ-OE-gCN" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="x8w-wL-v9G"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="infoLabel" destination="4tN-e5-Xwo" id="bBp-0a-Erm"/>
                         <outlet property="preview" destination="J5W-TL-CIx" id="Ix7-XU-fXh"/>
+                        <outlet property="startButton" destination="keK-AJ-Qas" id="AAJ-ci-OUQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
