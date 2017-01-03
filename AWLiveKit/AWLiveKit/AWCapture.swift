@@ -11,7 +11,7 @@ import AVFoundation
 import UIKit
 
 // MARK: - VideoQuality
-enum AWLiveCaptureVideoQuality :Int{
+enum AWLiveCaptureVideoQuality :Int,CustomStringConvertible, CustomDebugStringConvertible{
     case _480 = 0,_540i, _720, _720i, _1080, _4k
     var sessionPreset : String {
         switch self {
@@ -84,6 +84,24 @@ enum AWLiveCaptureVideoQuality :Int{
             return ._4000kbs
         }
         
+    }
+    var description: String {
+        switch self {
+        case ._480:
+            return "480, 640x480, 500kbps"
+        case ._540i:
+            return "540i, 960x540, 800kbps"
+        case ._720,._720i:
+            return "720, 1280x720, 1200kbps"
+        case ._1080:
+            return "1080, 1920x1080, 2000kbps"
+        case ._4k:
+            return "4k, 3840x2160, 4000kbps"
+
+        }
+    }
+    var debugDescription: String {
+        return self.description
     }
 }
 

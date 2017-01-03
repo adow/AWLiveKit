@@ -16,11 +16,13 @@ class AWLive {
     var videoEncoder : AWVideoEncoder!
     var audioEncoder : AWAudioEncoder!
     weak var preview : AWLivePreview?
+    var videoQuality : AWLiveCaptureVideoQuality!
     var live : Bool = false
     init(url:String,
          onPreview preview : AWLivePreview,
          withQuality videoQuality : AWLiveCaptureVideoQuality = AWLiveCaptureVideoQuality._720,
          atOrientation orientation : AVCaptureVideoOrientation = .Portrait) {
+        self.videoQuality = videoQuality
         self.preview = preview
         /// push
         push = AWLivePush2(url: url)
@@ -47,29 +49,13 @@ class AWLive {
             _self.capture.start()
         }
         
-        /// videoEncoder
-        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(orientation),
-                                      bitrate: videoQuality.recommandVideoBiterates,
-                                      fps:videoQuality.recommandVideoBiterates.recommandedFPS,
-                                      profile: videoQuality.recommandVideoBiterates.recommandedProfile)
-        videoEncoder.onEncoded = {
-            [weak self](sampleBuffer) -> () in
-            //            print("video encoded")
-            self?.push?.pushVideoSampleBuffer(sampleBuffer) /// push
-        }
-        /// audioEncoder
-        audioEncoder = AWAudioEncoder()
-        audioEncoder.onEncoded = {
-            [weak self](bufferList) -> () in
-            self?.push?.pushAudioBufferList(bufferList) /// push
-        }
+        
     }
     deinit {
         self.close()
     }
     func close() {
-        self.live = false
-        self.videoEncoder?.close()
+        self.stopLive()
         self.capture?.stop()
     }
 }
@@ -123,12 +109,38 @@ extension AWLive {
     }
 }
 extension AWLive {
+    /// 开始直播，指定当前的旋转位置, 只有开始直播的时候才进行编码
     func startLive() {
+        guard let orientation = self.videoOrientation else {
+            NSLog("No Video Orientation")
+            return
+        }
+        /// videoEncoder
+        videoEncoder?.close()
+        videoEncoder = nil
+        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(orientation),
+                                      bitrate: videoQuality.recommandVideoBiterates,
+                                      fps:videoQuality.recommandVideoBiterates.recommandedFPS,
+                                      profile: videoQuality.recommandVideoBiterates.recommandedProfile)
+        videoEncoder.onEncoded = {
+            [weak self](sampleBuffer) -> () in
+            //            print("video encoded")
+            self?.push?.pushVideoSampleBuffer(sampleBuffer) /// push
+        }
+        /// audioEncoder
+        audioEncoder = AWAudioEncoder()
+        audioEncoder.onEncoded = {
+            [weak self](bufferList) -> () in
+            self?.push?.pushAudioBufferList(bufferList) /// push
+        }
         self.push?.start()
         self.live = true
     }
     func stopLive() {
         self.push?.stop()
+        self.videoEncoder?.close()
+        self.videoEncoder = nil
+        self.audioEncoder = nil
         self.live = false
     }
 }

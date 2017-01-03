@@ -9,24 +9,36 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController {
+class LiveViewController: UIViewController {
 
-    var capture : AWLiveCapture!
-    var videoEncoder : AWVideoEncoder!
-    var audioEncoder : AWAudioEncoder!
-    var push : AWLivePush2!
     var live : AWLive!
     @IBOutlet var preview : AWLivePreview!
     @IBOutlet var infoLabel : UILabel!
     @IBOutlet var startButton : UIButton!
     var push_url : String! = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
+    var orientation : UIInterfaceOrientation! = .Portrait
+    var videoQuality : AWLiveCaptureVideoQuality = ._720
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.showInfo(push_url, duration: 5.0)
+        var videoOrientation : AVCaptureVideoOrientation = .Portrait
+        if orientation == .LandscapeRight {
+            videoOrientation = .LandscapeRight
+        }
+        else if orientation == .LandscapeLeft {
+            videoOrientation = .LandscapeLeft
+        }
+        else if orientation == .Portrait {
+            videoOrientation = .Portrait
+        }
+        else if orientation == .PortraitUpsideDown {
+            videoOrientation = .PortraitUpsideDown
+        }
         self.live = AWLive(url: self.push_url,
                            onPreview: self.preview,
-                           atOrientation : .LandscapeRight)
+                           withQuality: self.videoQuality,
+                           atOrientation : videoOrientation)
         
     }
     
@@ -45,13 +57,28 @@ class ViewController: UIViewController {
         self.live.close()
     }
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        return .LandscapeRight
+//        return UIInterfaceOrientationMask(rawValue: UInt(self.orientation.rawValue))
+        if orientation == .LandscapeRight {
+            return .LandscapeRight
+        }
+        else if orientation == .LandscapeLeft {
+            return .LandscapeLeft
+        }
+        else if orientation == .Portrait {
+            return .Portrait
+        }
+        else if orientation == .PortraitUpsideDown {
+            return .PortraitUpsideDown
+        }
+        else {
+            return .Portrait
+        }
     }
     override func shouldAutorotate() -> Bool {
-        return true
+        return false
     }
     override func preferredInterfaceOrientationForPresentation() -> UIInterfaceOrientation {
-        return .LandscapeRight
+        return self.orientation
     }
 
     override func didReceiveMemoryWarning() {
@@ -65,7 +92,7 @@ class ViewController: UIViewController {
     
 }
 
-extension ViewController {
+extension LiveViewController {
     private func showInfo(info:String, duration : NSTimeInterval = 0.0) {
         self.infoLabel.text = info
         self.infoLabel.alpha = 1.0

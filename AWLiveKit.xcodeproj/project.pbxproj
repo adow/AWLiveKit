@@ -17,13 +17,14 @@
 		68220A971D59A5C900715E37 /* AWLivePush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68220A961D59A5C900715E37 /* AWLivePush.swift */; };
 		68220A991D59A93100715E37 /* AWLiveExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68220A981D59A93100715E37 /* AWLiveExtension.swift */; };
 		68348FFC1D58692E00C2A72E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68348FFB1D58692E00C2A72E /* AppDelegate.swift */; };
-		68348FFE1D58692E00C2A72E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68348FFD1D58692E00C2A72E /* ViewController.swift */; };
+		68348FFE1D58692E00C2A72E /* LiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68348FFD1D58692E00C2A72E /* LiveViewController.swift */; };
 		683490011D58692E00C2A72E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68348FFF1D58692E00C2A72E /* Main.storyboard */; };
 		683490031D58692E00C2A72E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 683490021D58692E00C2A72E /* Assets.xcassets */; };
 		683490061D58692E00C2A72E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 683490041D58692E00C2A72E /* LaunchScreen.storyboard */; };
 		6834900F1D586AA000C2A72E /* AWCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6834900E1D586AA000C2A72E /* AWCapture.swift */; };
 		683490111D587EA900C2A72E /* AWLivePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683490101D587EA900C2A72E /* AWLivePreview.swift */; };
 		6851006E1E1B8F3D00A835A2 /* AWLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6851006D1E1B8F3D00A835A2 /* AWLive.swift */; };
+		685100701E1BF39A00A835A2 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6851006F1E1BF39A00A835A2 /* StartViewController.swift */; };
 		68C9BD1F1E14BE2800D2E127 /* aw_live_push.c in Sources */ = {isa = PBXBuildFile; fileRef = 68C9BD1D1E14BE2800D2E127 /* aw_live_push.c */; };
 		68C9BD231E15662E00D2E127 /* AWLivePush2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C9BD221E15662E00D2E127 /* AWLivePush2.swift */; };
 /* End PBXBuildFile section */
@@ -51,7 +52,7 @@
 		68220A981D59A93100715E37 /* AWLiveExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLiveExtension.swift; path = AWLiveKit/AWLiveExtension.swift; sourceTree = "<group>"; };
 		68348FF81D58692E00C2A72E /* AWLiveKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWLiveKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		68348FFB1D58692E00C2A72E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		68348FFD1D58692E00C2A72E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		68348FFD1D58692E00C2A72E /* LiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveViewController.swift; sourceTree = "<group>"; };
 		683490001D58692E00C2A72E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		683490021D58692E00C2A72E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		683490051D58692E00C2A72E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -59,6 +60,7 @@
 		6834900E1D586AA000C2A72E /* AWCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWCapture.swift; path = AWLiveKit/AWCapture.swift; sourceTree = "<group>"; };
 		683490101D587EA900C2A72E /* AWLivePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLivePreview.swift; path = AWLiveKit/AWLivePreview.swift; sourceTree = "<group>"; };
 		6851006D1E1B8F3D00A835A2 /* AWLive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLive.swift; path = AWLiveKit/AWLive.swift; sourceTree = "<group>"; };
+		6851006F1E1BF39A00A835A2 /* StartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 		68C9BD1D1E14BE2800D2E127 /* aw_live_push.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aw_live_push.c; path = AWLiveKit/aw_live_push.c; sourceTree = "<group>"; };
 		68C9BD1E1E14BE2800D2E127 /* aw_live_push.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aw_live_push.h; path = AWLiveKit/aw_live_push.h; sourceTree = "<group>"; };
 		68C9BD221E15662E00D2E127 /* AWLivePush2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLivePush2.swift; path = AWLiveKit/AWLivePush2.swift; sourceTree = "<group>"; };
@@ -120,7 +122,8 @@
 			children = (
 				6834900D1D586A8200C2A72E /* AWLiveKit */,
 				68348FFB1D58692E00C2A72E /* AppDelegate.swift */,
-				68348FFD1D58692E00C2A72E /* ViewController.swift */,
+				68348FFD1D58692E00C2A72E /* LiveViewController.swift */,
+				6851006F1E1BF39A00A835A2 /* StartViewController.swift */,
 				68348FFF1D58692E00C2A72E /* Main.storyboard */,
 				683490021D58692E00C2A72E /* Assets.xcassets */,
 				683490041D58692E00C2A72E /* LaunchScreen.storyboard */,
@@ -229,7 +232,8 @@
 				68220A7D1D59761C00715E37 /* AWEncoder.swift in Sources */,
 				683490111D587EA900C2A72E /* AWLivePreview.swift in Sources */,
 				68220A911D59A30300715E37 /* parseurl.c in Sources */,
-				68348FFE1D58692E00C2A72E /* ViewController.swift in Sources */,
+				685100701E1BF39A00A835A2 /* StartViewController.swift in Sources */,
+				68348FFE1D58692E00C2A72E /* LiveViewController.swift in Sources */,
 				68348FFC1D58692E00C2A72E /* AppDelegate.swift in Sources */,
 				68220A8F1D59A30300715E37 /* hashswf.c in Sources */,
 				6834900F1D586AA000C2A72E /* AWCapture.swift in Sources */,
