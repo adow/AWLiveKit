@@ -26,7 +26,7 @@ class AWLive {
         push = AWLivePush2(url: url)
         /// capture
         capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
-                                orientation: .LandscapeRight)
+                                orientation: orientation)
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
             self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
@@ -48,7 +48,7 @@ class AWLive {
         }
         
         /// videoEncoder
-        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(.LandscapeRight),
+        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(orientation),
                                       bitrate: videoQuality.recommandVideoBiterates,
                                       fps:videoQuality.recommandVideoBiterates.recommandedFPS,
                                       profile: videoQuality.recommandVideoBiterates.recommandedProfile)

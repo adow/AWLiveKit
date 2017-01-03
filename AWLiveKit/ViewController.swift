@@ -24,7 +24,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.showInfo(push_url, duration: 5.0)
-        self.live = AWLive(url: self.push_url, onPreview: self.preview)
+        self.live = AWLive(url: self.push_url,
+                           onPreview: self.preview,
+                           atOrientation : .LandscapeRight)
         
     }
     
