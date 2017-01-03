@@ -45,4 +45,14 @@ class AWLivePreview: UIView {
         }
         
     }
+    var videoOrientation : AVCaptureVideoOrientation? {
+        get {
+            return self.connection?.videoOrientation
+        }
+        set {
+            if let orientation = newValue {
+                self.connection?.videoOrientation = orientation
+            }
+        }
+    }
 }

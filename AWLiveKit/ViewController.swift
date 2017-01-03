@@ -103,25 +103,23 @@ class ViewController: UIViewController {
         self.rotate()
     }
     private func rotate() {
-        if let connection = (self.preview?.layer as? AVCaptureVideoPreviewLayer)?.connection {
-            let device_orientation = UIApplication.sharedApplication().statusBarOrientation
-            switch device_orientation {
-            case .LandscapeLeft:
-                connection.videoOrientation = .LandscapeLeft
-                self.capture.videoOrientation = .LandscapeLeft
-            case .LandscapeRight:
-                connection.videoOrientation = .LandscapeRight
-                self.capture.videoOrientation = .LandscapeRight
-            case .Portrait:
-                connection.videoOrientation = .Portrait
-                self.capture.videoOrientation = .Portrait
-            case .PortraitUpsideDown:
-                connection.videoOrientation = .PortraitUpsideDown
-                self.capture.videoOrientation = .PortraitUpsideDown
-            default:
-                connection.videoOrientation = .Portrait
-                self.capture.videoOrientation = .Portrait
-            }
+        let device_orientation = UIApplication.sharedApplication().statusBarOrientation
+        switch device_orientation {
+        case .LandscapeLeft:
+            self.preview.videoOrientation = .LandscapeLeft
+            self.capture.videoOrientation = .LandscapeLeft
+        case .LandscapeRight:
+            self.preview.videoOrientation = .LandscapeRight
+            self.capture.videoOrientation = .LandscapeRight
+        case .Portrait:
+            self.preview.videoOrientation = .Portrait
+            self.capture.videoOrientation = .Portrait
+        case .PortraitUpsideDown:
+            self.preview.videoOrientation = .PortraitUpsideDown
+            self.capture.videoOrientation = .PortraitUpsideDown
+        default:
+            self.preview.videoOrientation = .Portrait
+            self.capture.videoOrientation = .Portrait
         }
     }
 }
