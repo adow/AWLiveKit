@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     var videoEncoder : AWVideoEncoder!
     var audioEncoder : AWAudioEncoder!
     var push : AWLivePush2!
+    var live : AWLive!
     @IBOutlet var preview : AWLivePreview!
     @IBOutlet var infoLabel : UILabel!
     @IBOutlet var startButton : UIButton!
@@ -23,49 +24,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.showInfo(push_url, duration: 5.0)
-        let videoQuality = AWLiveCaptureVideoQuality._720
-        /// push
-        push = AWLivePush2(url: push_url)
-        /// capture
-        capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
-                                orientation: .LandscapeRight)
-        capture.onVideoSampleBuffer = {
-            [weak self](sampleBuffer) -> () in
-            self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
-            
-        }
-        capture.onAudioSampleBuffer = {
-            [weak self](sampleBuffer) -> () in
-//            print("audio")
-            self?.audioEncoder?.encodeSampleBuffer(sampleBuffer)
-        }
-        capture.onReady = {
-            [weak self] in
-            guard let _self = self else {
-                return
-            }
-
-            _self.capture.connectPreView(_self.preview)
-            _self.capture.start()
-            debugPrint("camera position:\(_self.capture.frontCammera)")
-        }
-        
-        /// videoEncoder
-        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(.LandscapeRight),
-                                      bitrate: videoQuality.recommandVideoBiterates,
-                                      fps:videoQuality.recommandVideoBiterates.recommandedFPS,
-                                      profile: videoQuality.recommandVideoBiterates.recommandedProfile)
-        videoEncoder.onEncoded = {
-            [weak self](sampleBuffer) -> () in
-            //            print("video encoded")
-            self?.push?.pushVideoSampleBuffer(sampleBuffer) /// push
-        }
-        /// audioEncoder
-        audioEncoder = AWAudioEncoder()
-        audioEncoder.onEncoded = {
-            [weak self](bufferList) -> () in
-            self?.push?.pushAudioBufferList(bufferList) /// push
-        }
+        self.live = AWLive(url: self.push_url, onPreview: self.preview)
         
     }
     
@@ -81,8 +40,7 @@ class ViewController: UIViewController {
     }
     override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
-        videoEncoder?.close()
-        capture?.stop()
+        self.live.close()
     }
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
         return .LandscapeRight
@@ -100,28 +58,9 @@ class ViewController: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.rotate()
+        self.live.rotateWithCurrentOrientation()
     }
-    private func rotate() {
-        let device_orientation = UIApplication.sharedApplication().statusBarOrientation
-        switch device_orientation {
-        case .LandscapeLeft:
-            self.preview.videoOrientation = .LandscapeLeft
-            self.capture.videoOrientation = .LandscapeLeft
-        case .LandscapeRight:
-            self.preview.videoOrientation = .LandscapeRight
-            self.capture.videoOrientation = .LandscapeRight
-        case .Portrait:
-            self.preview.videoOrientation = .Portrait
-            self.capture.videoOrientation = .Portrait
-        case .PortraitUpsideDown:
-            self.preview.videoOrientation = .PortraitUpsideDown
-            self.capture.videoOrientation = .PortraitUpsideDown
-        default:
-            self.preview.videoOrientation = .Portrait
-            self.capture.videoOrientation = .Portrait
-        }
-    }
+    
 }
 
 extension ViewController {
@@ -135,33 +74,28 @@ extension ViewController {
         }
     }
     @IBAction func onButtonLive(sender : UIButton!) {
-        guard let _push = self.push else {
-            return
-        }
-        if !_push.live {
-            _push.start()
+        if !live.live {
+            live.startLive()
             sender.selected = true
             self.showInfo("Start", duration: 5.0)
         }
         else {
-            _push.stop()
+            live.stopLive()
             sender.selected = false
             self.showInfo("Stop")
         }
     }
     @IBAction func onCameraChanged(sender : UISegmentedControl!) {
         if sender.selectedSegmentIndex == 0 {
-            self.capture.frontCammera = false
+            self.live.frontCamera = false
         }
         else if sender.selectedSegmentIndex == 1 {
-            self.capture.frontCammera = true
+            self.live.frontCamera = true
         }
-        self.rotate()
         
     }
     @IBAction func onButtonMirror(sender : UIButton!) {
         sender.selected = !sender.selected
-        self.capture.videoMirror = sender.selected
-        self.preview.mirror = sender.selected
+        self.live.mirror = sender.selected
     }
 }
