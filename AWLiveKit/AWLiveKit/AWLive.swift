@@ -21,7 +21,7 @@ class AWLive {
     init(url:String,
          onPreview preview : AWLivePreview,
          withQuality videoQuality : AWLiveCaptureVideoQuality = AWLiveCaptureVideoQuality._720,
-         atOrientation orientation : AVCaptureVideoOrientation = .Portrait) {
+         atOrientation orientation : AVCaptureVideoOrientation = .portrait) {
         self.videoQuality = videoQuality
         self.preview = preview
         /// push
@@ -73,18 +73,18 @@ extension AWLive {
     }
     /// 设置当前的屏幕方向
     func rotateWithCurrentOrientation() {
-        let device_orientation = UIApplication.sharedApplication().statusBarOrientation
+        let device_orientation = UIApplication.shared.statusBarOrientation
         switch device_orientation {
-        case .LandscapeLeft:
-            self.videoOrientation = .LandscapeLeft
-        case .LandscapeRight:
-            self.videoOrientation = .LandscapeRight
-        case .Portrait:
-            self.videoOrientation = .Portrait
-        case .PortraitUpsideDown:
-            self.videoOrientation = .PortraitUpsideDown
+        case .landscapeLeft:
+            self.videoOrientation = .landscapeLeft
+        case .landscapeRight:
+            self.videoOrientation = .landscapeRight
+        case .portrait:
+            self.videoOrientation = .portrait
+        case .portraitUpsideDown:
+            self.videoOrientation = .portraitUpsideDown
         default:
-            self.videoOrientation = .Portrait
+            self.videoOrientation = .portrait
         }
     }
     var frontCamera : Bool {

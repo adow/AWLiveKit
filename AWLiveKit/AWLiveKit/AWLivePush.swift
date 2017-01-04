@@ -13,56 +13,56 @@ import AudioToolbox
 
 // MARK: Frame
 enum AWLivePushFrameType:Int, CustomStringConvertible {
-    case SLICE = 0, SLICE_DPA, SLICE_DPB,SLICE_DPC, SLICE_IDR, SLICE_SEI, SLICE_SPS,SLICE_PPS,AUD, FILLER,UNKNOWN
+    case slice = 0, slice_DPA, slice_DPB,slice_DPC, slice_IDR, slice_SEI, slice_SPS,slice_PPS,aud, filler,unknown
     init(first_bit:UInt8) {
         switch first_bit & 0x1f {
         case 1:
-            self =  .SLICE
+            self =  .slice
         case 2:
-            self = .SLICE_DPA
+            self = .slice_DPA
         case 3:
-            self = .SLICE_DPB
+            self = .slice_DPB
         case 4:
-            self = .SLICE_DPC
+            self = .slice_DPC
         case 5:
-            self = .SLICE_IDR
+            self = .slice_IDR
         case 6:
-            self = .SLICE_SEI
+            self = .slice_SEI
         case 7:
-            self = .SLICE_SPS
+            self = .slice_SPS
         case 8:
-            self = .SLICE_PPS
+            self = .slice_PPS
         case 9:
-            self = .AUD
+            self = .aud
         case 12:
-            self = .FILLER
+            self = .filler
         default:
-            self = .UNKNOWN
+            self = .unknown
         }
     }
     var name : String {
         switch self {
-        case .SLICE:
+        case .slice:
             return "SLICE"
-        case .SLICE_DPA:
+        case .slice_DPA:
             return "SLICE_DPA"
-        case .SLICE_DPB:
+        case .slice_DPB:
             return "SLICE_DPB"
-        case .SLICE_DPC:
+        case .slice_DPC:
             return "SLICE_DPC"
-        case .SLICE_IDR:
+        case .slice_IDR:
             return "SLICE_IDR"
-        case .SLICE_SEI:
+        case .slice_SEI:
             return "SLICE_SEI"
-        case .SLICE_SPS:
+        case .slice_SPS:
             return "SLICE_SPS"
-        case .SLICE_PPS:
+        case .slice_PPS:
             return "SLICE_PPS"
-        case .AUD:
+        case .aud:
             return "AUD"
-        case .FILLER:
+        case .filler:
             return "FILLER"
-        case .UNKNOWN:
+        case .unknown:
             return "UNKNOWN"
         }
     }
@@ -74,16 +74,16 @@ enum AWLivePushFrameType:Int, CustomStringConvertible {
 
 // MARK: - Push
 class AWLivePush: NSObject {
-   var rtmpQueue : dispatch_queue_t = dispatch_queue_create("adow.rtmp", DISPATCH_QUEUE_SERIAL)
+   var rtmpQueue : DispatchQueue = DispatchQueue(label: "adow.rtmp", attributes: [])
     var sps_pps_sended : Bool = false
     let avvc_header_length : size_t = 4
-    var startTime : NSDate = NSDate()
+    var startTime : Date = Date()
     /// 连接是否准备就绪, 必须连接完成，并且发送完音频头之后才算完成
     var ready : Bool = false
     init(url:String) {
         super.init()
 //        let start_time = NSDate()
-        dispatch_async(rtmpQueue) {
+        rtmpQueue.async {
             let result = aw_rtmp_connection(url)
             if result == 1 {
                 NSLog("rtmp connected")
@@ -103,13 +103,13 @@ class AWLivePush: NSObject {
 // MARK: Video
 extension AWLivePush {
     /// 推送视频
-    func pushVideoSampleBuffer(sampleBuffer:CMSampleBuffer) {
-        dispatch_async(self.rtmpQueue) { 
+    func pushVideoSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
+        self.rtmpQueue.async { 
             self._go_pushVideoSampleBuffer(sampleBuffer)
         }
     }
     /// 推送视频内容
-    private func _go_pushVideoSampleBuffer(sampleBuffer:CMSampleBuffer) {
+    fileprivate func _go_pushVideoSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
         guard self.ready else {
 //            NSLog("RTMP is not ready")
             return
@@ -133,55 +133,61 @@ extension AWLivePush {
                 return
             }
             self.sps_pps_sended = true
-            aw_rtmp_send_sps_pps(UnsafeMutablePointer<UInt8>(sps_data.bytes),
-                                 Int32(sps_data.length),
-                                 UnsafeMutablePointer<UInt8>(pps_data.bytes),
-                                 Int32(pps_data.length))
+            aw_rtmp_send_sps_pps(UnsafeMutablePointer<UInt8>(mutating: (sps_data as NSData).bytes.bindMemory(to: UInt8.self, capacity: sps_data.count)),
+                                 Int32(sps_data.count),
+                                 UnsafeMutablePointer<UInt8>(mutating: (pps_data as NSData).bytes.bindMemory(to: UInt8.self, capacity: pps_data.count)),
+                                 Int32(pps_data.count))
         }
         /// data
         var totalLength :size_t = 0
-        var dataPointer : UnsafeMutablePointer<Int8> = nil
+        var dataPointer : UnsafeMutablePointer<Int8>? = nil
         guard CMBlockBufferGetDataPointer(dataBuffer, 0, nil, &totalLength, &dataPointer) == noErr else {
             NSLog("Could not get dataPointer")
             return
         }
-        let dataPointer_u = UnsafeMutablePointer<UInt8>(dataPointer)
-        var bufferOffset : size_t = 0
-        while bufferOffset < totalLength - avvc_header_length {
-            var nal_unit_length : UInt32 = 0
-            memcpy(&nal_unit_length, dataPointer_u + bufferOffset, avvc_header_length)
-            nal_unit_length = CFSwapInt32BigToHost(nal_unit_length)
-            
-//            let data_frame = NSData(bytes: dataPointer_u + bufferOffset + avvc_header_length, length: Int(nal_unit_length))
-//            debugPrint("frame:\(keyFrame)")
-//            debugPrint(data_frame)
-            let first_bit = (dataPointer_u + bufferOffset + avvc_header_length).memory
-            let frame_type = AWLivePushFrameType(first_bit: first_bit)
-            let idr_frame = frame_type == .SLICE_IDR
-//            print("frame type:\(frame_type),\(first_bit),\(first_bit & 0x1f),timeStamp:\(nTimeStamp)")
-            
-            let timeOffset = abs(self.startTime.timeIntervalSinceNow) * 1000
-            aw_rtmp_send_h264_video(
-                dataPointer_u + bufferOffset + avvc_header_length,
-                UInt32(nal_unit_length),
-                idr_frame ? 1 : 0,
-                UInt32(timeOffset))
-            
-            bufferOffset = bufferOffset + avvc_header_length + Int(nal_unit_length)
-//            nTimeStamp += (1000 / 30)
+        dataPointer!.withMemoryRebound(to:UnsafeMutablePointer<UInt8>.self,capacity: totalLength) {
+            (p)  in
+            let dataPointer_u = p.pointee
+            var bufferOffset : size_t = 0
+            while bufferOffset < totalLength - avvc_header_length {
+                var nal_unit_length : UInt32 = 0
+                memcpy(&nal_unit_length, UnsafeRawPointer(dataPointer_u) + bufferOffset, avvc_header_length)
+                nal_unit_length = CFSwapInt32BigToHost(nal_unit_length)
+                
+                //            let data_frame = NSData(bytes: dataPointer_u + bufferOffset + avvc_header_length, length: Int(nal_unit_length))
+                //            debugPrint("frame:\(keyFrame)")
+                //            debugPrint(data_frame)
+                let first_bit = (dataPointer_u + bufferOffset + avvc_header_length).pointee
+                let frame_type = AWLivePushFrameType(first_bit: first_bit)
+                let idr_frame = frame_type == .slice_IDR
+                //            print("frame type:\(frame_type),\(first_bit),\(first_bit & 0x1f),timeStamp:\(nTimeStamp)")
+                
+                let timeOffset = abs(self.startTime.timeIntervalSinceNow) * 1000
+                aw_rtmp_send_h264_video(
+                    dataPointer_u + bufferOffset + avvc_header_length,
+                    UInt32(nal_unit_length),
+                    idr_frame ? 1 : 0,
+                    UInt32(timeOffset))
+                
+                bufferOffset = bufferOffset + avvc_header_length + Int(nal_unit_length)
+                //            nTimeStamp += (1000 / 30)
+            }
         }
+        
+        
+        
     }
 }
 // MARK: Audio
 extension AWLivePush {
     /// 推送音频内容
-    func pushAudioBufferList(bufferList: AudioBufferList) {
-        dispatch_async(self.rtmpQueue) { 
+    func pushAudioBufferList(_ bufferList: AudioBufferList) {
+        self.rtmpQueue.async { 
             self._goto_pushAudioBufferList(bufferList)
         }
     }
     /// 推送音频内容
-    private func _goto_pushAudioBufferList(bufferList:AudioBufferList) {
+    fileprivate func _goto_pushAudioBufferList(_ bufferList:AudioBufferList) {
         guard self.ready else {
 //            NSLog("RTMP is not ready")
             return
@@ -189,6 +195,7 @@ extension AWLivePush {
         let audio_data_length = bufferList.mBuffers.mDataByteSize
         let audio_data_bytes = bufferList.mBuffers.mData
         let timeOffset = abs(self.startTime.timeIntervalSinceNow) * 1000
-        aw_rtmp_send_audio(UnsafeMutablePointer<UInt8>(audio_data_bytes), audio_data_length, UInt32(timeOffset))
+        let p = audio_data_bytes!.assumingMemoryBound(to: UnsafeMutablePointer<UInt8>.self)
+        aw_rtmp_send_audio(p.pointee, audio_data_length, UInt32(timeOffset))
     }
 }

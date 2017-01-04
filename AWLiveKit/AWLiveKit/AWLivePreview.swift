@@ -11,7 +11,7 @@ import AVFoundation
 
 class AWLivePreview: UIView {
 
-    class override func layerClass()->(AnyClass){
+    class override var layerClass:(AnyClass){
         return AVCaptureVideoPreviewLayer.self
     }
     
@@ -35,12 +35,12 @@ class AWLivePreview: UIView {
     }
     var mirror : Bool {
         get {
-            return self.connection?.videoMirrored ?? false
+            return self.connection?.isVideoMirrored ?? false
         }
         set {
             if let _connection = self.connection {
                 _connection.automaticallyAdjustsVideoMirroring = false
-                _connection.videoMirrored = newValue
+                _connection.isVideoMirrored = newValue
             }
         }
         

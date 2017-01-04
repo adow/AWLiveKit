@@ -17,7 +17,7 @@ extension CMSampleBuffer {
         guard attachments != nil else { return nil }
         
         let unsafePointer = CFArrayGetValueAtIndex(attachments, 0)
-        let nsDic = unsafeBitCast(unsafePointer, NSDictionary.self)
+        let nsDic = unsafeBitCast(unsafePointer, to: NSDictionary.self)
         guard let dic = nsDic as? Dictionary<String, AnyObject> else { return nil }
         
         guard let dependsOnOthersOptinal = dic["DependsOnOthers"],
@@ -31,7 +31,7 @@ extension CMSampleBuffer {
     var dependsOnOthers: Bool {
         guard let
             attachments = CMSampleBufferGetSampleAttachmentsArray(self, false),
-            attachment = unsafeBitCast(CFArrayGetValueAtIndex(attachments, 0), CFDictionaryRef.self) as Dictionary?
+            let attachment = unsafeBitCast(CFArrayGetValueAtIndex(attachments, 0), to: NSDictionary.self) as? Dictionary<String,AnyObject>
             else { return false }
         
         return attachment["DependsOnOthers"] as! Bool
@@ -68,20 +68,20 @@ extension CMSampleBuffer {
     var presentationTimeStamp: CMTime {
         return CMSampleBufferGetPresentationTimeStamp(self)
     }
-    var sps_data : NSData? {
+    var sps_data : Data? {
         return self.get_sps_or_pps_data(0, sampleBuffer: self)
     }
-    var pps_data : NSData? {
+    var pps_data : Data? {
         return self.get_sps_or_pps_data(1, sampleBuffer: self)
     }
     
-    func get_sps_or_pps_data(choice : Int ,sampleBuffer:CMSampleBuffer) -> NSData?{
+    func get_sps_or_pps_data(_ choice : Int ,sampleBuffer:CMSampleBuffer) -> Data?{
         let format = CMSampleBufferGetFormatDescription(sampleBuffer)
         guard format != nil else { return nil }
         
         var paramSet = UInt8()
-        var paramSetPtr = withUnsafePointer(&paramSet, {
-            (ptr) -> UnsafePointer<UInt8> in
+        var paramSetPtr = withUnsafePointer(to: &paramSet, {
+            (ptr) -> UnsafePointer<UInt8>? in
             return ptr
         })
         
@@ -99,7 +99,7 @@ extension CMSampleBuffer {
                                                                         &naluHeadLen)
         if status == noErr {
             // choice: true means sps. false means pps
-            let paraData = NSData(bytes: paramSetPtr, length: paraSetSize)
+            let paraData = Data(bytes: UnsafePointer<UInt8>(paramSetPtr!), count: paraSetSize)
             return paraData
         } else {
             print("CMVideoFormatDescriptionGetH264ParameterSetAtIndex error:\(status)")
@@ -107,19 +107,23 @@ extension CMSampleBuffer {
         }
     }
 }
-extension IntegerLiteralConvertible {
-    var bytes: [UInt8] {
-        var value: Self = self
-        return withUnsafePointer(&value) {
-            Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>($0), count: sizeof(Self.self)))
-        }
-    }
-    
-    init(bytes: [UInt8]) {
-        self = bytes.withUnsafeBufferPointer {
-            return UnsafePointer<`Self`>($0.baseAddress).memory
-        }
-    }
+extension ExpressibleByIntegerLiteral {
+//    var bytes: [UInt8] {
+//        var value: Self = self
+//        return withUnsafePointer(to: &value) {
+//            (p) in
+//        
+//            Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>(p), count: MemoryLayout<Self>.size))
+//            
+//            let p_2 = UnsafeBufferPointer(start: p, count: MemoryLayout<Self>.size)
+//        }
+//    }
+//    
+//    init(bytes: [UInt8]) {
+//        self = bytes.withUnsafeBufferPointer {
+//            return UnsafeRawPointer($0.baseAddress!).load(as: Self.self)
+//        }
+//    }
 }
 extension String {
     
@@ -131,12 +135,12 @@ extension String {
     
     var mutablePointer: UnsafeMutablePointer<Int8> {
         return withCString({ (ptr) -> UnsafeMutablePointer<Int8> in
-            return UnsafeMutablePointer(ptr)
+            return UnsafeMutablePointer(mutating: ptr)
         })
     }
     
     var asciiString: UnsafePointer<Int8> {
-        return (self as NSString).cStringUsingEncoding(NSASCIIStringEncoding)
+        return (self as NSString).cString(using: String.Encoding.ascii.rawValue)!
     }
     
     

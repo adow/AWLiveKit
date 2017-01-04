@@ -26,29 +26,29 @@ class StartViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func shouldAutorotate() -> Bool {
+    override var shouldAutorotate : Bool {
         return false
     }
     
-    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        return .Portrait
+    override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
+        return .portrait
     }
 
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         if segue.identifier == "segue_start_to_live" {
-            guard let url = urlTextField.text where url != "" else {
+            guard let url = urlTextField.text, url != "" else {
                 return
             }
-            let videoQuality = videoQualities[qualityPicker.selectedRowInComponent(0)]
+            let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
             let landscape = (self.orientationSegment.selectedSegmentIndex == 0)
-            if let destinationViewController = segue.destinationViewController as? LiveViewController {
+            if let destinationViewController = segue.destination as? LiveViewController {
                 destinationViewController.push_url = url
-                destinationViewController.orientation =  landscape ? .LandscapeRight : .Portrait
+                destinationViewController.orientation =  landscape ? .landscapeRight : .portrait
                 destinationViewController.videoQuality = videoQuality
                 
             }
@@ -58,13 +58,13 @@ class StartViewController: UIViewController {
 
 }
 extension StartViewController : UIPickerViewDataSource, UIPickerViewDelegate {
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return videoQualities.count
     }
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return videoQualities[row].description
     }
 }

@@ -58,11 +58,11 @@ enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
     var recommandedProfile : AWVideoEncoderProfile {
         switch self {
         case ._450kbs, ._500kbs:
-            return AWVideoEncoderProfile.Baseline
+            return AWVideoEncoderProfile.baseline
         case ._600kbs, ._800kbs, ._1000kbs:
-            return AWVideoEncoderProfile.Main
+            return AWVideoEncoderProfile.main
         case ._1200kbs, ._1500kbs, ._2000kbs, ._2500kbs, ._3000kbs, ._4000kbs:
-            return AWVideoEncoderProfile.High
+            return AWVideoEncoderProfile.high
         }
     }
     var description: String {
@@ -113,24 +113,24 @@ enum AWVideoEncoderFPS : Int , CustomStringConvertible{
 }
 // MARK: profile
 enum AWVideoEncoderProfile : Int , CustomStringConvertible{
-    case Baseline = 0, Main, High
+    case baseline = 0, main, high
     var profile : CFString {
         switch self {
-        case .Baseline:
+        case .baseline:
             return kVTProfileLevel_H264_Baseline_AutoLevel
-        case .Main:
+        case .main:
             return kVTProfileLevel_H264_Main_AutoLevel
-        case .High:
+        case .high:
             return kVTProfileLevel_H264_High_AutoLevel
         }
     }
     var description: String {
         switch self {
-        case .Baseline:
+        case .baseline:
             return "kVTProfileLevel_H264_Baseline_AutoLevel"
-        case .Main:
+        case .main:
             return "kVTProfileLevel_H264_Main_AutoLevel"
-        case .High:
+        case .high:
             return "kVTProfileLevel_H264_High_AutoLevel"
         }
     }
@@ -138,13 +138,13 @@ enum AWVideoEncoderProfile : Int , CustomStringConvertible{
 
 // MARK: Video Encoder
 class AWVideoEncoder: NSObject {
-    private var videoCompressionSession : VTCompressionSession? = nil
+    fileprivate var videoCompressionSession : VTCompressionSession? = nil
     var attributes : [NSString:AnyObject]!
     var onEncoded : AWVideoEncoderCallback? = nil
     init(outputSize:CGSize,
          bitrate : AWVideoEncoderBitrate = ._600kbs,
          fps : AWVideoEncoderFPS = ._30,
-         profile : AWVideoEncoderProfile = .Main) {
+         profile : AWVideoEncoderProfile = .main) {
         super.init()
         NSLog("Video Encoder OutputSize:\(outputSize)")
         NSLog("Video Encoder bitrate:\(bitrate)")
@@ -152,21 +152,21 @@ class AWVideoEncoder: NSObject {
         NSLog("Video Encoder Profile:\(profile)")
 
         attributes = [
-                kCVPixelBufferPixelFormatTypeKey: Int(kCVPixelFormatType_32BGRA),
-                kCVPixelBufferIOSurfacePropertiesKey: [:],
-                kCVPixelBufferOpenGLESCompatibilityKey: true,
-                kCVPixelBufferWidthKey:NSNumber(int: Int32(outputSize.width)),
-                kCVPixelBufferHeightKey:NSNumber(int: Int32(outputSize.height)),
+                kCVPixelBufferPixelFormatTypeKey: Int(kCVPixelFormatType_32BGRA) as AnyObject,
+                kCVPixelBufferIOSurfacePropertiesKey: [:] as AnyObject,
+                kCVPixelBufferOpenGLESCompatibilityKey: true as AnyObject,
+                kCVPixelBufferWidthKey:NSNumber(value: Int32(outputSize.width) as Int32),
+                kCVPixelBufferHeightKey:NSNumber(value: Int32(outputSize.height) as Int32),
             ]
         /// create session
         let status = VTCompressionSessionCreate(kCFAllocatorDefault,
                                                 Int32(outputSize.width), Int32(outputSize.height),
                                                 kCMVideoCodecType_H264,
                                                 nil,
-                                                attributes,
+                                                attributes as CFDictionary?,
                                                 nil,
                                                 encodeCallback,
-                                                unsafeBitCast(self, UnsafeMutablePointer<Void>.self),
+                                                unsafeBitCast(self, to: UnsafeMutableRawPointer.self),
                                                 &(self.videoCompressionSession))
         if status != noErr {
             NSLog("Create Compression Session Error:\(status)")
@@ -186,12 +186,12 @@ class AWVideoEncoder: NSObject {
                              kCFBooleanTrue)
         if VTSessionSetProperty(self.videoCompressionSession!,
                                 kVTCompressionPropertyKey_AverageBitRate,
-                                NSNumber(integer: bitrate.bitrates)) != noErr {
+                                NSNumber(value: bitrate.bitrates as Int)) != noErr {
             print("Set BitRate Failed")
         }
         VTSessionSetProperty(self.videoCompressionSession!,
                              kVTCompressionPropertyKey_MaxKeyFrameInterval,
-                             NSNumber(integer: fps.fps))
+                             NSNumber(value: fps.fps as Int))
         /// Encode
         if VTCompressionSessionPrepareToEncodeFrames(self.videoCompressionSession!) != noErr {
             NSLog("Prepare to Encode Frames Error")
@@ -208,7 +208,7 @@ class AWVideoEncoder: NSObject {
         self.videoCompressionSession = nil
     }
     /// 编码
-    func encodeSampleBuffer(sampleBuffer:CMSampleBuffer){
+    func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer){
         let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
         guard let _pixelBuffer = pixelBuffer else {
             NSLog("No Pixel Buffer")
@@ -220,7 +220,7 @@ class AWVideoEncoder: NSObject {
         
     }
     /// 编码
-    func encodePixelBuffer(pixelBuffer:CVPixelBuffer, presentationTime: CMTime, duration : CMTime) {
+    func encodePixelBuffer(_ pixelBuffer:CVPixelBuffer, presentationTime: CMTime, duration : CMTime) {
         guard let _compressionSeession = self.videoCompressionSession else {
             NSLog("No VideoCompressionSession")
             return
@@ -244,15 +244,15 @@ class AWVideoEncoder: NSObject {
     }
     /// 编码回调
     var encodeCallback : VTCompressionOutputCallback = {
-        (outputCallbackRefCon: UnsafeMutablePointer<Void>,
-        sourceFrameRefCon: UnsafeMutablePointer<Void>,
+        (outputCallbackRefCon: UnsafeMutableRawPointer?,
+        sourceFrameRefCon: UnsafeMutableRawPointer?,
         status: OSStatus,
         infoFlags: VTEncodeInfoFlags,
         sampleBuffer: CMSampleBuffer?) in
         guard let _buffer = sampleBuffer else {
             return
         }
-        let _self = unsafeBitCast(outputCallbackRefCon, AWVideoEncoder.self)
+        let _self = unsafeBitCast(outputCallbackRefCon!, to: AWVideoEncoder.self)
         _self.onEncoded?(_buffer)
         
     }
@@ -261,13 +261,13 @@ class AWVideoEncoder: NSObject {
 private var g_audioInputFormat : AudioStreamBasicDescription!
 typealias AWAudioEncoderCallback = (AudioBufferList) -> ()
 class AWAudioEncoder {
-    var audioConverter : AudioConverterRef = nil
+    var audioConverter : AudioConverterRef? = nil
     var onEncoded : AWAudioEncoderCallback? = nil
     init() {
         
     }
     /// 初始化编码器，因为要知道 audioInputFormat, 所以必须从第一个 sampleBuffer 获取格式后创建
-    private func setup() {
+    fileprivate func setup() {
         guard self.audioConverter == nil else {
             return
         }
@@ -277,7 +277,7 @@ class AWAudioEncoder {
         outputFormat.mFormatID = kAudioFormatMPEG4AAC
         outputFormat.mChannelsPerFrame = g_audioInputFormat.mChannelsPerFrame
         outputFormat.mFramesPerPacket = 1024
-        outputFormat.mFormatFlags = UInt32(MPEG4ObjectID.AAC_Main.rawValue)
+        outputFormat.mFormatFlags = UInt32(MPEG4ObjectID.aac_Main.rawValue)
         
         var audioClassDescription_list = [
             AudioClassDescription(mType: kAudioEncoderComponentType, mSubType: kAudioFormatMPEG4AAC, mManufacturer: kAppleHardwareAudioCodecManufacturer),
@@ -293,9 +293,9 @@ class AWAudioEncoder {
         }
         NSLog("AudioEncoder Setup")
     }
-    func encodeSampleBuffer(sampleBuffer:CMSampleBuffer) {
+    func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
         let format = CMSampleBufferGetFormatDescription(sampleBuffer)
-        let sourceFormat = CMAudioFormatDescriptionGetStreamBasicDescription(format!).memory
+        let sourceFormat = CMAudioFormatDescriptionGetStreamBasicDescription(format!)?.pointee
         g_audioInputFormat = sourceFormat
         
         self.setup()
@@ -310,7 +310,7 @@ class AWAudioEncoder {
         guard CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sampleBuffer,
                   nil,
                   &inBufferList,
-                  sizeof(AudioBufferList.self),
+                  MemoryLayout<AudioBufferList>.size,
                   nil,
                   nil,
                   0,
@@ -320,16 +320,16 @@ class AWAudioEncoder {
         }
         
         let frameSize : UInt32 = 1024
-        let dataPtr = UnsafeMutablePointer<Void>.alloc(Int(frameSize))
+        let dataPtr = UnsafeMutableRawPointer.allocate(bytes: Int(frameSize),alignedTo: MemoryLayout<Int>.alignment)
         let channels = g_audioInputFormat.mChannelsPerFrame
         let  audioBuffer = AudioBuffer(mNumberChannels: channels,
                                        mDataByteSize: frameSize,
                                        mData: dataPtr)
-        dataPtr.destroy()
+//        dataPtr.deinitialize()
         var outBufferList = AudioBufferList(mNumberBuffers: 1, mBuffers: audioBuffer)
         var outputDataPacketSize : UInt32 = 1
         var outputPacketDescription = AudioStreamPacketDescription()
-        let status =  AudioConverterFillComplexBuffer(audioConverter,
+        let status =  AudioConverterFillComplexBuffer(audioConverter!,
                                                       self.encoderCallback,
                                                       &inBufferList,
                                                       &outputDataPacketSize,
@@ -346,22 +346,21 @@ class AWAudioEncoder {
         (setupAudioEncoderFromSampleBufferinAudioConverter: AudioConverterRef,
         ioNumberDataPackets: UnsafeMutablePointer<UInt32>,
         ioData: UnsafeMutablePointer<AudioBufferList>,
-        outDataPacketDescription: UnsafeMutablePointer<UnsafeMutablePointer<AudioStreamPacketDescription>>,
-        inUserData: UnsafeMutablePointer<Void>) in
-        let inBufferList = unsafeBitCast(inUserData, UnsafeMutablePointer<AudioBufferList>.self)
-        guard inBufferList != nil else {
-            ioNumberDataPackets.memory = 0
+        outDataPacketDescription: UnsafeMutablePointer<UnsafeMutablePointer<AudioStreamPacketDescription>?>?,
+        inUserData: UnsafeMutableRawPointer?) in
+        guard let inBufferList = unsafeBitCast(inUserData, to: (UnsafeMutablePointer<AudioBufferList>?.self)!) else {
+            ioNumberDataPackets.pointee = 0
             NSLog("ioNumberDataPackets empty")
             return 1024
         }
         
         let numBytes : UInt32 =
-            min(ioNumberDataPackets.memory * g_audioInputFormat.mBytesPerPacket,
-                inBufferList.memory.mBuffers.mDataByteSize)
+            min(ioNumberDataPackets.pointee * g_audioInputFormat.mBytesPerPacket,
+                inBufferList.pointee.mBuffers.mDataByteSize)
         
-        ioData.memory.mBuffers.mData = inBufferList.memory.mBuffers.mData
-        ioData.memory.mBuffers.mDataByteSize = numBytes
-        ioNumberDataPackets.memory = numBytes / g_audioInputFormat.mBytesPerPacket
+        ioData.pointee.mBuffers.mData = inBufferList.pointee.mBuffers.mData
+        ioData.pointee.mBuffers.mDataByteSize = numBytes
+        ioNumberDataPackets.pointee = numBytes / g_audioInputFormat.mBytesPerPacket
         return noErr
     }
 

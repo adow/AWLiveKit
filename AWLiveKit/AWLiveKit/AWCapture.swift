@@ -30,42 +30,42 @@ enum AWLiveCaptureVideoQuality :Int,CustomStringConvertible, CustomDebugStringCo
         }
     }
     /// 输出视频
-    func videoSizeForOrientation(orientation:AVCaptureVideoOrientation = .Portrait) -> CGSize{
+    func videoSizeForOrientation(_ orientation:AVCaptureVideoOrientation = .portrait) -> CGSize{
         switch self {
         case ._480:
-            if orientation == .Portrait || orientation == .PortraitUpsideDown {
-                return CGSizeMake(480.0, 640.0)
+            if orientation == .portrait || orientation == .portraitUpsideDown {
+                return CGSize(width: 480.0, height: 640.0)
             }
             else {
-                return CGSizeMake(640.0, 480.0)
+                return CGSize(width: 640.0, height: 480.0)
             }
         case ._540i:
-            if orientation == .Portrait || orientation == .PortraitUpsideDown {
-                return CGSizeMake(540.0, 960.0)
+            if orientation == .portrait || orientation == .portraitUpsideDown {
+                return CGSize(width: 540.0, height: 960.0)
             }
             else {
-                return CGSizeMake(960.0, 540.0)
+                return CGSize(width: 960.0, height: 540.0)
             }
-        case ._720,_720i:
-            if orientation == .Portrait || orientation == .PortraitUpsideDown {
-                return CGSizeMake(720.0, 1280.0)
+        case ._720,._720i:
+            if orientation == .portrait || orientation == .portraitUpsideDown {
+                return CGSize(width: 720.0, height: 1280.0)
             }
             else {
-                return CGSizeMake(1280.0, 720.0)
+                return CGSize(width: 1280.0, height: 720.0)
             }
         case ._1080:
-            if orientation == .Portrait || orientation == .PortraitUpsideDown {
-                return CGSizeMake(1080.0, 1920.0)
+            if orientation == .portrait || orientation == .portraitUpsideDown {
+                return CGSize(width: 1080.0, height: 1920.0)
             }
             else {
-                return CGSizeMake(1920.0, 1080.0)
+                return CGSize(width: 1920.0, height: 1080.0)
             }
         case ._4k:
-            if orientation == .Portrait || orientation == .PortraitUpsideDown {
-                return CGSizeMake(2160.0, 3840.0)
+            if orientation == .portrait || orientation == .portraitUpsideDown {
+                return CGSize(width: 2160.0, height: 3840.0)
             }
             else {
-                return CGSizeMake(3840.0, 2160.0)
+                return CGSize(width: 3840.0, height: 2160.0)
             }
         }
     }
@@ -113,17 +113,17 @@ class AWLiveCapture : NSObject{
     /// session
     var captureSession : AVCaptureSession!
     /// 设备
-    private var videoDevice : AVCaptureDevice!
-    private var audioDevice : AVCaptureDevice!
+    fileprivate var videoDevice : AVCaptureDevice!
+    fileprivate var audioDevice : AVCaptureDevice!
     /// 输入
-    private var videoInput : AVCaptureInput!
+    fileprivate var videoInput : AVCaptureInput!
     /// 输出
-    private var videoOutput : AVCaptureVideoDataOutput!
-    private var audioOutput : AVCaptureAudioDataOutput!
+    fileprivate var videoOutput : AVCaptureVideoDataOutput!
+    fileprivate var audioOutput : AVCaptureAudioDataOutput!
     /// 队列
-    private var sessionQueue : dispatch_queue_t = dispatch_queue_create("adow.live.session", DISPATCH_QUEUE_SERIAL)
-    private var videoQueue : dispatch_queue_t = dispatch_queue_create("adow.live.video-queue", DISPATCH_QUEUE_SERIAL)
-    private var audioQueue : dispatch_queue_t = dispatch_queue_create("adow.live.audio-queue", DISPATCH_QUEUE_SERIAL)
+    fileprivate var sessionQueue : DispatchQueue = DispatchQueue(label: "adow.live.session", attributes: [])
+    fileprivate var videoQueue : DispatchQueue = DispatchQueue(label: "adow.live.video-queue", attributes: [])
+    fileprivate var audioQueue : DispatchQueue = DispatchQueue(label: "adow.live.audio-queue", attributes: [])
     /// 获取视频采样内容后的回调
     var onVideoSampleBuffer : AWLiveCaptureSampleBufferCallback? = nil
     /// 获取音频采样内容后的回调
@@ -131,22 +131,22 @@ class AWLiveCapture : NSObject{
     /// 准备好后发出回调
     var onReady : AWLiveCaptureReadyCallback? = nil
     var ready : Bool = false
-    init (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .Portrait) {
+    init (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .portrait) {
         super.init()
 //        let start_time = NSDate()
         /// session
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = sessionPreset ///AVCaptureSessionPresetiFrame960x540
-        dispatch_async(sessionQueue) { 
+        sessionQueue.async { 
             /// device
-            self.videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-            self.audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)
+            self.videoDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+            self.audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
             self.captureSession.beginConfiguration()
             defer {
                 self.captureSession.commitConfiguration()
                 /// 如果准备好了，发出回调
                 if self.ready {
-                    dispatch_async(dispatch_get_main_queue(), { 
+                    DispatchQueue.main.async(execute: { 
                         self.onReady?()
                     })
                 }
@@ -165,7 +165,7 @@ class AWLiveCapture : NSObject{
             /// videoOutput
             self.videoOutput = AVCaptureVideoDataOutput()
             self.videoOutput.setSampleBufferDelegate(self, queue: self.videoQueue)
-            let bgra = NSNumber(int: Int32(kCVPixelFormatType_32BGRA))
+            let bgra = NSNumber(value: Int32(kCVPixelFormatType_32BGRA) as Int32)
             let captureSettings = [String(kCVPixelBufferPixelFormatTypeKey) : bgra]
             self.videoOutput.videoSettings = captureSettings
             self.videoOutput.alwaysDiscardsLateVideoFrames = false
@@ -203,7 +203,7 @@ class AWLiveCapture : NSObject{
         return view
     }
     /// 连接已经存在的 preview
-    func connectPreView(preview : AWLivePreview) {
+    func connectPreView(_ preview : AWLivePreview) {
         preview.session = self.captureSession
         if let layer = preview.layer as? AVCaptureVideoPreviewLayer, let orientation = self.videoOrientation {
             layer.connection.videoOrientation = orientation
@@ -215,11 +215,11 @@ class AWLiveCapture : NSObject{
             guard let _orientation = newValue else {
                 return
             }
-            let video_connection = videoOutput?.connectionWithMediaType(AVMediaTypeVideo)
+            let video_connection = videoOutput?.connection(withMediaType: AVMediaTypeVideo)
             video_connection?.videoOrientation = _orientation
         }
         get {
-            let video_connection = videoOutput?.connectionWithMediaType(AVMediaTypeVideo)
+            let video_connection = videoOutput?.connection(withMediaType: AVMediaTypeVideo)
             return video_connection?.videoOrientation
         }
     }
@@ -229,25 +229,25 @@ class AWLiveCapture : NSObject{
             guard let _mirror = newValue else {
                 return
             }
-            let video_connection = videoOutput.connectionWithMediaType(AVMediaTypeVideo)
-            video_connection?.videoMirrored = _mirror
+            let video_connection = videoOutput.connection(withMediaType: AVMediaTypeVideo)
+            video_connection?.isVideoMirrored = _mirror
         }
         get {
-            let video_connection = videoOutput.connectionWithMediaType(AVMediaTypeVideo)
-            return video_connection?.videoMirrored
+            let video_connection = videoOutput.connection(withMediaType: AVMediaTypeVideo)
+            return video_connection?.isVideoMirrored
         }
     }
     /// 切换摄像头
     var frontCammera : Bool{
         set {
-            let position = newValue ? AVCaptureDevicePosition.Front : AVCaptureDevicePosition.Back
+            let position = newValue ? AVCaptureDevicePosition.front : AVCaptureDevicePosition.back
             do {
                 self.captureSession.beginConfiguration()
                 try self.videoDevice.lockForConfiguration()
                 self.captureSession.removeInput(self.videoInput)
                 self.videoDevice.unlockForConfiguration()
                 self.videoDevice = nil
-                if let devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as? [AVCaptureDevice] {
+                if let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as? [AVCaptureDevice] {
                     if let camera = (devices.filter {
                         return $0.position == position
                     }).first {
@@ -267,7 +267,7 @@ class AWLiveCapture : NSObject{
             }
         }
         get {
-            return self.videoDevice.position == .Front
+            return self.videoDevice.position == .front
         }
         
     }
@@ -282,7 +282,7 @@ extension AWLiveCapture {
         self.captureSession.startRunning()
     }
     func stop() {
-        guard self.captureSession.running else {
+        guard self.captureSession.isRunning else {
             return
         }
         self.captureSession.stopRunning()
@@ -290,7 +290,7 @@ extension AWLiveCapture {
 }
 // MARK: Video and Audio SampleBuffer
 extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate {
-    func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!) {
+    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
         if captureOutput == self.videoOutput {
             self.onVideoSampleBuffer?(sampleBuffer)
         }
@@ -298,7 +298,7 @@ extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCapture
             self.onAudioSampleBuffer?(sampleBuffer)
         }
     }
-    func captureOutput(captureOutput: AVCaptureOutput!, didDropSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!) {
+    func captureOutput(_ captureOutput: AVCaptureOutput!, didDrop sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
         if captureOutput == videoOutput {
             print("Drop Video SampleBuffer")
         }
