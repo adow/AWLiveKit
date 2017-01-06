@@ -5,7 +5,7 @@ SOURCES = \
 	  ../rtmp/rtmp.c \
 	  flv.c
 
-OUTPUT = flv 
+OUTPUT = flv.out 
 
 $(OUTPUT) : $(SOURCES)
 	gcc -o $(OUTPUT) $(SOURCES) -g
@@ -14,3 +14,4 @@ $(OUTPUT) : $(SOURCES)
 .PHONY: clean 
 clean:
 	-rm -f *.o *.out $(OUTPUT)
+	-rm -rf *.dSYM/

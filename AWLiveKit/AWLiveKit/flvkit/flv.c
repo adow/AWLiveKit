@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <limits.h>
+#include <unistd.h>
 #include "../rtmp/rtmp.h"
 
 #define LOG_MAX_LINE 2048 ///每行日志的最大长度
@@ -142,13 +144,18 @@ int print_hex_str(const unsigned char *s, size_t n,
     return 0;
 }
 
-int print_flv_file_tag(const char *filename) {
-    const char* url = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84";
+int push_flv_file_rtmp(const char *filename, const char *url,
+        int verbose, int wait_read) {
+    //const char* url = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84";
     if (flv_rtmp_connect(url)) {
         return -1;
     }
     printf("RTMP Connected:%s\n",url);
     FILE *f = fopen(filename, "rb");
+    if (!f) {
+        printf("flv filename not found:%s\n",filename);
+        return -2;
+    }
     int c;
     int counter = 0;
     int limits = 0;
@@ -207,19 +214,25 @@ int print_flv_file_tag(const char *filename) {
         if (tag_header_type == 0x08) {
             unsigned int audio_tag_data_meta = *tag_data;
             printf("audio tag_data_meta:%02x\n",audio_tag_data_meta);
-            print_hex_str(tag_data ,tag_header_data_size ,"","\n");
+            if (verbose) {
+                print_hex_str(tag_data ,tag_header_data_size ,"","\n");
+            }
             flv_rtmp_send_data(tag_data, tag_header_data_size,
                     tag_header_timestamp,RTMP_PACKET_TYPE_AUDIO);
         }
         else if (tag_header_type == 0x09) {
             unsigned int video_tag_data_meta = *tag_data;
             printf("video tag_tag_data_meta:%02x\n",video_tag_data_meta);
-            print_hex_str(tag_data ,tag_header_data_size ,"","\n");
+            if (verbose) {
+                print_hex_str(tag_data ,tag_header_data_size ,"","\n");
+            }
             flv_rtmp_send_data(tag_data, tag_header_data_size,
                     tag_header_timestamp,RTMP_PACKET_TYPE_VIDEO);
         }
         else if (tag_header_type == 0x12) {
-            print_hex_str(tag_data,tag_header_data_size,"","\n");
+            if (verbose) {
+                print_hex_str(tag_data,tag_header_data_size,"","\n");
+            }
             printf("script tag skipped\n");
         }
         free(tag_data);
@@ -323,6 +336,45 @@ int flv_rtmp_send_data(unsigned char *data, uint32_t size,
     return result; 
 }
 
+/// 获取外部参数, 执行推流
+int _execute_cmd(int arg_c, char *arg_v[]) {
+    char flv_filename[PATH_MAX] = {'\0'};
+    char url[PATH_MAX] = {'\0'};
+    char format[] = "f:u:vw";
+    int verbose = 0; /// 显示输出过程
+    int wait_read = 1; /// 到文件结尾不要停止
+    int ch;
+    while ((ch = getopt(arg_c, arg_v, format))!= -1) {
+        switch (ch) {
+            case 'f':
+                strcpy(flv_filename,optarg);
+                break;
+            case 'u':
+                strcpy(url,optarg);
+                break;
+            case 'v':
+                verbose = 1;
+                break;
+            case 'e':
+                wait_read = 1;
+                break;
+
+            
+        }
+    }
+    printf("flv_filename:%s\n",flv_filename);
+    printf("url:%s\n",url);
+    if (!strlen(flv_filename)) {
+        printf("need -f: filename to flv\n");
+        return -1;
+    }
+    if (!strlen(url)) {
+        printf("need -u: url to push rtmp\n");
+        return -2;
+    }
+    push_flv_file_rtmp(flv_filename, url,verbose, wait_read);
+    return 0;
+}
 
 int main(int arg_c,char *arg_v[]){
     /*
@@ -335,6 +387,8 @@ int main(int arg_c,char *arg_v[]){
     print_bin(0xaf);
     */
     //print_flv_file_hex("/Users/reynoldqin/Downloads/1.flv");
-    print_flv_file_tag("/Users/reynoldqin/Downloads/1.flv");
+    //print_flv_file_tag("/Users/reynoldqin/Downloads/1.flv");
+    /// ./flv.out -f "/Users/reynoldqin/Downloads/1.flv" -u "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84" -v
+    _execute_cmd(arg_c,arg_v);
 	return 0;
 }
