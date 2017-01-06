@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "../rtmp/rtmp.h"
 
 #define LOG_MAX_LINE 2048 ///每行日志的最大长度
 #define LOG_BUFFER_MAX 2048000 ///printf时的最大长度
@@ -10,6 +11,27 @@
 #define HTON24(x)  ((x>>16&0xff)|(x<<16&0xff0000)|(x&0xff00))  
 #define HTON32(x)  ((x>>24&0xff)|(x>>8&0xff00)|(x<<8&0xff0000)|(x<<24&0xff000000))  
 #define HTONTIME(x) ((x>>16&0xff)|(x<<16&0xff0000)|(x&0xff00)|(x&0xff000000))  
+
+/// rtmp
+//定义包头长度，RTMP_MAX_HEADER_SIZE=18
+#define FLV_RTMP_HEAD_SIZE   (sizeof(RTMPPacket)+RTMP_MAX_HEADER_SIZE)
+//存储Nal单元数据的buffer大小
+#define FLV_BUFFER_SIZE 32768
+//搜寻Nal单元时的一些标志
+#define FLV_GOT_A_NAL_CROSS_BUFFER BUFFER_SIZE+1
+#define FLV_GOT_A_NAL_INCLUDE_A_BUFFER BUFFER_SIZE+2
+#define FLV_NO_MORE_BUFFER_TO_READ BUFFER_SIZE+3
+unsigned int  flv_m_nFileBufSize;
+unsigned int  flv_nalhead_pos;
+RTMP* flv_m_pRtmp;
+unsigned char *flv_m_pFileBuf;
+unsigned char *flv_m_pFileBuf_tmp;
+unsigned char *flv_m_pFileBuf_tmp_old;	//used for realloc
+
+int flv_rtmp_connect(const char *url);
+void flv_rtmp_close();
+int flv_rtmp_send_data(unsigned char *data, uint32_t size, 
+        uint32_t timestamp,uint8_t type);
 
 /*read 1 byte*/  
 int ReadU8(uint32_t *u8,FILE*fp){  
@@ -121,10 +143,15 @@ int print_hex_str(const unsigned char *s, size_t n,
 }
 
 int print_flv_file_tag(const char *filename) {
+    const char* url = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84";
+    if (flv_rtmp_connect(url)) {
+        return -1;
+    }
+    printf("RTMP Connected:%s\n",url);
     FILE *f = fopen(filename, "rb");
     int c;
     int counter = 0;
-    int limits = 10;
+    int limits = 0;
     // flv header
     unsigned char signature[4] = {'\0'};
     fgets((char *)signature,4,f);
@@ -181,14 +208,19 @@ int print_flv_file_tag(const char *filename) {
             unsigned int audio_tag_data_meta = *tag_data;
             printf("audio tag_data_meta:%02x\n",audio_tag_data_meta);
             print_hex_str(tag_data ,tag_header_data_size ,"","\n");
+            flv_rtmp_send_data(tag_data, tag_header_data_size,
+                    tag_header_timestamp,RTMP_PACKET_TYPE_AUDIO);
         }
         else if (tag_header_type == 0x09) {
             unsigned int video_tag_data_meta = *tag_data;
             printf("video tag_tag_data_meta:%02x\n",video_tag_data_meta);
             print_hex_str(tag_data ,tag_header_data_size ,"","\n");
+            flv_rtmp_send_data(tag_data, tag_header_data_size,
+                    tag_header_timestamp,RTMP_PACKET_TYPE_VIDEO);
         }
         else if (tag_header_type == 0x12) {
             print_hex_str(tag_data,tag_header_data_size,"","\n");
+            printf("script tag skipped\n");
         }
         free(tag_data);
         ///
@@ -196,8 +228,101 @@ int print_flv_file_tag(const char *filename) {
             break;
         }
     }
+    flv_rtmp_close();
+    printf("RTMP Closed\n");
     return 0;
 };
+
+/// rtmp
+/// 连接 rtmp
+int flv_rtmp_connect(const char *url) {
+    flv_nalhead_pos=0;
+    flv_m_nFileBufSize=FLV_BUFFER_SIZE;
+    flv_m_pFileBuf = (unsigned char*)malloc(FLV_BUFFER_SIZE);
+    flv_m_pFileBuf_tmp = (unsigned char*)malloc(FLV_BUFFER_SIZE);
+    
+    flv_m_pRtmp = RTMP_Alloc();
+    RTMP_Init(flv_m_pRtmp);
+    /*设置URL*/
+    if (RTMP_SetupURL(flv_m_pRtmp,(char*)url) == FALSE)
+    {
+        printf("Set URL Failed");
+        RTMP_Free(flv_m_pRtmp);
+        return -1;
+    }
+    /*设置可写,即发布流,这个函数必须在连接前使用,否则无效*/
+    RTMP_EnableWrite(flv_m_pRtmp);
+    /*连接服务器*/
+    if (RTMP_Connect(flv_m_pRtmp, NULL) == false)
+    {
+        printf("Connect RTMP Failed");
+        RTMP_Free(flv_m_pRtmp);
+        return -2;
+    }
+    
+    /*连接流*/
+    if (RTMP_ConnectStream(flv_m_pRtmp,0) == false)
+    {
+        printf("Connect Stream Failed");
+        RTMP_Close(flv_m_pRtmp);
+        RTMP_Free(flv_m_pRtmp);
+        return -3;
+    }
+    return 0;
+}
+/// 关闭 rtmp 连接
+void flv_rtmp_close() {
+    if(flv_m_pRtmp)
+    {
+        RTMP_Close(flv_m_pRtmp);
+        RTMP_Free(flv_m_pRtmp);
+        flv_m_pRtmp = NULL;
+    }
+    if (flv_m_pFileBuf != NULL)
+    {
+        free(flv_m_pFileBuf);
+    }
+    if (flv_m_pFileBuf_tmp != NULL)
+    {  
+        free(flv_m_pFileBuf_tmp);
+    }
+}
+/// 发送 rtmp 数据
+int flv_rtmp_send_data(unsigned char *data, uint32_t size, 
+        uint32_t timestamp,uint8_t type) {
+    if (data == NULL && size < 11) {
+        return -1;
+    }
+    uint32_t packet_size= FLV_RTMP_HEAD_SIZE + size;
+    RTMPPacket *packet;
+    packet = (RTMPPacket *)malloc(packet_size);
+    memset(packet, 0, FLV_RTMP_HEAD_SIZE);
+    printf("data_size:%d,packet_size:%d\n",size,packet_size);
+
+    packet->m_body = (char *)packet + FLV_RTMP_HEAD_SIZE;
+    unsigned char *body = (unsigned char *)packet->m_body;
+    printf("copy body\n");
+    if (body == NULL) {
+        printf("body is null\n");
+    }
+    memcpy(body, data, size);
+
+    packet->m_hasAbsTimestamp = 0;
+    packet->m_packetType = type;
+    packet->m_nInfoField2 = flv_m_pRtmp->m_stream_id;
+    packet->m_nChannel = 0x04;
+    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
+    packet->m_nTimeStamp = timestamp;
+    packet->m_nBodySize = size;
+    printf("sending...\n");
+    int result = RTMP_SendPacket(flv_m_pRtmp, packet, true);
+    free(packet);
+    if (!result) {
+        printf("rtmp send failed");
+    }
+    return result; 
+}
+
 
 int main(int arg_c,char *arg_v[]){
     /*
