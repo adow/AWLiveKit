@@ -83,7 +83,7 @@ def print_flv_file_tag(filename,limits = 0):
         # tag data
         tag_data = f.read(tag_header_data_size_int)
         #print ('tag_data')
-        print (tag_data.encode('hex'))
+        #print (tag_data.encode('hex'))
 
         # audio tag data
         if tag_header_type_int == 0x08:
@@ -100,7 +100,7 @@ def print_flv_file_tag(filename,limits = 0):
                 audio_tag_data_meta_bitrate,
                 audio_tag_data_meta_precise,
                 audio_tag_data_meta_type,))
-            print ('\taudio_tag_data_body:' + audio_tag_data_body.encode('hex'))
+            #print ('\taudio_tag_data_body:' + audio_tag_data_body.encode('hex'))
         elif tag_header_type_int == 0x09:
             video_tag_data_meta = tag_data[0]
             video_tag_data_meta_s = video_tag_data_meta.encode('hex')
@@ -111,7 +111,7 @@ def print_flv_file_tag(filename,limits = 0):
             print ('\tvideo_type:%d,video_encoder:%d'%(video_tag_data_meta_type,video_tag_data_meta_encoder,))
 
             video_tag_data_body = tag_data[1:]
-            print ('\tvideo_tag_data_body:' + video_tag_data_body.encode('hex'))
+            #print ('\tvideo_tag_data_body:' + video_tag_data_body.encode('hex'))
         elif tag_header_type_int == 0x12:
             #print (tag_data.encode('hex'))
             # amf_1
@@ -146,7 +146,7 @@ def print_flv_file_tag(filename,limits = 0):
 
 
 #print_flv_file_hex('/Users/reynoldqin/Downloads/1.flv')
-print_flv_file_tag('/Users/reynoldqin/Downloads/1.flv',10)
+print_flv_file_tag('/Users/reynoldqin/Downloads/1.flv',0)
 #print(get_bit2(0xaf,0,4))
 #print(get_bit(0x17,0,4))
 #print(get_bit(0x17,4,4))

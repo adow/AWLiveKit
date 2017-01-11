@@ -3,9 +3,9 @@ SOURCES = \
 	  ../rtmp/log.c \
 	  ../rtmp/parseurl.c \
 	  ../rtmp/rtmp.c \
-	  flv.c
+	  flvrtmp.c 
 
-OUTPUT = flv.out 
+OUTPUT = flv-rtmp
 
 $(OUTPUT) : $(SOURCES)
 	gcc -o $(OUTPUT) $(SOURCES) -g

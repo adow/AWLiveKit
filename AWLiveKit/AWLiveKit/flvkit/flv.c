@@ -4,6 +4,8 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include "../rtmp/rtmp.h"
 
 #define LOG_MAX_LINE 2048 ///每行日志的最大长度
@@ -376,6 +378,101 @@ int _execute_cmd(int arg_c, char *arg_v[]) {
     return 0;
 }
 
+int _test_read() {
+	const char *filename = "./test.txt";
+	struct stat st;
+	FILE *f = fopen(filename,"rb");	
+	stat(filename, &st);	
+	setbuf(f,NULL);
+	for (int a = 0; a<INT_MAX; a++) {
+		if (feof(f)) {
+			long int pos = ftell(f);
+			//printf("%d:end of file,%ld\n",a,pos);
+			//clearerr(f);
+			//fseek(f, 0, SEEK_SET);
+			//lseek(fileno(f),0,SEEK_SET);
+			struct stat now_st;
+			stat(filename,&now_st);
+			if (st.st_size != now_st.st_size) {
+				st = now_st;
+				//printf("file changed\n");
+				fclose(f);
+				f = fopen(filename,"rb");
+				fseek(f,pos - 1,SEEK_SET);
+			}
+		}
+		else {
+			printf("---\n");
+			const size_t size = 4;
+			unsigned char input[size] = {'\0'};
+			print_hex_str(input,size," ","\n");
+			size_t read = fread(input,sizeof(char), size - 1,f);
+			if (read > 0) {
+				print_hex_str(input,size," ","\n");
+				printf("%s\n",input);
+				fflush(stdout);
+			}
+		}
+		sleep(3);
+		/*
+		const size_t size = 4;
+		char input[size] = {'\0'};
+		size_t read = fread(input,sizeof(char), size,f);
+		printf("%s\n",input);
+		sleep(3);
+		*/
+	}
+	fclose(f);	
+	return 0;
+}
+
+int _test_read2() {
+	const char *filename = "./test.txt";
+	int f = open(filename, O_RDONLY | O_SYNC | O_DSYNC);
+	struct stat st;
+	stat(filename, &st);
+	for (int a = 0; a< INT_MAX; a++) {
+		const size_t size = 4;
+		unsigned char input[size] = {'\0'};
+		ssize_t len = read(f, input, size - 1);
+		//print_hex_str(input,size," ", "\n");
+		if (len == 0 ) {
+			//printf("end of file\n");
+			//lseek(f,0,SEEK_SET);
+			off_t now_pos = lseek(f,0,SEEK_CUR);
+			struct stat now_st;
+			stat(filename, &now_st);
+			if (st.st_size != now_st.st_size) {
+				//printf("file changed");
+				st = now_st;
+				close(f);
+				f = open(filename, O_RDONLY | O_SYNC | O_DSYNC);
+				lseek(f,now_pos,SEEK_SET);
+			}
+
+		}
+		else {
+			size_t str_len = strlen((char *)input);
+			if (*(input + str_len -1) == 0x0a) {
+				char *output = (char *)malloc(str_len);
+				memset(output,'\0',str_len);
+				strncpy(output,(char *)input, str_len - 1);
+				//printf("%s\n",output);
+				printf("%s",output);
+			}	
+			else {
+				//printf("%s\n",input);
+				printf("%s",input);	
+			}
+			fflush(stdout);
+		}
+		sleep(3);
+		
+
+	}
+	return 0;
+}
+
 int main(int arg_c,char *arg_v[]){
     /*
     printfln("0x27 >> 4:%d",0x27 >> 4);
@@ -389,6 +486,8 @@ int main(int arg_c,char *arg_v[]){
     //print_flv_file_hex("/Users/reynoldqin/Downloads/1.flv");
     //print_flv_file_tag("/Users/reynoldqin/Downloads/1.flv");
     /// ./flv.out -f "/Users/reynoldqin/Downloads/1.flv" -u "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84" -v
-    _execute_cmd(arg_c,arg_v);
+    //_execute_cmd(arg_c,arg_v);
+    //_test_read();
+    _test_read2();
 	return 0;
 }
