@@ -307,7 +307,14 @@ int receive_flv_file() {
 	FILE *file = fopen(filename, "wb");
 	if (!file) {
 		printf("could not open file:%s",filename);
-		return -1;
+		return -3;
+	}
+	/// 用于记录 tag 位置 
+	const char* filename_tag = strcat(filename,".tag");
+	FILE *file_tag = fopen(filename_tag,"wb");
+	if (!file) {
+		printf("could not open tag file:%s",filename_tag);
+		return -4;
 	}
 	
 	int counter = 0;
@@ -341,6 +348,7 @@ int receive_flv_file() {
         	printf("--------------TAG:%d---------------\n",counter);
 		long pos = ftell(file);
 		printf("this tag will start from:%ld\n",pos);
+		fwrite(&pos,sizeof(long),1,file_tag); /// 将当前位置写入到 tag 文件中
 		/// previous tag size
 		uint32_t previous_tag_size = 0;
 		//if (flv_rtmp_read_u32(&previous_tag_size)) return -1;
@@ -386,10 +394,8 @@ int receive_flv_file() {
 		if (flv_rtmp_read_buf(tag_data,tag_header_data_size)) return -1;
 		print_hex_str(tag_data, tag_header_data_size, " ", "\n");
 		fwrite(tag_data,1,tag_header_data_size,file);
-
-		
-
 		free(tag_data);
+		///
 		fflush(stdout);
 		fflush(stderr);
 		///
@@ -400,6 +406,7 @@ int receive_flv_file() {
 	}
 	///
 	fclose(file);
+	fclose(file_tag);
 	flv_rtmp_close();
 	return 0;
 }
