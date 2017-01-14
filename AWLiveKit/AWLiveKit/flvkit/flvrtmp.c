@@ -6,6 +6,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/socket.h>  
+#include <sys/un.h>   
+#include <time.h>
+#include <sys/select.h>
 #include "../rtmp/rtmp.h"
 
 /// rtmp
@@ -18,6 +22,10 @@
 #define FLV_GOT_A_NAL_INCLUDE_A_BUFFER BUFFER_SIZE+2
 #define FLV_NO_MORE_BUFFER_TO_READ BUFFER_SIZE+3
 
+#define FLV_RTMP_PUSH_RUN_MODE_PIPLINE 'P'
+#define FLV_RTMP_PUSH_RUN_MODE_SOCKET 'S'
+#define FLV_RTMP_PUSH_RUN_MODE_FILE 'F'
+
 unsigned int  flv_m_nFileBufSize;
 unsigned int  flv_nalhead_pos;
 RTMP* flv_m_pRtmp;
@@ -29,6 +37,7 @@ int flv_rtmp_connect(const char *url,int write);
 void flv_rtmp_close();
 int flv_rtmp_send_data(unsigned char *data, uint32_t size, 
         uint32_t timestamp,uint8_t type);
+int _do_push_flv_file(int counter);
 
 int fd = -1; /// flv 文件
 char filename[PATH_MAX] = {'\0'};
@@ -40,6 +49,9 @@ char url[PATH_MAX] = {'\0'};
 //const char *url = "rtmp://m.push.wifiwx.com:1935/live/wifiwx-239";
 
 FILE *file_log = NULL; /// 输出日志文件，可以更换这个文件
+
+int FLV_RTMP_PUSH_FLV_HEADER_SENT = 0; /// flv header 是否已经发送
+int FLV_RTMP_PUSH_CONNECTED = 0; /// rtmp 是否已经连接
 
 /// printf 到指定文件
 void flv_rtmp_printf(const char *fmt,...){
@@ -68,6 +80,47 @@ int print_hex_str(const unsigned char *s, size_t n,
 #define HTON24(x)  ((x>>16&0xff)|(x<<16&0xff0000)|(x&0xff00))  
 #define HTON32(x)  ((x>>24&0xff)|(x>>8&0xff00)|(x<<8&0xff0000)|(x<<24&0xff000000))  
 #define HTONTIME(x) ((x>>16&0xff)|(x<<16&0xff0000)|(x&0xff00)|(x&0xff000000))
+
+int min(int a,int b){
+	return a < b ? a : b;
+}
+int int_max(int a, int b) {
+	return a > b ? a : b;
+}
+
+int read_cmd(int fd, 
+		char *cmd_name, int *cmd_name_len, 
+		char *cmd_value, int *cmd_value_len) {
+	const int cmd_buf_size = 1024;
+	char buf[cmd_buf_size] = {'\0'};
+	int len = read(fd, buf, cmd_buf_size);
+	flv_rtmp_printf("read length:%d\n",len);
+	if (len == -1) {
+		flv_rtmp_printf("read cmd error\n");
+		return -1;
+	}
+	else if (len == 0) {
+		return 0;
+	}
+	else {
+		flv_rtmp_printf("cmd:%s",buf);
+		char *p_buf = buf;
+		for(p_buf = buf;p_buf < p_buf + len; p_buf++) {
+			/// find :
+			if (*p_buf == ':') {
+				/// cmd_name
+				*cmd_name_len = p_buf - buf;
+				strncpy(cmd_name, buf, *cmd_name_len);	
+				/// cmd_value
+				*cmd_value_len = len - *cmd_name_len - 2;
+				strncpy(cmd_value, p_buf + 1, *cmd_value_len);
+				break;
+			}
+
+		}	
+		return len;
+	}
+}
 
 /// flv_file
 int flv_file_open() {
@@ -308,6 +361,211 @@ int push_flv_file(int verbose) {
 	return 0;
 }
 
+int push_flv_file_loop(char mode) {
+	// 文件推送循环，在每个循环中会尝试读取外部的命令 
+	flv_rtmp_printf("push_flv_file_loop will start,mode:%c\n",mode);
+	/// 通信方式
+	if (mode == FLV_RTMP_PUSH_RUN_MODE_SOCKET) { /// socket
+	}
+	else if (mode == FLV_RTMP_PUSH_RUN_MODE_PIPLINE) { /// pipline
+	}
+	else if (mode == FLV_RTMP_PUSH_RUN_MODE_FILE) { /// file
+	}
+	flv_file_open(); /// 开始的时候就打开文件一次
+	int counter = 0;
+	int limits = 0;	
+	fd_set read_set;
+	fd_set write_set;
+	struct timeval timeout={0,0};
+	struct timespec wait_time = {0,1.0 * 1000000000L}; ///0.03s
+	wait_time.tv_sec = 0;
+	wait_time.tv_nsec = 10 *1000000L;
+	const size_t cmd_buf_size = 1024;
+	while(1) {
+		/// receive cmd
+		int max_fd = 0;
+		if (mode == FLV_RTMP_PUSH_RUN_MODE_PIPLINE) {
+			FD_ZERO(&read_set);
+			FD_ZERO(&write_set);
+			FD_SET(STDIN_FILENO,&read_set);
+			FD_SET(STDOUT_FILENO, &write_set);
+			max_fd = int_max(STDIN_FILENO,STDOUT_FILENO) + 1;
+		}
+		int ret = select(max_fd, &read_set, &write_set,NULL,&timeout);
+		if (ret == -1) {
+			flv_rtmp_printf("select error\n");
+			return -1;
+		}
+		else if (ret == 0) {
+			flv_rtmp_printf("not available\n");
+		}
+		else {
+			//flv_rtmp_printf("%d available\n",ret);
+			if (FD_ISSET(STDIN_FILENO,&read_set)) {
+				flv_rtmp_printf("read stdin available\n");	
+				/// analysis cmd
+				char cmd_name[cmd_buf_size] = {'\0'};
+				char cmd_value[cmd_buf_size] = {'\0'};
+				int cmd_name_len = 0;
+				int cmd_value_len = 0;
+				if (read_cmd(STDIN_FILENO, 
+						cmd_name, &cmd_name_len,
+						cmd_value,&cmd_value_len) > 0) {
+					/// cmd 
+					flv_rtmp_printf("cmd_name:%s,%d\n",cmd_name,cmd_name_len);
+					flv_rtmp_printf("cmd_value:%s,%d\n",cmd_value,cmd_value_len);
+					/// change filename
+					if (!strcmp(cmd_name,"set-filename")) {
+						memset(filename,'\0',PATH_MAX);		
+						strncpy(filename,cmd_value,
+								cmd_value_len);
+						flv_rtmp_printf("filename has been changed:%s\n",filename);
+						/// 关闭文件后重新打开
+						if (fd != -1) {
+							close(fd);
+							fd = -1; ///reset fd
+						}
+						fd = open(filename,O_RDONLY);/// reopen file
+						///  获取到 tag 文件中的定位数据
+						const char *filename_tag = strcat(filename,".tag");
+						long tag_pos = 0;
+						FILE *file_tag = fopen(filename_tag,"r");
+						if (file_tag) {
+							flv_rtmp_printf("tag pos:%ld",tag_pos);
+							fread(&tag_pos,sizeof(long),1,file_tag);
+						}
+						/// 将文件定位回指定的位置
+						lseek(fd, tag_pos,SEEK_CUR);
+
+
+					}
+				}
+				
+			}
+			if (FD_ISSET(STDOUT_FILENO,&write_set)) {
+				//flv_rtmp_printf("write stdout available\n");
+			}
+		}
+		
+		/// push flv file
+		_do_push_flv_file(counter);	
+		fflush(file_log);
+		///
+		++counter;
+		if (limits && counter >= limits) {
+		    break;
+		}
+		//sleep(1);
+		nanosleep(&wait_time,NULL);
+	}
+	return 0;
+}
+
+int _do_push_flv_file(int counter) {
+	/// connect rtmp
+	if (!FLV_RTMP_PUSH_CONNECTED) {
+		flv_rtmp_printf("connecting url:%s\n",url);
+		if (flv_rtmp_connect(url,1)) {
+			return -2;
+		}
+		FLV_RTMP_PUSH_CONNECTED = 1;
+	}
+	/// 没有指定文件
+	if (!strcmp(filename,"")) {
+		flv_rtmp_printf("no filename, skipped\n");
+		return -3;
+	}
+	/// flv 文件头
+	if (!FLV_RTMP_PUSH_FLV_HEADER_SENT) {
+		flv_rtmp_printf("flv header has not been sent\n");
+		//这时会重新定位到文件开头
+		if (fd == -1) {
+			close(fd);
+		}	
+		fd = open(filename, O_RDONLY);
+		lseek(fd, 0, SEEK_SET);
+		/// flv header
+		/// signautre
+		unsigned char signature[4] = {'\0'};
+		if (flv_file_read_buf(signature, 3)) {
+			return -1;
+		}
+		flv_rtmp_printf("signature:%s\n",signature);
+		print_hex_str(signature, 4, " ","\n");
+		/// version
+		unsigned char version[2] = {'\0'};
+		if (flv_file_read_buf(version,1)) {
+			return -1;
+		}
+		flv_rtmp_printf("version:\n");
+		print_hex_str(version,2," ", "\n");
+		/// flags
+		unsigned char flags[2] = {'\0'};
+		if (flv_file_read_buf(flags,1)) {
+			return -1;
+		}
+		flv_rtmp_printf("flags:\n");
+		print_hex_str(flags,2," ", "\n");
+		/// header_size
+		uint32_t header_size = 0;
+		if (flv_file_read_u32(&header_size)) {
+			return -1;
+		}
+		flv_rtmp_printf("header_size:%d\n",header_size);
+
+		FLV_RTMP_PUSH_FLV_HEADER_SENT = 1;
+	}
+	/// flv body
+	flv_rtmp_printf("--------------TAG:%d---------------\n",counter);
+	/// previous tag size
+	uint32_t previous_tag_size = 0;
+	if (flv_file_read_u32(&previous_tag_size)) return -1;
+	flv_rtmp_printf("previous_tag_size:%d\n",previous_tag_size);
+	/// tag header
+	uint32_t tag_header_type = 0;
+	if (flv_file_read_u8(&tag_header_type)) return -1;
+	flv_rtmp_printf("tag_header_type:%02x\n",tag_header_type); 
+	/// tag header data size
+	uint32_t tag_header_data_size = 0;
+	if (flv_file_read_u24(&tag_header_data_size)) return -1;
+	flv_rtmp_printf("tag_header_data_size:%d\n",tag_header_data_size);
+	/// tag header timestamp
+	uint32_t tag_header_timestamp = 0;
+	if (flv_file_read_u24(&tag_header_timestamp)) return -1;
+	flv_rtmp_printf("tag_header_timestamp:%d\n",tag_header_timestamp);
+	/// tag header timestamp_ex
+	uint32_t tag_header_timestamp_ex = 0;
+	if (flv_file_read_u8(&tag_header_timestamp_ex)) return -1;
+	flv_rtmp_printf("tag_header_timestamp_ex:%d\n",tag_header_timestamp_ex);
+	/// tag stream id
+	uint32_t tag_header_stream_id = 0;
+	if (flv_file_read_u24(&tag_header_stream_id)) return -1;
+	flv_rtmp_printf("tag_header_stream_id:%d\n",tag_header_stream_id);
+	/// tag body
+	unsigned char *tag_data = calloc(tag_header_data_size, sizeof(char));
+	if (flv_file_read_buf(tag_data,tag_header_data_size)) return -1;
+	print_hex_str(tag_data, tag_header_data_size, " ", "\n");
+	/// audio
+	if (tag_header_type == 0x08) {
+		flv_rtmp_printf("audio tag\n");
+		flv_rtmp_send_data(tag_data, tag_header_data_size,
+			tag_header_timestamp,RTMP_PACKET_TYPE_AUDIO);
+	}
+	/// video
+	else if (tag_header_type == 0x09) {
+		flv_rtmp_printf("video tag\n");
+		flv_rtmp_send_data(tag_data, tag_header_data_size,
+			tag_header_timestamp,RTMP_PACKET_TYPE_VIDEO);
+	}
+	/// script
+	else if (tag_header_type == 0x12) {
+		flv_rtmp_printf("script tag, skipped\n");
+	}
+
+	free(tag_data);
+	return 0;
+}
+
 /// receive
 int receive_flv_file() {
 	///flv_rtmp_printf("connect url:%s\n",url);
@@ -360,8 +618,10 @@ int receive_flv_file() {
 	flv_rtmp_printf("header_size:%d\n",header_size);
 	while (1) {
         	flv_rtmp_printf("--------------TAG:%d---------------\n",counter);
+		/// write tag pos
 		long pos = ftell(file);
 		flv_rtmp_printf("this tag will start from:%ld\n",pos);
+		fseek(file_tag, 0, SEEK_SET);
 		fwrite(&pos,sizeof(long),1,file_tag); /// 将当前位置写入到 tag 文件中
 		/// previous tag size
 		uint32_t previous_tag_size = 0;
@@ -451,7 +711,6 @@ int receive_flv_file_simple() {
 	fclose(file);
 	flv_rtmp_close();
 	return 0;
-
 }
 
 /// rtmp
@@ -573,16 +832,19 @@ int _execute_cmd(int arg_c, char *arg_v[]) {
     }
     flv_rtmp_printf("flv_filename:%s\n",filename);
     flv_rtmp_printf("url:%s\n",url);
+    /*
     if (!strlen(filename)) {
         flv_rtmp_printf("need -f: filename to flv\n");
         return -1;
     }
+    */
     if (!strlen(url)) {
         flv_rtmp_printf("need -u: url to push rtmp\n");
         return -2;
     }
     if (!strcmp(cmd,"push")) {
-	return push_flv_file(verbose);
+	//return push_flv_file(verbose);
+	return push_flv_file_loop('P');
     }
     else if (!strcmp(cmd,"receive")) {		
 	return receive_flv_file();
@@ -597,15 +859,30 @@ int _execute_cmd(int arg_c, char *arg_v[]) {
 
 
 /// test
+int _test_read_cmd() {
+	const int buf_size = 1024;
+	char cmd_name[buf_size] = {'\0'};
+	char cmd_value[buf_size] = {'\0'};
+	int cmd_name_len = 0;
+	int cmd_value_len = 0;
+	int ret = read_cmd(STDIN_FILENO, cmd_name, &cmd_name_len,
+			cmd_value, &cmd_value_len);
+	printf("ret:%d\n",ret);
+	printf("cmd_name:%s,%d\n",cmd_name,cmd_name_len);
+	printf("cmd_value:%s,%d\n",cmd_value,cmd_value_len);
+	return 0;
+}
 
 /// main
 int main(int arg_c,char *arg_v[]){	
-	file_log = stdout;
-	//file_log = fopen("./flvrtmp.log","a");
+	//file_log = stdout;
+	file_log = fopen("./flvrtmp.log","a");
 	//push_flv_file(1);
 	// ./flv-rtmp -v -f "/Users/reynoldqin/Downloads/1.flv" -u "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
 	// ./flv-rtmp -v -f "/Users/reynoldqin/Downloads/3.flv" -u "rtmp://m.push.wifiwx.com:1935/live/wifiwx-239"
 
 	_execute_cmd(arg_c, arg_v);
+	//push_flv_file_loop('P');
+	//_test_read_cmd();
 	return 0;
 }
