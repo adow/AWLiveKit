@@ -5,10 +5,8 @@ import os
 import subprocess
 import time
 
-p_push = None
-
-p_receives = []
-receiving_items = [] #[(url,filename),(url,filename),(url,filename)]
+p_pushing = None #(process,url,filename)
+p_pulling = [] #(process,url,filename),(process,url,filename),(process,url,filename)
 
 
 # cmd
@@ -33,52 +31,57 @@ def run_cmd(r):
             'status':_cmd_status,
             'push-start':_cmd_push_start,
             'push-stop':_cmd_push_stop,
-            'receive-start':_cmd_receive_start,
-            'receive-stop':_cmd_receive_stop,}.get(cmd,_cmd_help)(par)
+            'pull-start':_cmd_pull_start,
+            'pull-stop':_cmd_pull_stop,}.get(cmd,_cmd_help)(par)
 
 def _cmd_quit(args):
     '''quit'''
-    global p_push
-    global p_receives
-    if p_push:
-        p_push.kill()
-        p_push = None
-    for p in p_receives:
+    global p_pushing
+    global p_pulling 
+    if p_pushing:
+        (p,url,filename) = p_pushing
         p.kill()
-    p_receives = []
+    p_pushing = None
+    for pull_item in p_pulling:
+        (p,url,filename) = pull_item
+        p.kill()
+    p_pulling = []
     return False 
 
 def _cmd_push_start(args):
     '''push-start $url $filename'''
-    global p_push 
+    global p_pushing 
+    if p_pushing:
+        print "push has been started"
+        return True
     url = args[0]
     filename = ''
     if len(args) > 1:
         filename = args[1]
     print 'url:%s, filename:%s'%(url,filename,)
-    script_push_start = './flv-rtmp push -u \"%s\"'%(url,)
-    print script_push_start
-    '''
-    p_push =subprocess.Popen(script_push_start, shell = True,
+    script = './flv-rtmp push -u \"%s\"'%(url,)
+    print script 
+    p =subprocess.Popen(script, shell = True,
         stdin = subprocess.PIPE,
         stdout = subprocess.PIPE,
         stderr = subprocess.STDOUT)
-    '''
+    p_pushing = (p,url,filename)
     return True
 
 def _cmd_push_stop(args):
     '''push-stop'''
-    global p_push 
-    if p_push:
-        p_push.kill()
-    p_push = None
+    global p_pushing 
+    if p_pushing:
+        (p,url,filename) = p_pushing
+        p.kill()
+    p_pushing = None
     return True
 
-def _cmd_receive_start(args):
-    '''receive-start $url $filename'''
-    global p_receives,receiving_items
+def _cmd_pull_start(args):
+    '''pull-start $url $filename'''
+    global p_pulling 
     if len(args) < 2:
-        print 'receive-start $url $filename'
+        print 'pull-start $url $filename'
         return True
     url = args[0] 
     filename = args[1]
@@ -88,25 +91,23 @@ def _cmd_receive_start(args):
             stdin = subprocess.PIPE,
             stdout = subprocess.PIPE,
             stderr = subprocess.STDOUT)
-    p_receives.append(p) 
-    item = (url,filename)
-    receiving_items.append(item)
+    pull_item = (p,url,filename)
+    p_pulling.append(pull_item)
     return True
 
-def _cmd_receive_stop(args):
-    '''receive-stop $index'''
-    global p_receives,receiving_items
+def _cmd_pull_stop(args):
+    '''pull-stop $index'''
+    global p_pulling
     if len(args) < 1:
-        print 'receive-stop $index'
+        print 'pull-stop $index'
         return True
     i = int(args[0])
-    if i < len(p_receives):
-        p = p_receives[i]
+    if i < len(p_pulling):
+        pull_item = p_pulling[i]
+        (p,url,filename) = pull_item
         p.kill()
-        p_receives.remove(p)
-        item = receiving_items[i]
-        receiving_items.remove(item)
-        print '%d stopped'%(i,)
+        p_pulling.remove(pull_item)
+        print '%d stopped:(%s) %s, %s'%(i,str(p.pid),url,filename,)
     else:
         print '%d not found'%(i,)
     return True
@@ -114,12 +115,13 @@ def _cmd_receive_stop(args):
 def _cmd_status(args):
     '''status'''
     print 'pushing:'
-    if p_push:
-        print '0:push'
-    print 'receiving:'
-    for (i,p) in enumerate(p_receives):
-        item = receiving_items[i]
-        print '\t%d:(%s) %s, %s'%(i,str(p.pid),item[0], item[1],) 
+    if p_pushing:
+        (p,url,filename) = p_pushing
+        print '\t(%s) %s, %s'%(str(p.pid),url,filename,)
+    print 'pulling:'
+    for (i,pull_item) in enumerate(p_pulling):
+        (p,url,filename) = pull_item
+        print '\t%d:(%s) %s, %s'%(i,str(p.pid),url, filename,) 
     return True
 
 # cmd-help
@@ -127,8 +129,8 @@ def _cmd_help(args):
     print 'rtmp-flv-cli commands:'
     l = [_cmd_push_start,
             _cmd_push_stop,
-            _cmd_receive_start,
-            _cmd_receive_stop,
+            _cmd_pull_start,
+            _cmd_pull_stop,
             _cmd_status,
             _cmd_help,]
     for f in l:
