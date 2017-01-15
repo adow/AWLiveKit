@@ -60,6 +60,8 @@ def _cmd_push_start(args):
         filename = args[1]
     print 'url:%s, filename:%s'%(url,filename,)
     script = './flv-rtmp push -u \"%s\"'%(url,)
+    if filename:
+        script = script + ' -f \"' + filename + '\"'
     print script 
     p =subprocess.Popen(script, shell = True,
         stdin = subprocess.PIPE,
