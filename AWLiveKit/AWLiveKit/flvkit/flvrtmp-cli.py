@@ -87,7 +87,7 @@ def _cmd_pull_start(args):
         return True
     url = args[0] 
     filename = args[1]
-    script = './flv-rtmp receive -u \"%s\" -f \"%s\"'%(url, filename,)
+    script = './flv-rtmp pull -u \"%s\" -f \"%s\"'%(url, filename,)
     print script
     p = subprocess.Popen(script, shell = True, 
             stdin = subprocess.PIPE,

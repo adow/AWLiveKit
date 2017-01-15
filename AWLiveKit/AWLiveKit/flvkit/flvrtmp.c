@@ -382,7 +382,7 @@ int push_flv_file_loop(char mode) {
 	wait_time.tv_nsec = 10 *1000000L;
 	const size_t cmd_buf_size = 1024;
 	while(1) {
-		/// receive cmd
+		///  cmd
 		int max_fd = 0;
 		if (mode == FLV_RTMP_PUSH_RUN_MODE_PIPLINE) {
 			FD_ZERO(&read_set);
@@ -566,8 +566,8 @@ int _do_push_flv_file(int counter) {
 	return 0;
 }
 
-/// receive
-int receive_flv_file() {
+/// pull 
+int pull_flv_file() {
 	///flv_rtmp_printf("connect url:%s\n",url);
 	if (flv_rtmp_connect(url,0)) {
 		return -2;
@@ -685,7 +685,7 @@ int receive_flv_file() {
 	return 0;
 }
 
-int receive_flv_file_simple() {
+int pull_flv_file_simple() {
 	if (flv_rtmp_connect(url,0)) {
 		return -2;
 	}
@@ -846,9 +846,9 @@ int _execute_cmd(int arg_c, char *arg_v[]) {
 	//return push_flv_file(verbose);
 	return push_flv_file_loop('P');
     }
-    else if (!strcmp(cmd,"receive")) {		
-	return receive_flv_file();
-	//return receive_flv_file_simple();
+    else if (!strcmp(cmd,"pull")) {		
+	return pull_flv_file();
+	//return pull_flv_file_simple();
     }
     else {
 	flv_rtmp_printf("unknown cmd:%s",cmd);
