@@ -1,0 +1,6 @@
+*.out
+*.o
+*.dSYM
+flv-rtmp
+*.log
+test.txt
