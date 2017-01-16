@@ -376,12 +376,16 @@ int flv_push_loop(char mode) {
 			FD_ZERO(&write_set);
 			FD_SET(STDIN_FILENO,&read_set);
 			FD_SET(socket_listen_fd, &read_set);
+			max_fd = int_max(STDIN_FILENO,socket_listen_fd);
 			/// 如果有连接将等待他发来消息
 			if (socket_com_fd != -1) {
 				FD_SET(socket_com_fd, &read_set);
+				max_fd = int_max(max_fd, socket_com_fd);
 			}
 			FD_SET(STDOUT_FILENO, &write_set);
-			max_fd = int_max(STDIN_FILENO,STDOUT_FILENO) + 1;
+			max_fd = int_max(max_fd, STDOUT_FILENO);
+			//max_fd = int_max(STDIN_FILENO,STDOUT_FILENO) + 1;
+			max_fd += 1;
 		}
 		int ret = select(max_fd, &read_set, &write_set,NULL,&timeout);
 		if (ret == -1) {
@@ -435,6 +439,16 @@ int flv_push_loop(char mode) {
 					FD_ISSET(socket_com_fd, &read_set)) {
 				/// 有客户端发来消息
 				aw_log("command available\n");
+				char cmd_name[cmd_buf_size] = {'\0'};
+				char cmd_value[cmd_buf_size] = {'\0'};
+				int cmd_name_len = 0;
+				int cmd_value_len = 0;
+				if (read_cmd(socket_com_fd, 
+						cmd_name, &cmd_name_len,
+						cmd_value,&cmd_value_len) > 0) {
+					aw_log("cmd_name:%s,%d\n",cmd_name,cmd_name_len);
+					aw_log("cmd_value:%s,%d\n",cmd_value,cmd_value_len);	
+				}
 			}
 			if (FD_ISSET(STDOUT_FILENO,&write_set)) {
 				aw_log("write stdout available\n");
