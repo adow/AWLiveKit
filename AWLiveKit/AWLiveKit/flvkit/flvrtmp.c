@@ -12,6 +12,8 @@
 #include <sys/select.h>
 #include "../rtmp/rtmp.h"
 
+#define UNIX_DOMAIN "/tmp/flv-rtmp" 
+
 /// rtmp
 //定义包头长度，RTMP_MAX_HEADER_SIZE=18
 #define FLV_RTMP_HEAD_SIZE   (sizeof(RTMPPacket)+RTMP_MAX_HEADER_SIZE)
@@ -181,14 +183,18 @@ int flv_file_open_position(char position) {
 			close(fd);
 			fd = -1;
 		}
+		char filename_tag[PATH_MAX] = {'\0'};
+		strcpy(filename_tag,filename);
 		///  获取到 tag 文件中的定位数据
-		const char *filename_tag = strcat(filename,".tag");
+		strcat(filename_tag,".tag");
 		long pos = 0;
 		FILE *file_tag = fopen(filename_tag,"r");
 		if (file_tag) {
 			fread(&pos,sizeof(long),1,file_tag);
 		}
-		flv_rtmp_printf("tag pos:%ld\n",pos);
+		fclose(file_tag);
+		//flv_rtmp_printf("tag pos:%ld\n",pos);
+		printf("tag pos:%ld\n",pos);
 		fd = open(filename, O_RDONLY);
 		if (fd == -1) {
 			return -1;
@@ -923,6 +929,30 @@ int _test_read_cmd() {
 	return 0;
 }
 
+int _test_open_flv_file_tag() {
+	char *test_filename = "/Users/reynoldqin/Downloads/245.flv";
+	strcpy(filename,test_filename);
+	flv_file_open_position('T');
+	int counter = 0;
+	while(1) {
+		_do_push_flv_file(counter++);
+		sleep(3);
+	}
+	/*
+	char *filename_tag = "/Users/reynoldqin/Downloads/245.flv.tag";
+	long pos = 0;
+	FILE *file_tag = fopen(filename_tag,"r");
+	if (file_tag) {
+		fread(&pos,sizeof(long),1,file_tag);
+	}
+	fclose(file_tag);
+	//flv_rtmp_printf("tag pos:%ld\n",pos);
+	printf("tag pos:%ld\n",pos);
+	//vfprintf(file_log,"tag pos:%ld\n",pos);
+	*/
+	return 0;
+}
+
 /// main
 int main(int arg_c,char *arg_v[]){	
 	//file_log = stdout;
@@ -934,5 +964,6 @@ int main(int arg_c,char *arg_v[]){
 	_execute_cmd(arg_c, arg_v);
 	//push_flv_file_loop('P');
 	//_test_read_cmd();
+	//_test_open_flv_file_tag();
 	return 0;
 }
