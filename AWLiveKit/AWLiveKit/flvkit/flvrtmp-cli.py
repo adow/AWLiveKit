@@ -31,6 +31,7 @@ def run_cmd(r):
             'status':_cmd_status,
             'push-start':_cmd_push_start,
             'push-stop':_cmd_push_stop,
+            'push-set-filename':_cmd_push_set_filename,
             'pull-start':_cmd_pull_start,
             'pull-stop':_cmd_pull_stop,}.get(cmd,_cmd_help)(par)
 
@@ -77,6 +78,22 @@ def _cmd_push_stop(args):
         (p,url,filename) = p_pushing
         p.kill()
     p_pushing = None
+    return True
+
+def _cmd_push_set_filename(args):
+    '''push-set-filename $filename'''
+    global p_pushing 
+    if not p_pushing:
+        print "push has not been started"
+        return True
+    if not args:
+        print 'push-set-filename $filename'
+    new_filename = args[0]
+    (p,url,filename) = p_pushing 
+    script = 'push-set-filename:%s\n'%(new_filename,)
+    p.stdin.write(script)
+    p_pushing = (p,url,new_filename) 
+    print 'pushing filename changed to %s'%(new_filename,)
     return True
 
 def _cmd_pull_start(args):
@@ -131,6 +148,7 @@ def _cmd_help(args):
     print 'rtmp-flv-cli commands:'
     l = [_cmd_push_start,
             _cmd_push_stop,
+            _cmd_push_set_filename,
             _cmd_pull_start,
             _cmd_pull_stop,
             _cmd_status,
