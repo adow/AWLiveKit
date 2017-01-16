@@ -12,6 +12,8 @@ rtmp://m.push.wifiwx.com:1935/live/wifiwx-84
 
 ./flv-rtmp-pull -f "/Users/reynoldqin/Downloads/239.flv" -u "rtmp://m.push.wifiwx.com:1935/live/wifiwx-239"
 
+./flv-rtmp-push -f "/Users/reynoldqin/Downloads/239.flv" -u "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
+
 pull-start rtmp://m.push.wifiwx.com:1935/live/wifiwx-243 /Users/reynoldqin/Downloads/243.flv
 
 pull-start rtmp://m.push.wifiwx.com:1935/live/wifiwx-245 /Users/reynoldqin/Downloads/245.flv

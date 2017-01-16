@@ -1,6 +1,6 @@
 *.out
 *.o
 *.dSYM
-flv-rtmp
+flv-rtmp-pull
+flv-rtmp-push
 *.log
-test.txt
