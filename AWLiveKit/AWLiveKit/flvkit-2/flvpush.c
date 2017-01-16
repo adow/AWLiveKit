@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <sys/un.h>   
 #include <time.h>
+#include <sys/socket.h>
 
 #include "util.h"
 #include "flvrtmp.h"
@@ -22,12 +23,17 @@
 #define FLV_RTMP_FILE_OPEN_POSITION_CUR 'C'
 #define FLV_RTMP_FILE_OPEN_POSITION_TAG 'T'
 
+
 char flv_filename[PATH_MAX] = {'\0'};
 char rtmp_url[PATH_MAX] = {'\0'};
 char flv_fd = -1;
 
 int FLV_RTMP_PUSH_FLV_HEADER_SENT = 0; /// flv header 是否已经发送
 int FLV_RTMP_PUSH_CONNECTED = 0; /// rtmp 是否已经连接
+
+#define UNIX_DOMAIN "/tmp/flv-rtmp-push"
+int socket_listen_fd = -1; ///服务器
+int socket_com_fd = -1; ///连接
 
 /// read flv file
 int flv_file_open_position(char position) {
@@ -158,6 +164,48 @@ int flv_file_read_u32(uint32_t *u32) {
 	}
 	*u32 = HTON32(*u32);
 	return 0;
+}
+
+/// socket 
+int start_socket() {
+    socklen_t clt_addr_len;  
+    int ret;  
+    int i;  
+    static char recv_buf[1024];   
+    socklen_t len;  
+    struct sockaddr_un clt_addr;  
+    struct sockaddr_un srv_addr;  
+    socket_listen_fd = socket(PF_UNIX,SOCK_STREAM,0);  
+    if(socket_listen_fd < 0)  
+    {  
+        aw_log("cannot create communication socket\n");  
+        return -1;  
+    }    
+    //set server addr_param  
+    srv_addr.sun_family=AF_UNIX;  
+    strncpy(srv_addr.sun_path,UNIX_DOMAIN,sizeof(srv_addr.sun_path)-1);  
+    unlink(UNIX_DOMAIN);  
+    //bind sockfd & addr  
+    ret=bind(socket_listen_fd,(struct sockaddr*)&srv_addr,sizeof(srv_addr));  
+    if(ret==-1)  
+    {  
+        aw_log("cannot bind server socket\n");  
+        close(socket_listen_fd);  
+        unlink(UNIX_DOMAIN);  
+        return -2;  
+    }  
+    printf("binded\n");
+    //listen sockfd   
+    ret=listen(socket_listen_fd,1);  
+    if(ret==-1)  
+    {  
+        aw_log("cannot listen the client connect request\n");  
+        close(socket_listen_fd);  
+        unlink(UNIX_DOMAIN);  
+        return -3;  
+    }  
+    aw_log("listening at:%s\n",UNIX_DOMAIN);
+    return 0;
 }
 
 /// push
@@ -307,6 +355,7 @@ int flv_push_loop(char mode) {
 	}
 	else if (mode == FLV_RTMP_PUSH_RUN_MODE_FILE) { /// file
 	}
+	start_socket();
 	//flv_file_open_position('S'); /// 开始的时候就打开文件一次
 	int counter = 0;
 	int limits = 0;	
@@ -326,6 +375,11 @@ int flv_push_loop(char mode) {
 			FD_ZERO(&read_set);
 			FD_ZERO(&write_set);
 			FD_SET(STDIN_FILENO,&read_set);
+			FD_SET(socket_listen_fd, &read_set);
+			/// 如果有连接将等待他发来消息
+			if (socket_com_fd != -1) {
+				FD_SET(socket_com_fd, &read_set);
+			}
 			FD_SET(STDOUT_FILENO, &write_set);
 			max_fd = int_max(STDIN_FILENO,STDOUT_FILENO) + 1;
 		}
@@ -365,12 +419,29 @@ int flv_push_loop(char mode) {
 					}
 				}
 			}
+			if (FD_ISSET(socket_listen_fd,&read_set)) {
+				/// 获取新的连接
+				aw_log("new connection available\n");
+				struct sockaddr_un clt_addr;
+				socklen_t len=sizeof(clt_addr);  
+				socket_com_fd = accept(socket_listen_fd,
+						(struct sockaddr*)&clt_addr,
+						&len);  
+				if(socket_com_fd < 0){  
+					perror("cannot accept client connect request\n");  
+				}
+			}
+			if (socket_com_fd != -1 && 
+					FD_ISSET(socket_com_fd, &read_set)) {
+				/// 有客户端发来消息
+				aw_log("command available\n");
+			}
 			if (FD_ISSET(STDOUT_FILENO,&write_set)) {
 				aw_log("write stdout available\n");
 			}
 		}
 		/// push flv file
-		int push_result = _do_push_flv_file(counter);
+		//int push_result = _do_push_flv_file(counter);
 		/*
 		if (push_result) {
 			aw_log("push failed:%d\n",push_result);
@@ -382,8 +453,8 @@ int flv_push_loop(char mode) {
 		if (limits && counter >= limits) {
 		    break;
 		}
-		//sleep(3);
-		nanosleep(&wait_time,NULL);
+		sleep(3);
+		//nanosleep(&wait_time,NULL);
 	}
 	return 0;
 }
