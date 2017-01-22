@@ -5,6 +5,7 @@
 #include <limits.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
 #include <sys/stat.h>
 
 #include "util.h"
@@ -49,4 +50,17 @@ int int_min(int a,int b){
 }
 int int_max(int a, int b) {
 	return a > b ? a : b;
+}
+
+/// 等待多少毫秒
+int sleep_ms(uint32_t ms) {
+	uint32_t seconds = ms / 1000;
+	uint32_t ns = (ms % 1000) * 1000000L;
+	/*
+	struct timespec wait_time = {0,0.0 * 1000000000L}; ///0.03s
+	wait_time.tv_sec = 0;
+	wait_time.tv_nsec = ms *1000000L;
+	*/
+	struct timespec wait_time = {seconds, ns};
+	return nanosleep(&wait_time,NULL);
 }

@@ -12,4 +12,5 @@ int print_hex_str(const unsigned char *s, size_t n,
         const char *end);
 int int_min(int a,int b);
 int int_max(int a, int b);
+int sleep_ms(uint32_t ms);
 #endif

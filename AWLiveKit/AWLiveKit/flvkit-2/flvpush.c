@@ -35,6 +35,12 @@ int FLV_RTMP_PUSH_CONNECTED = 0; /// rtmp 是否已经连接
 int socket_listen_fd = -1; ///服务器
 int socket_com_fd = -1; ///连接
 
+uint32_t last_timestamp_video = 0; /// 上一个音频帧的时间戳
+uint32_t last_timestamp_audio = 0; /// 上一个视频帧的时间戳
+uint32_t last_time_video = 0; /// 上一个视频处理的时间
+uint32_t last_time_audio = 0; /// 上一个音频处理的时间
+
+
 /// read flv file
 int flv_file_open_position(char position) {
 	/// 从开始位置打开文件,'S' 开始位置，'C' 当前位置，'T' Tag 文件位置
@@ -245,7 +251,9 @@ int read_cmd(int fd,
 	}
 }
 
-int _do_push_flv_file(int counter) {
+int _do_push_flv_file(int counter,
+		uint32_t *wait_ms, /// 下面需要等待的时间
+		int *keyframe) {
 	/// connect rtmp
 	if (!FLV_RTMP_PUSH_CONNECTED) {
 		aw_log("connecting url:%s\n",rtmp_url);
@@ -323,16 +331,64 @@ int _do_push_flv_file(int counter) {
 	/// tag body
 	unsigned char *tag_data = calloc(tag_header_data_size, sizeof(char));
 	if (flv_file_read_buf(tag_data,tag_header_data_size)) return -1;
-	print_hex_str(tag_data, tag_header_data_size, " ", "\n");
+	//print_hex_str(tag_data, tag_header_data_size, " ", "\n");
 	/// audio
+	uint32_t now_time = RTMP_GetTime();
 	if (tag_header_type == 0x08) {
 		aw_log("audio tag\n");
+		
+		/// 计算上一个音频帧之间的间隔时间，他们之间要价格 21 ms
+		uint32_t audio_duration = now_time - last_time_audio; /// 距离上一个帧的处理时间
+		uint32_t audio_timestamp_duration = tag_header_timestamp - last_timestamp_audio; /// 距离上一个音频帧的距离
+		if (audio_duration < audio_timestamp_duration) {
+			*wait_ms = audio_timestamp_duration - audio_duration;
+		}
+		else {
+			*wait_ms = 0;
+		}
+		aw_log("now_timestamp:%ld,last_timestmap:%ld, timestamp_duration:%ld\n",
+				tag_header_timestamp, last_timestamp_audio,
+				audio_timestamp_duration);
+		aw_log("now_time:%ld,last_time:%ld,audio_duration:%ld\n",
+				now_time,
+				last_time_audio,
+				audio_duration);
+		//aw_log("wait_ms:%ld\n",*wait_ms);
+		last_timestamp_audio = tag_header_timestamp;
+		last_time_audio = now_time;
+		//sleep_ms(*wait_ms);
+		/// send
 		flv_rtmp_send_data(tag_data, tag_header_data_size,
 			tag_header_timestamp,RTMP_PACKET_TYPE_AUDIO);
 	}
 	/// video
 	else if (tag_header_type == 0x09) {
-		aw_log("video tag\n");
+		//aw_log("video tag\n");
+		unsigned int video_type = *tag_data;
+		printf("video_tag:%02x\n",video_type);
+		*keyframe = video_type == 0x17;
+		/// 计算上一个视频的间隔时间，他们之间要间隔 40ms
+		uint32_t video_duration = now_time - last_time_video;
+		uint32_t video_timestamp_duration = tag_header_timestamp - last_timestamp_video;
+		if (video_duration < video_timestamp_duration ) {
+			*wait_ms = video_timestamp_duration - video_duration;
+		}
+		else {
+			*wait_ms = 0;
+		}
+		aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
+				tag_header_timestamp,
+				last_timestamp_video,
+				video_timestamp_duration);
+		aw_log("now_time:%ld,last_time:%ld,video_duration:%ld\n",
+				now_time,
+				last_time_video,
+				video_duration);
+		//aw_log("wait_ms:%ld\n",*wait_ms);
+		last_timestamp_video = tag_header_timestamp;
+		last_time_video = now_time;
+		//sleep_ms(*wait_ms);
+		/// send
 		flv_rtmp_send_data(tag_data, tag_header_data_size,
 			tag_header_timestamp,RTMP_PACKET_TYPE_VIDEO);
 	}
@@ -362,13 +418,16 @@ int flv_push_loop(char mode) {
 	fd_set read_set;
 	fd_set write_set;
 	struct timeval timeout={0,0};
+	uint32_t last_keyframe_time = 0; /// 上一个 i 帧的时间
+	const size_t cmd_buf_size = 1024;
+	/*
 	struct timespec wait_time = {0,1.0 * 1000000000L}; ///0.03s
 	wait_time.tv_sec = 0;
-	wait_time.tv_nsec = 10 *1000000L;
-	//wait_time.tv_nsec = 3000 *1000000L;
-	const size_t cmd_buf_size = 1024;
+	wait_time.tv_nsec = 999 *1000000L;
+	*/
 	while(1) {
 		aw_log("-----------LOOP:%d----------\n",counter);	
+		uint32_t start_time_2 = RTMP_GetTime();
 		///  cmd
 		int max_fd = 0;
 		if (mode == FLV_RTMP_PUSH_RUN_MODE_PIPLINE) {
@@ -454,8 +513,20 @@ int flv_push_loop(char mode) {
 				aw_log("write stdout available\n");
 			}
 		}
+		//sleep_ms(900);
+		/*
+		int sleep_result = nanosleep(&wait_time,NULL);
+		if (sleep_result) {
+			aw_log("sleep_result:%d\n",sleep_result);
+			break;
+		}
+		*/
 		/// push flv file
-		//int push_result = _do_push_flv_file(counter);
+		int keyframe = 0;
+		uint32_t wait_ms = 10;
+		int push_result = _do_push_flv_file(counter,
+				 &wait_ms,
+				 &keyframe);
 		/*
 		if (push_result) {
 			aw_log("push failed:%d\n",push_result);
@@ -467,8 +538,30 @@ int flv_push_loop(char mode) {
 		if (limits && counter >= limits) {
 		    break;
 		}
-		sleep(3);
-		//nanosleep(&wait_time,NULL);
+		if (keyframe) {
+			uint32_t now_time = RTMP_GetTime();
+			uint32_t keyframe_duration = now_time - last_keyframe_time; /// 距离上一个关键帧已经经过多少时间
+			aw_log("keyframe_duration:%ld\n",keyframe_duration);
+			last_keyframe_time = now_time; /// 更新关键帧时间
+			/// 关键帧之间至少等待 1s
+			const uint32_t max_keyframe_duration = 1500;
+			if (keyframe_duration < max_keyframe_duration) {
+				wait_ms = max_keyframe_duration - keyframe_duration;
+			}
+
+		}
+		aw_log("wait_ms:%ld\n",wait_ms);
+		sleep_ms(wait_ms);	
+		///
+		/*
+		uint32_t end_time_2 = RTMP_GetTime();
+		aw_log("start_time:%ld,end_time:%ld, duration:%ld,keyframe:%d\n",
+				start_time_2,
+				end_time_2,
+				end_time_2 - start_time_2,
+				keyframe);
+		*/
+		
 	}
 	return 0;
 }

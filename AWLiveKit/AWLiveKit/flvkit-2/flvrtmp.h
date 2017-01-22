@@ -1,6 +1,8 @@
 #ifndef flvrtmp_h
 #define flvrtmp_h
 #include "../rtmp/rtmp.h"
+#include "../rtmp/rtmp_sys.h"
+
 RTMP* flv_m_pRtmp;
 int flv_rtmp_connect(const char *url,int write);
 void flv_rtmp_close();
