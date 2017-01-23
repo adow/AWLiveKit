@@ -67,9 +67,9 @@ int pull_flv_file(const char* flv_filename,
         	aw_log("--------------TAG:%d---------------\n",counter);
 		/// write tag pos
 		long pos = ftell(file);
-		aw_log("this tag will start from:%ld\n",pos);
-		fseek(file_tag, 0, SEEK_SET);
-		fwrite(&pos,sizeof(long),1,file_tag); /// 将当前位置写入到 tag 文件中
+		//aw_log("this tag will start from:%ld\n",pos);
+		//fseek(file_tag, 0, SEEK_SET);
+		//fwrite(&pos,sizeof(long),1,file_tag); /// 将当前位置写入到 tag 文件中
 		/// previous tag size
 		uint32_t previous_tag_size = 0;
 		//if (flv_rtmp_read_u32(&previous_tag_size)) return -1;
@@ -115,6 +115,15 @@ int pull_flv_file(const char* flv_filename,
 		if (flv_rtmp_read_buf(tag_data,tag_header_data_size)) return -1;
 		print_hex_str(tag_data, tag_header_data_size, " ", "\n");
 		fwrite(tag_data,1,tag_header_data_size,file);
+        /// 只有视频关键帧的才记录位置
+        if (tag_header_type == 0x09) {
+            unsigned int video_type = *tag_data;
+            if (video_type == 0x17) {
+                aw_log("iframe will start from:%ld\n",pos);
+                fseek(file_tag, 0, SEEK_SET);
+                fwrite(&pos,sizeof(long),1,file_tag); /// 将当前位置写入到 tag 文件中
+            }
+        }
 		free(tag_data);
 		///
 		fflush(stdout);
