@@ -4,6 +4,8 @@ rtmp://m.push.wifiwx.com:1935/live/wifiwx-84
 
 rtmp://172.18.10.72:1935/live/wifiwx-84
 
+///////////////////
+
 ./flv-rtmp pull -f "/Users/reynoldqin/Downloads/243.flv" -u "rtmp://m.push.wifiwx.com:1935/live/wifiwx-243"
 
 ./flv-rtmp pull -f "/Users/reynoldqin/Downloads/245.flv" -u "rtmp://m.push.wifiwx.com:1935/live/wifiwx-245"
@@ -14,6 +16,8 @@ rtmp://172.18.10.72:1935/live/wifiwx-84
 
 ./flv-rtmp push -f "/Users/reynoldqin/Downloads/239.flv" -u "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
 
+////////////////////
+
 ./flv-rtmp-pull -f "/Users/reynoldqin/Downloads/239.flv" -u "rtmp://m.push.wifiwx.com:1935/live/wifiwx-239"
 
 ./flv-rtmp-push -f "/Users/reynoldqin/Downloads/239.flv" -u "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
@@ -21,6 +25,8 @@ rtmp://172.18.10.72:1935/live/wifiwx-84
 ./flv-rtmp-push -f "/Users/reynoldqin/Downloads/239.flv" -u "rtmp://172.18.10.72:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
 
 ./flv-rtmp-push -f "/Users/reynoldqin/Downloads/243.flv" -u "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
+
+///////////////////////
 
 pull-start rtmp://m.push.wifiwx.com:1935/live/wifiwx-243 /Users/reynoldqin/Downloads/243.flv
 
@@ -34,6 +40,8 @@ push-set-filename /Users/reynoldqin/Downloads/243.flv
 
 push-set-filename /Users/reynoldqin/Downloads/245.flv
 
+//////////////////
+
 gcc socket.c -o socket
 ./socket server
 ./socket client
@@ -41,5 +49,23 @@ gcc socket.c -o socket
 gcc pip-work.c -o pip-work.out
 ./pip-work.out
 
+//////////////////
+
 shrink the cache queue, size=0, removed=2157, max=30.00
 fast vector incrase 2048=>4096
+
+////////////////
+
+make flv-rtmp-pull
+
+make flv-rtmp-push
+
+./flv-rtmp-pull -f "/Users/reynoldqin/Downloads/243.flv" -u "rtmp://m.push.wifiwx.com:1935/live/wifiwx-243"
+
+./flv-rtmp-pull -f "/Users/reynoldqin/Downloads/245.flv" -u "rtmp://m.push.wifiwx.com:1935/live/wifiwx-245"
+
+./flv-rtmp-push -f "/Users/reynoldqin/Downloads/243.flv" -u "rtmp://172.18.10.72:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
+
+push-set-filename:/Users/reynoldqin/Downloads/243.flv
+
+push-set-filename:/Users/reynoldqin/Downloads/245.flv

@@ -18,6 +18,10 @@
 #define FLV_RTMP_FILE_OPEN_POSITION_CUR 'C'
 #define FLV_RTMP_FILE_OPEN_POSITION_TAG 'T'
 
+/// do_cmd 的返回结果
+#define CMD_RESULT_SUCCEED_CONTINUE 0 
+#define CMD_RESULT_SUCCEED_COMPLETE 1
+#define CMD_RESULT_SUCCEED_ERROR -1
 
 char flv_filename[PATH_MAX] = {'\0'};
 char rtmp_url[PATH_MAX] = {'\0'};
@@ -44,7 +48,6 @@ uint32_t last_keyframe_timestamp = 0; /// 上一个视频关键帧的时间戳
 uint32_t last_keyframe_time = 0; /// 上一个视频关键帧的处理时间
 
 const uint32_t max_keyframe_timestamp_duration = 2000; /// 两个关键帧之间的时间距离
-
 
 
 /// read flv file
@@ -304,12 +307,44 @@ int read_cmd(int fd) {
 	}
 }
 
+/// 执行正在等待的命令, 返回
+/// 0: 运行成功，继续后面操作;
+/// 1: 运行成功，但是不要继续操作;
+/// -1: 运行错误;
+int do_cmd() {
+	if (!cmd_is_waiting()) {
+		return 0;
+	}
+	aw_log("will run command:%s:%s\n", waiting_cmd_name, waiting_cmd_value);
+	/// 执行修改文件命令
+	if (!strcmp(waiting_cmd_name,"push-set-filename")) {
+		/// 修改现在的文件名
+		memset(flv_filename,'\0',PATH_MAX);		
+		strcpy(flv_filename, waiting_cmd_value);
+		aw_log("filename has been changed:%s\n",flv_filename);
+		flv_file_open_position('T');/// 使用 tag 文件打开文件位置
+		/// 重置以下数字
+		last_time_audio = 0;
+		last_timestamp_audio = 0;
+		last_time_video = 0;
+		last_timestamp_video = 0;
+		last_keyframe_time = 0;
+		last_keyframe_timestamp = 0;
+		cmd_clear(); /// 清空命令
+		return 1; /// 返回后他将跳过后续操作，继续后面的循环
+	}
+	else {
+		aw_log("unknown command\n");
+		return 0;
+	}
+}
+
 /// socket 
 int start_socket() {
     socklen_t clt_addr_len;  
     int ret;  
     int i;  
-    static char recv_buf[1024];   
+    static char recv_buf[cmd_buf_size];   
     socklen_t len;  
     struct sockaddr_un clt_addr;  
     struct sockaddr_un srv_addr;  
@@ -492,34 +527,42 @@ int _do_push_flv_file(int counter,
 		else if (tag.is_video_tag) {
 			aw_log("video_tag:%d\n",tag.is_video_key_frame);
 			if (tag.is_video_key_frame) {
-				/// 两个关键帧之间的时间间隔要保持在一个距离
-				uint32_t keyframe_duration = now_time - last_keyframe_time;
-				uint32_t keyframe_timestamp_duration = 
-					tag.tag_header_timestamp - last_keyframe_timestamp;
-				/// 实际用时比关键帧的时间戳距离小
-				/*	
-				if (keyframe_duration < keyframe_timestamp_duration) {
-					*wait_ms = keyframe_timestamp_duration - keyframe_duration;
-				}
-				*/
-				/// 两个关键帧之间的间隔应该通过他们的时间戳来确定，以此来确定这一个关键帧需要等待的时间，但是实际上有些关键这之间没有 2000 ms， 只有几百，这还是会导致播放 rtmp 时的卡顿（原因是 srs 上面服务器的 shrink the cache queue, size=0, removed=2157, max=30.00），只有固定两帧之间 2000 ms 的值才能让 rtmp 播放正常。
-				/// 以下代码虽然尝试用两个关键帧实际戳来作为判断等待的依据，但是实际还是用 2000 ms 来作为参照。
-				if (keyframe_duration < max_keyframe_timestamp_duration) {
-					*wait_ms = max_keyframe_timestamp_duration - keyframe_duration;
+				/// 开始执行命令
+				int cmd_result = do_cmd();	
+				/// 只有返回 0 的时候才继续下面的操作
+				if (!cmd_result) {	
+					/// 两个关键帧之间的时间间隔要保持在一个距离
+					uint32_t keyframe_duration = now_time - last_keyframe_time;
+					uint32_t keyframe_timestamp_duration = 
+						tag.tag_header_timestamp - last_keyframe_timestamp;
+					/// 实际用时比关键帧的时间戳距离小
+					/*	
+					if (keyframe_duration < keyframe_timestamp_duration) {
+						*wait_ms = keyframe_timestamp_duration - keyframe_duration;
+					}
+					*/
+					/// 两个关键帧之间的间隔应该通过他们的时间戳来确定，以此来确定这一个关键帧需要等待的时间，但是实际上有些关键这之间没有 2000 ms， 只有几百，这还是会导致播放 rtmp 时的卡顿（原因是 srs 上面服务器的 shrink the cache queue, size=0, removed=2157, max=30.00），只有固定两帧之间 2000 ms 的值才能让 rtmp 播放正常。
+					/// 以下代码虽然尝试用两个关键帧实际戳来作为判断等待的依据，但是实际还是用 2000 ms 来作为参照。
+					if (keyframe_duration < max_keyframe_timestamp_duration) {
+						*wait_ms = max_keyframe_timestamp_duration - keyframe_duration;
+					}
+					else {
+						*wait_ms = 0;
+					}
+					aw_log("keyframe_timestamp:%ld,last_keyframe_timestamp:%ld,keyframe_timestamp_duration:%ld\n",
+							tag.tag_header_timestamp,
+							last_keyframe_timestamp,
+							keyframe_timestamp_duration);
+					aw_log("keyframe_time:%ld,last_keyframe_time:%ld, keyframe_duration:%ld\n",
+							now_time,
+							last_keyframe_time,
+							keyframe_duration);
+					last_keyframe_time = now_time;	/// 记录上一次关键帧时间
+					last_keyframe_timestamp = tag.tag_header_timestamp; /// 记录上一个关键帧的时间戳
 				}
 				else {
-					*wait_ms = 0;
+					*wait_ms = 2000;
 				}
-				aw_log("keyframe_timestamp:%ld,last_keyframe_timestamp:%ld,keyframe_timestamp_duration:%ld\n",
-						tag.tag_header_timestamp,
-						last_keyframe_timestamp,
-						keyframe_timestamp_duration);
-				aw_log("keyframe_time:%ld,last_keyframe_time:%ld, keyframe_duration:%ld\n",
-						now_time,
-						last_keyframe_time,
-						keyframe_duration);
-				last_keyframe_time = now_time;	/// 记录上一次关键帧时间
-				last_keyframe_timestamp = tag.tag_header_timestamp; /// 记录上一个关键帧的时间戳
 			}
 			else {
 				/// 计算上一个视频的间隔时间，他们之间要间隔 40ms
