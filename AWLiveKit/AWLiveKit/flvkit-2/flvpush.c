@@ -13,11 +13,6 @@
 #include "util.h"
 #include "flvrtmp.h"
 
-/// 通信的模式
-#define FLV_RTMP_PUSH_RUN_MODE_PIPLINE 'P'
-#define FLV_RTMP_PUSH_RUN_MODE_SOCKET 'S'
-#define FLV_RTMP_PUSH_RUN_MODE_FILE 'F'
-
 /// 打开推流文件的位置
 #define FLV_RTMP_FILE_OPEN_POSITION_START 'S'
 #define FLV_RTMP_FILE_OPEN_POSITION_CUR 'C'
@@ -34,6 +29,12 @@ int FLV_RTMP_PUSH_CONNECTED = 0; /// rtmp 是否已经连接
 #define UNIX_DOMAIN "/tmp/flv-rtmp-push"
 int socket_listen_fd = -1; ///服务器
 int socket_com_fd = -1; ///连接
+fd_set cmd_read_set; /// 读入
+fd_set cmd_write_set; ///写入
+struct timeval cmd_timeout = {0,0}; /// select 超时时间
+const size_t cmd_buf_size = 1024; /// 命令最大长度
+char waiting_cmd_name[cmd_buf_size] = {'\0'}; /// 下一个要运行的命令名字
+char waiting_cmd_value[cmd_buf_size] = {'\0'}; /// 下一个要运行的命令参数
 
 uint32_t last_timestamp_video = 0; /// 上一个音频帧的时间戳
 uint32_t last_timestamp_audio = 0; /// 上一个视频帧的时间戳
@@ -175,6 +176,66 @@ int flv_file_read_u32(uint32_t *u32) {
 	return 0;
 }
 
+/// cmd
+/// 是否有命令正在运行
+int cmd_is_waiting() {
+	if (strlen(waiting_cmd_name) > 0 || strlen(waiting_cmd_value) > 0 ) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+//// 清空正在运行的命令和参数
+int cmd_clear() {
+	memset(waiting_cmd_name,'\0',cmd_buf_size);
+	memset(waiting_cmd_value,'\0',cmd_buf_size);
+	return 0;
+}
+/// 读取新的命令，如果还有命令在执行就不要读取
+int read_cmd(int fd) {
+	char buf[cmd_buf_size] = {'\0'};
+	int len = read(fd, buf, cmd_buf_size);
+	aw_log("read (%d):%s",len,buf);
+	if (len == -1) {
+		aw_log("read cmd error\n");
+		return -1;
+	}
+	else if (len == 0) {
+		return 0;
+	}
+	else {
+		/// 还有命令在运行的时候，不要再次读取新的命令
+		if (cmd_is_waiting()) {
+			aw_log("command is waiting for running, skip this read\n");
+			aw_log("\t%s:%s\n",waiting_cmd_name,waiting_cmd_value);
+			return -2;		
+		}
+		aw_log("cmd:%s",buf);
+		char *p_buf = buf;
+		for(p_buf = buf;p_buf < buf + len; p_buf++) {
+			//aw_log("%s\n",p_buf);
+			//continue;
+			/// find :
+			if (*p_buf == ':') {
+				/// cmd_name
+				size_t cmd_name_len = p_buf - buf; /// 命令部分长度
+				strncpy(waiting_cmd_name, 
+						buf, 
+						cmd_name_len);	
+				/// cmd_value
+				size_t cmd_value_len = len - cmd_name_len - 2; /// 命令参数部分长度
+				strncpy(waiting_cmd_value, 
+						p_buf + 1,  /// 要 : 后面一个开始
+						cmd_value_len);
+				break;
+			}
+
+		}	
+		return len;
+	}
+}
+
 /// socket 
 int start_socket() {
     socklen_t clt_addr_len;  
@@ -217,43 +278,69 @@ int start_socket() {
     return 0;
 }
 
-/// push
-int read_cmd(int fd, 
-		char *cmd_name, int *cmd_name_len, 
-		char *cmd_value, int *cmd_value_len) {
-	const int cmd_buf_size = 1024;
-	char buf[cmd_buf_size] = {'\0'};
-	int len = read(fd, buf, cmd_buf_size);
-	aw_log("read:%s,%d\n",buf,len);
-	if (len == -1) {
-		aw_log("read cmd error\n");
+/// 处理每个轮询中的命令输入
+int _select_cmd() {
+	///  cmd
+	int max_fd = 0;
+	FD_ZERO(&cmd_read_set);
+	FD_ZERO(&cmd_write_set);
+	FD_SET(STDIN_FILENO,&cmd_read_set); /// 接收管道输入
+	FD_SET(socket_listen_fd, &cmd_read_set); /// 接收 socket 输入
+	max_fd = int_max(STDIN_FILENO,socket_listen_fd);
+	/// 如果有连接将等待他发来消息
+	if (socket_com_fd != -1) {
+		FD_SET(socket_com_fd, &cmd_read_set);
+		max_fd = int_max(max_fd, socket_com_fd);
+	}
+	FD_SET(STDOUT_FILENO, &cmd_write_set);
+	max_fd = int_max(max_fd, STDOUT_FILENO);
+	max_fd += 1;
+	int ret = select(max_fd, &cmd_read_set, &cmd_write_set,NULL,&cmd_timeout);
+	if (ret == -1) {
+		aw_log("select error\n");
 		return -1;
 	}
-	else if (len == 0) {
+	else if (ret == 0) {
+		aw_log("not available\n");
 		return 0;
 	}
 	else {
-		aw_log("cmd:%s\n",buf);
-		char *p_buf = buf;
-		for(p_buf = buf;p_buf < buf + len; p_buf++) {
-			//aw_log("%s\n",p_buf);
-			//continue;
-			/// find :
-			if (*p_buf == ':') {
-				/// cmd_name
-				*cmd_name_len = p_buf - buf;
-				strncpy(cmd_name, buf, *cmd_name_len);	
-				/// cmd_value
-				*cmd_value_len = len - *cmd_name_len - 2;
-				strncpy(cmd_value, p_buf + 1, *cmd_value_len);
-				break;
+		aw_log("%d available\n",ret);
+		if (FD_ISSET(STDIN_FILENO,&cmd_read_set)) { /// 管道输入
+			aw_log("pipline command arrived\n");	
+			if (read_cmd(STDIN_FILENO) > 0) {
+				aw_log("waiting_cmd_name:%s\n",waiting_cmd_name);
+				aw_log("waiting_cmd_value:%s\n",waiting_cmd_value);
 			}
-
-		}	
-		return len;
+		}
+		if (FD_ISSET(socket_listen_fd,&cmd_read_set)) { /// 新的客户端连接, 将在后面接收数据
+			aw_log("new connection available\n");
+			struct sockaddr_un clt_addr;
+			socklen_t len=sizeof(clt_addr);  
+			socket_com_fd = accept(socket_listen_fd,
+					(struct sockaddr*)&clt_addr,
+					&len);  
+			if(socket_com_fd < 0){  
+				perror("cannot accept client connect request\n");  
+			}
+		}
+		if (socket_com_fd != -1 && 
+				FD_ISSET(socket_com_fd, &cmd_read_set)) {
+			/// 有客户端发来消息,拆分消息
+			aw_log("socket command arrived\n");
+			if (read_cmd(socket_com_fd) > 0) {
+				aw_log("waiting_cmd_name:%s\n",waiting_cmd_name);
+				aw_log("waiting_cmd_value:%s\n",waiting_cmd_value);
+			}	
+		}
+		if (FD_ISSET(STDOUT_FILENO,&cmd_write_set)) {
+			aw_log("write stdout available\n");
+		}
+		return 0;
 	}
 }
 
+/// push
 int _do_push_flv_file(int counter,
 		uint32_t *wait_ms, /// 下面需要等待的时间
 		int *keyframe) {
@@ -435,20 +522,13 @@ int _do_push_flv_file(int counter,
 	return 0;
 }
 
-int flv_push_loop(char mode) {
+int flv_push_loop() {
 	// 文件推送循环，在每个循环中会尝试读取外部的命令 
-	aw_log("push_flv_file_loop will start,mode:%c\n",mode);
-	/// 通信方式
-	if (mode == FLV_RTMP_PUSH_RUN_MODE_SOCKET) { /// socket
-	}
-	else if (mode == FLV_RTMP_PUSH_RUN_MODE_PIPLINE) { /// pipline
-	}
-	else if (mode == FLV_RTMP_PUSH_RUN_MODE_FILE) { /// file
-	}
+	aw_log("push_flv_file_loop will start\n");
 	start_socket();
 	//flv_file_open_position('S'); /// 开始的时候就打开文件一次
 	int counter = 0;
-	int limits = 0;	
+	int limits = 0;	 /// just test
 	fd_set read_set;
 	fd_set write_set;
 	struct timeval timeout={0,0};
@@ -456,104 +536,21 @@ int flv_push_loop(char mode) {
 	while(1) {
 		aw_log("-----------LOOP:%d----------\n",counter);	
 		uint32_t start_time = RTMP_GetTime();
-		///  cmd
-		int max_fd = 0;
-		if (mode == FLV_RTMP_PUSH_RUN_MODE_PIPLINE) {
-			FD_ZERO(&read_set);
-			FD_ZERO(&write_set);
-			FD_SET(STDIN_FILENO,&read_set);
-			FD_SET(socket_listen_fd, &read_set);
-			max_fd = int_max(STDIN_FILENO,socket_listen_fd);
-			/// 如果有连接将等待他发来消息
-			if (socket_com_fd != -1) {
-				FD_SET(socket_com_fd, &read_set);
-				max_fd = int_max(max_fd, socket_com_fd);
-			}
-			FD_SET(STDOUT_FILENO, &write_set);
-			max_fd = int_max(max_fd, STDOUT_FILENO);
-			//max_fd = int_max(STDIN_FILENO,STDOUT_FILENO) + 1;
-			max_fd += 1;
-		}
-		int ret = select(max_fd, &read_set, &write_set,NULL,&timeout);
-		if (ret == -1) {
-			aw_log("select error\n");
-			return -1;
-		}
-		else if (ret == 0) {
-			aw_log("not available\n");
-		}
-		else {
-			aw_log("%d available\n",ret);
-			if (FD_ISSET(STDIN_FILENO,&read_set)) {
-				aw_log("read stdin available\n");	
-				/// analysis cmd
-				char cmd_name[cmd_buf_size] = {'\0'};
-				char cmd_value[cmd_buf_size] = {'\0'};
-				int cmd_name_len = 0;
-				int cmd_value_len = 0;
-				if (read_cmd(STDIN_FILENO, 
-						cmd_name, &cmd_name_len,
-						cmd_value,&cmd_value_len) > 0) {
-					/// cmd 
-					aw_log("cmd_name:%s,%d\n",cmd_name,cmd_name_len);
-					aw_log("cmd_value:%s,%d\n",cmd_value,cmd_value_len);
-					/// change filename
-					if (!strcmp(cmd_name,"push-set-filename")) {
-						/// 修改现在的文件名
-						memset(flv_filename,'\0',PATH_MAX);		
-						strncpy(flv_filename,cmd_value,
-								cmd_value_len);
-						aw_log("filename has been changed:%s\n",flv_filename);
-						flv_file_open_position('T');/// 使用 tag 文件打开文件位置
-
-
-					}
-				}
-			}
-			if (FD_ISSET(socket_listen_fd,&read_set)) {
-				/// 获取新的连接
-				aw_log("new connection available\n");
-				struct sockaddr_un clt_addr;
-				socklen_t len=sizeof(clt_addr);  
-				socket_com_fd = accept(socket_listen_fd,
-						(struct sockaddr*)&clt_addr,
-						&len);  
-				if(socket_com_fd < 0){  
-					perror("cannot accept client connect request\n");  
-				}
-			}
-			if (socket_com_fd != -1 && 
-					FD_ISSET(socket_com_fd, &read_set)) {
-				/// 有客户端发来消息
-				aw_log("command available\n");
-				char cmd_name[cmd_buf_size] = {'\0'};
-				char cmd_value[cmd_buf_size] = {'\0'};
-				int cmd_name_len = 0;
-				int cmd_value_len = 0;
-				if (read_cmd(socket_com_fd, 
-						cmd_name, &cmd_name_len,
-						cmd_value,&cmd_value_len) > 0) {
-					aw_log("cmd_name:%s,%d\n",cmd_name,cmd_name_len);
-					aw_log("cmd_value:%s,%d\n",cmd_value,cmd_value_len);	
-				}
-			}
-			if (FD_ISSET(STDOUT_FILENO,&write_set)) {
-				aw_log("write stdout available\n");
-			}
-		}
+		_select_cmd(); /// 从 socket, pipline 中获取命令参数
+		int keyframe = 0; /// 这一次推送的是否是关键帧
+		/*	
 		/// push flv file
-		int keyframe = 0;
 		uint32_t wait_ms = 10;
 		int push_result = _do_push_flv_file(counter,
 				 &wait_ms,
 				 &keyframe);
-		/*
 		if (push_result) {
 			aw_log("push failed:%d\n",push_result);
-			break;
+			//break;
 		}
 		*/
 		///
+		sleep_ms(3000); /// wait 1s
 		++counter;
 		if (limits && counter >= limits) {
 		    break;
@@ -571,7 +568,7 @@ int flv_push_loop(char mode) {
 }
 
 
-
+/// execute
 /// 获取外部参数, 执行拉流
 int _execute_cmd(int arg_c, char *arg_v[]) {
 	char *cmd = arg_v[1];
@@ -612,7 +609,7 @@ int _execute_cmd(int arg_c, char *arg_v[]) {
     }
     
     aw_log("flv-rtmp-push starts\n");
-    return flv_push_loop('P');
+    return flv_push_loop();
 }
 int main(int arg_c,char *arg_v[]){
 	_execute_cmd(arg_c, arg_v);
