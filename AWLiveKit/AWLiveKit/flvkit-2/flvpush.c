@@ -45,6 +45,8 @@ uint32_t last_keyframe_time = 0; /// 上一个视频关键帧的处理时间
 
 const uint32_t max_keyframe_timestamp_duration = 2000; /// 两个关键帧之间的时间距离
 
+
+
 /// read flv file
 int flv_file_open_position(char position) {
 	/// 从开始位置打开文件,'S' 开始位置，'C' 当前位置，'T' Tag 文件位置
@@ -174,6 +176,72 @@ int flv_file_read_u32(uint32_t *u32) {
 	}
 	*u32 = HTON32(*u32);
 	return 0;
+}
+
+struct flv_tag {
+	uint32_t previous_tag_size;
+	uint32_t tag_header_type;
+	uint32_t tag_header_data_size;
+	uint32_t tag_header_timestamp;
+	uint32_t tag_header_timestamp_ex;
+	uint32_t tag_header_stream_id;
+	unsigned char *tag_data;
+	int is_video_tag;
+	int is_audio_tag;
+	int is_script_tag;
+	int is_video_key_frame;
+};
+
+/// 读取文件中一个 tag 段
+int flv_file_read_tag(struct flv_tag *tag){
+	/// previous tag size
+	uint32_t previous_tag_size = 0;
+	if (flv_file_read_u32(&previous_tag_size)) return -4;
+	aw_log("previous_tag_size:%d\n",previous_tag_size);
+	tag->previous_tag_size = previous_tag_size;
+	/// tag header
+	uint32_t tag_header_type = 0;
+	if (flv_file_read_u8(&tag_header_type)) return -5;
+	aw_log("tag_header_type:%02x\n",tag_header_type); 
+	tag->tag_header_type = tag_header_type;
+	/// tag header data size
+	uint32_t tag_header_data_size = 0;
+	if (flv_file_read_u24(&tag_header_data_size)) return -6;
+	aw_log("tag_header_data_size:%d\n",tag_header_data_size);
+	tag->tag_header_data_size = tag_header_data_size;
+	/// tag header timestamp
+	uint32_t tag_header_timestamp = 0;
+	if (flv_file_read_u24(&tag_header_timestamp)) return -7;
+	aw_log("tag_header_timestamp:%d\n",tag_header_timestamp);
+	tag->tag_header_timestamp = tag_header_timestamp;
+	/// tag header timestamp_ex
+	uint32_t tag_header_timestamp_ex = 0;
+	if (flv_file_read_u8(&tag_header_timestamp_ex)) return -8;
+	aw_log("tag_header_timestamp_ex:%d\n",tag_header_timestamp_ex);
+	tag->tag_header_timestamp_ex = tag_header_timestamp_ex;
+	/// tag stream id
+	uint32_t tag_header_stream_id = 0;
+	if (flv_file_read_u24(&tag_header_stream_id)) return -9;
+	aw_log("tag_header_stream_id:%d\n",tag_header_stream_id);
+	tag->tag_header_stream_id = tag_header_stream_id;
+	/// tag body
+	unsigned char *tag_data = calloc(tag_header_data_size, sizeof(char));
+	if (flv_file_read_buf(tag_data,tag_header_data_size)) return -1;
+	tag->tag_data = tag_data;
+	/// tag type
+	tag->is_script_tag = tag_header_type == 0x12;
+	tag->is_audio_tag = tag_header_type == 0x08;
+	tag->is_video_tag = tag_header_type == 0x09;
+	/// is_video_key_frame
+	if (tag->is_video_tag) {
+		unsigned int video_type = *tag_data;
+		tag->is_video_key_frame = video_type == 0x17;
+	}
+
+	return tag_header_data_size;
+}
+void flv_file_release_tag(struct flv_tag *tag) {
+	free(tag->tag_data);
 }
 
 /// cmd
@@ -394,131 +462,99 @@ int _do_push_flv_file(int counter,
 		FLV_RTMP_PUSH_FLV_HEADER_SENT = 1;
 	}
 	/// flv body
-	/// previous tag size
-	uint32_t previous_tag_size = 0;
-	if (flv_file_read_u32(&previous_tag_size)) return -4;
-	aw_log("previous_tag_size:%d\n",previous_tag_size);
-	/// tag header
-	uint32_t tag_header_type = 0;
-	if (flv_file_read_u8(&tag_header_type)) return -5;
-	aw_log("tag_header_type:%02x\n",tag_header_type); 
-	/// tag header data size
-	uint32_t tag_header_data_size = 0;
-	if (flv_file_read_u24(&tag_header_data_size)) return -6;
-	aw_log("tag_header_data_size:%d\n",tag_header_data_size);
-	/// tag header timestamp
-	uint32_t tag_header_timestamp = 0;
-	if (flv_file_read_u24(&tag_header_timestamp)) return -7;
-	aw_log("tag_header_timestamp:%d\n",tag_header_timestamp);
-	/// tag header timestamp_ex
-	uint32_t tag_header_timestamp_ex = 0;
-	if (flv_file_read_u8(&tag_header_timestamp_ex)) return -8;
-	aw_log("tag_header_timestamp_ex:%d\n",tag_header_timestamp_ex);
-	/// tag stream id
-	uint32_t tag_header_stream_id = 0;
-	if (flv_file_read_u24(&tag_header_stream_id)) return -9;
-	aw_log("tag_header_stream_id:%d\n",tag_header_stream_id);
-	/// tag body
-	unsigned char *tag_data = calloc(tag_header_data_size, sizeof(char));
-	if (flv_file_read_buf(tag_data,tag_header_data_size)) return -1;
-	//print_hex_str(tag_data, tag_header_data_size, " ", "\n");
-	/// audio
 	uint32_t now_time = RTMP_GetTime();
-	if (tag_header_type == 0x08) {
-		aw_log("audio tag\n");
-		
-		/// 计算上一个音频帧之间的间隔时间，他们之间要价格 21 ms
-		uint32_t audio_duration = now_time - last_time_audio; /// 距离上一个帧的处理时间
-		uint32_t audio_timestamp_duration = tag_header_timestamp - last_timestamp_audio; /// 距离上一个音频帧的距离
-		if (audio_duration < audio_timestamp_duration) {
-			*wait_ms = audio_timestamp_duration - audio_duration;
+	struct flv_tag tag;
+	if (flv_file_read_tag(&tag) > 0) {
+		if (tag.is_script_tag) {
+			aw_log("script tag\n");	
 		}
-		else {
-			*wait_ms = 0;
-		}
-		aw_log("now_timestamp:%ld,last_timestmap:%ld, timestamp_duration:%ld\n",
-				tag_header_timestamp, last_timestamp_audio,
-				audio_timestamp_duration);
-		aw_log("now_time:%ld,last_time:%ld,audio_duration:%ld\n",
-				now_time,
-				last_time_audio,
-				audio_duration);
-		aw_log("wait_ms:%ld\n",*wait_ms);
-		last_timestamp_audio = tag_header_timestamp;
-		last_time_audio = now_time;
-		sleep_ms(*wait_ms);
-		/// send
-		flv_rtmp_send_data(tag_data, tag_header_data_size,
-			tag_header_timestamp,RTMP_PACKET_TYPE_AUDIO);
-	}
-	/// video
-	else if (tag_header_type == 0x09) {
-		//aw_log("video tag\n");
-		unsigned int video_type = *tag_data;
-		printf("video_tag:%02x\n",video_type);
-		*keyframe = video_type == 0x17;
-		if (*keyframe) {
-			/// 两个关键帧之间的时间间隔要保持在一个距离
-			uint32_t keyframe_duration = now_time - last_keyframe_time;
-			uint32_t keyframe_timestamp_duration = tag_header_timestamp - last_keyframe_timestamp;
-			/// 实际用时比关键帧的时间戳距离小
-			/*	
-			if (keyframe_duration < keyframe_timestamp_duration) {
-				*wait_ms = keyframe_timestamp_duration - keyframe_duration;
-			}
-			*/
-			/// 两个关键帧之间的间隔应该通过他们的时间戳来确定，以此来确定这一个关键帧需要等待的时间，但是实际上有些关键这之间没有 2000 ms， 只有几百，这还是会导致播放 rtmp 时的卡顿（原因是 srs 上面服务器的 shrink the cache queue, size=0, removed=2157, max=30.00），只有固定两帧之间 2000 ms 的值才能让 rtmp 播放正常。
-			/// 以下代码虽然尝试用两个关键帧实际戳来作为判断等待的依据，但是实际还是用 2000 ms 来作为参照。
-			if (keyframe_duration < max_keyframe_timestamp_duration) {
-				*wait_ms = max_keyframe_timestamp_duration - keyframe_duration;
+		else if (tag.is_audio_tag) {
+			aw_log("audio tag\n");
+			/// 计算上一个音频帧之间的间隔时间，他们之间要价格 21 ms
+			uint32_t audio_duration = now_time - last_time_audio; /// 距离上一个帧的处理时间
+			uint32_t audio_timestamp_duration = tag.tag_header_timestamp - last_timestamp_audio; /// 距离上一个音频帧的距离
+			if (audio_duration < audio_timestamp_duration) {
+				*wait_ms = audio_timestamp_duration - audio_duration;
 			}
 			else {
 				*wait_ms = 0;
 			}
-			aw_log("keyframe_timestamp:%ld,last_keyframe_timestamp:%ld,keyframe_timestamp_duration:%ld\n",
-					tag_header_timestamp,
-					last_keyframe_timestamp,
-					keyframe_timestamp_duration);
-			aw_log("keyframe_time:%ld,last_keyframe_time:%ld, keyframe_duration:%ld\n",
-					now_time,
-					last_keyframe_time,
-					keyframe_duration);
-			last_keyframe_time = now_time;	/// 记录上一次关键帧时间
-			last_keyframe_timestamp = tag_header_timestamp; /// 记录上一个关键帧的时间戳
+			aw_log("wait_ms:%ld\n",*wait_ms);
+			last_timestamp_audio = tag.tag_header_timestamp;
+			last_time_audio = now_time;
+			sleep_ms(*wait_ms);
+			/// send
+			flv_rtmp_send_data(tag.tag_data, 
+				tag.tag_header_data_size,
+				tag.tag_header_timestamp,
+				RTMP_PACKET_TYPE_AUDIO);
 		}
-		else {
-			/// 计算上一个视频的间隔时间，他们之间要间隔 40ms
-			uint32_t video_duration = now_time - last_time_video;
-			uint32_t video_timestamp_duration = tag_header_timestamp - last_timestamp_video;
-			if (video_duration < video_timestamp_duration ) {
-				*wait_ms = video_timestamp_duration - video_duration;
+		else if (tag.is_video_tag) {
+			aw_log("video_tag:%d\n",tag.is_video_key_frame);
+			if (tag.is_video_key_frame) {
+				/// 两个关键帧之间的时间间隔要保持在一个距离
+				uint32_t keyframe_duration = now_time - last_keyframe_time;
+				uint32_t keyframe_timestamp_duration = 
+					tag.tag_header_timestamp - last_keyframe_timestamp;
+				/// 实际用时比关键帧的时间戳距离小
+				/*	
+				if (keyframe_duration < keyframe_timestamp_duration) {
+					*wait_ms = keyframe_timestamp_duration - keyframe_duration;
+				}
+				*/
+				/// 两个关键帧之间的间隔应该通过他们的时间戳来确定，以此来确定这一个关键帧需要等待的时间，但是实际上有些关键这之间没有 2000 ms， 只有几百，这还是会导致播放 rtmp 时的卡顿（原因是 srs 上面服务器的 shrink the cache queue, size=0, removed=2157, max=30.00），只有固定两帧之间 2000 ms 的值才能让 rtmp 播放正常。
+				/// 以下代码虽然尝试用两个关键帧实际戳来作为判断等待的依据，但是实际还是用 2000 ms 来作为参照。
+				if (keyframe_duration < max_keyframe_timestamp_duration) {
+					*wait_ms = max_keyframe_timestamp_duration - keyframe_duration;
+				}
+				else {
+					*wait_ms = 0;
+				}
+				aw_log("keyframe_timestamp:%ld,last_keyframe_timestamp:%ld,keyframe_timestamp_duration:%ld\n",
+						tag.tag_header_timestamp,
+						last_keyframe_timestamp,
+						keyframe_timestamp_duration);
+				aw_log("keyframe_time:%ld,last_keyframe_time:%ld, keyframe_duration:%ld\n",
+						now_time,
+						last_keyframe_time,
+						keyframe_duration);
+				last_keyframe_time = now_time;	/// 记录上一次关键帧时间
+				last_keyframe_timestamp = tag.tag_header_timestamp; /// 记录上一个关键帧的时间戳
 			}
 			else {
-				*wait_ms = 0;
+				/// 计算上一个视频的间隔时间，他们之间要间隔 40ms
+				uint32_t video_duration = now_time - last_time_video;
+				uint32_t video_timestamp_duration = tag.tag_header_timestamp - last_timestamp_video;
+				if (video_duration < video_timestamp_duration ) {
+					*wait_ms = video_timestamp_duration - video_duration;
+				}
+				else {
+					*wait_ms = 0;
+				}
+				aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
+						tag.tag_header_timestamp,
+						last_timestamp_video,
+						video_timestamp_duration);
+				aw_log("now_time:%ld,last_time:%ld,video_duration:%ld\n",
+						now_time,
+						last_time_video,
+						video_duration);
 			}
-			aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
-					tag_header_timestamp,
-					last_timestamp_video,
-					video_timestamp_duration);
-			aw_log("now_time:%ld,last_time:%ld,video_duration:%ld\n",
-					now_time,
-					last_time_video,
-					video_duration);
+			aw_log("wait_ms:%ld\n",*wait_ms);
+			last_timestamp_video = tag.tag_header_timestamp; /// 记录上一次时间戳
+			last_time_video = now_time; /// 记录上一次视频帧处理时间
+			sleep_ms(*wait_ms);
+			/// send
+			flv_rtmp_send_data(tag.tag_data, 
+				tag.tag_header_data_size,
+				tag.tag_header_timestamp,
+				RTMP_PACKET_TYPE_VIDEO);
 		}
-		aw_log("wait_ms:%ld\n",*wait_ms);
-		last_timestamp_video = tag_header_timestamp; /// 记录上一次时间戳
-		last_time_video = now_time; /// 记录上一次视频帧处理时间
-		sleep_ms(*wait_ms);
-		/// send
-		flv_rtmp_send_data(tag_data, tag_header_data_size,
-			tag_header_timestamp,RTMP_PACKET_TYPE_VIDEO);
 	}
-	/// script
-	else if (tag_header_type == 0x12) {
-		aw_log("script tag, skipped\n");
+	else {
+		aw_log("read flv tag failed\n");
 	}
-
-	free(tag_data);
+	flv_file_release_tag(&tag);
 	return 0;
 }
 
@@ -538,7 +574,6 @@ int flv_push_loop() {
 		uint32_t start_time = RTMP_GetTime();
 		_select_cmd(); /// 从 socket, pipline 中获取命令参数
 		int keyframe = 0; /// 这一次推送的是否是关键帧
-		/*	
 		/// push flv file
 		uint32_t wait_ms = 10;
 		int push_result = _do_push_flv_file(counter,
@@ -548,9 +583,8 @@ int flv_push_loop() {
 			aw_log("push failed:%d\n",push_result);
 			//break;
 		}
-		*/
 		///
-		sleep_ms(3000); /// wait 1s
+		//sleep_ms(3000); /// wait 1s
 		++counter;
 		if (limits && counter >= limits) {
 		    break;
