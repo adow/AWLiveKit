@@ -39,7 +39,10 @@ uint32_t last_timestamp_video = 0; /// 上一个音频帧的时间戳
 uint32_t last_timestamp_audio = 0; /// 上一个视频帧的时间戳
 uint32_t last_time_video = 0; /// 上一个视频处理的时间
 uint32_t last_time_audio = 0; /// 上一个音频处理的时间
+uint32_t last_keyframe_timestamp = 0; /// 上一个视频关键帧的时间戳
+uint32_t last_keyframe_time = 0; /// 上一个视频关键帧的处理时间
 
+const uint32_t max_keyframe_timestamp_duration = 2000; /// 两个关键帧之间的时间距离
 
 /// read flv file
 int flv_file_open_position(char position) {
@@ -353,10 +356,10 @@ int _do_push_flv_file(int counter,
 				now_time,
 				last_time_audio,
 				audio_duration);
-		//aw_log("wait_ms:%ld\n",*wait_ms);
+		aw_log("wait_ms:%ld\n",*wait_ms);
 		last_timestamp_audio = tag_header_timestamp;
 		last_time_audio = now_time;
-		//sleep_ms(*wait_ms);
+		sleep_ms(*wait_ms);
 		/// send
 		flv_rtmp_send_data(tag_data, tag_header_data_size,
 			tag_header_timestamp,RTMP_PACKET_TYPE_AUDIO);
@@ -367,27 +370,58 @@ int _do_push_flv_file(int counter,
 		unsigned int video_type = *tag_data;
 		printf("video_tag:%02x\n",video_type);
 		*keyframe = video_type == 0x17;
-		/// 计算上一个视频的间隔时间，他们之间要间隔 40ms
-		uint32_t video_duration = now_time - last_time_video;
-		uint32_t video_timestamp_duration = tag_header_timestamp - last_timestamp_video;
-		if (video_duration < video_timestamp_duration ) {
-			*wait_ms = video_timestamp_duration - video_duration;
+		if (*keyframe) {
+			/// 两个关键帧之间的时间间隔要保持在一个距离
+			uint32_t keyframe_duration = now_time - last_keyframe_time;
+			uint32_t keyframe_timestamp_duration = tag_header_timestamp - last_keyframe_timestamp;
+			/// 实际用时比关键帧的时间戳距离小
+			/*	
+			if (keyframe_duration < keyframe_timestamp_duration) {
+				*wait_ms = keyframe_timestamp_duration - keyframe_duration;
+			}
+			*/
+			/// 两个关键帧之间的间隔应该通过他们的时间戳来确定，以此来确定这一个关键帧需要等待的时间，但是实际上有些关键这之间没有 2000 ms， 只有几百，这还是会导致播放 rtmp 时的卡顿（原因是 srs 上面服务器的 shrink the cache queue, size=0, removed=2157, max=30.00），只有固定两帧之间 2000 ms 的值才能让 rtmp 播放正常。
+			/// 以下代码虽然尝试用两个关键帧实际戳来作为判断等待的依据，但是实际还是用 2000 ms 来作为参照。
+			if (keyframe_duration < max_keyframe_timestamp_duration) {
+				*wait_ms = max_keyframe_timestamp_duration - keyframe_duration;
+			}
+			else {
+				*wait_ms = 0;
+			}
+			aw_log("keyframe_timestamp:%ld,last_keyframe_timestamp:%ld,keyframe_timestamp_duration:%ld\n",
+					tag_header_timestamp,
+					last_keyframe_timestamp,
+					keyframe_timestamp_duration);
+			aw_log("keyframe_time:%ld,last_keyframe_time:%ld, keyframe_duration:%ld\n",
+					now_time,
+					last_keyframe_time,
+					keyframe_duration);
+			last_keyframe_time = now_time;	/// 记录上一次关键帧时间
+			last_keyframe_timestamp = tag_header_timestamp; /// 记录上一个关键帧的时间戳
 		}
 		else {
-			*wait_ms = 0;
+			/// 计算上一个视频的间隔时间，他们之间要间隔 40ms
+			uint32_t video_duration = now_time - last_time_video;
+			uint32_t video_timestamp_duration = tag_header_timestamp - last_timestamp_video;
+			if (video_duration < video_timestamp_duration ) {
+				*wait_ms = video_timestamp_duration - video_duration;
+			}
+			else {
+				*wait_ms = 0;
+			}
+			aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
+					tag_header_timestamp,
+					last_timestamp_video,
+					video_timestamp_duration);
+			aw_log("now_time:%ld,last_time:%ld,video_duration:%ld\n",
+					now_time,
+					last_time_video,
+					video_duration);
 		}
-		aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
-				tag_header_timestamp,
-				last_timestamp_video,
-				video_timestamp_duration);
-		aw_log("now_time:%ld,last_time:%ld,video_duration:%ld\n",
-				now_time,
-				last_time_video,
-				video_duration);
-		//aw_log("wait_ms:%ld\n",*wait_ms);
-		last_timestamp_video = tag_header_timestamp;
-		last_time_video = now_time;
-		//sleep_ms(*wait_ms);
+		aw_log("wait_ms:%ld\n",*wait_ms);
+		last_timestamp_video = tag_header_timestamp; /// 记录上一次时间戳
+		last_time_video = now_time; /// 记录上一次视频帧处理时间
+		sleep_ms(*wait_ms);
 		/// send
 		flv_rtmp_send_data(tag_data, tag_header_data_size,
 			tag_header_timestamp,RTMP_PACKET_TYPE_VIDEO);
@@ -418,16 +452,10 @@ int flv_push_loop(char mode) {
 	fd_set read_set;
 	fd_set write_set;
 	struct timeval timeout={0,0};
-	uint32_t last_keyframe_time = 0; /// 上一个 i 帧的时间
 	const size_t cmd_buf_size = 1024;
-	/*
-	struct timespec wait_time = {0,1.0 * 1000000000L}; ///0.03s
-	wait_time.tv_sec = 0;
-	wait_time.tv_nsec = 999 *1000000L;
-	*/
 	while(1) {
 		aw_log("-----------LOOP:%d----------\n",counter);	
-		uint32_t start_time_2 = RTMP_GetTime();
+		uint32_t start_time = RTMP_GetTime();
 		///  cmd
 		int max_fd = 0;
 		if (mode == FLV_RTMP_PUSH_RUN_MODE_PIPLINE) {
@@ -513,14 +541,6 @@ int flv_push_loop(char mode) {
 				aw_log("write stdout available\n");
 			}
 		}
-		//sleep_ms(900);
-		/*
-		int sleep_result = nanosleep(&wait_time,NULL);
-		if (sleep_result) {
-			aw_log("sleep_result:%d\n",sleep_result);
-			break;
-		}
-		*/
 		/// push flv file
 		int keyframe = 0;
 		uint32_t wait_ms = 10;
@@ -538,29 +558,13 @@ int flv_push_loop(char mode) {
 		if (limits && counter >= limits) {
 		    break;
 		}
-		if (keyframe) {
-			uint32_t now_time = RTMP_GetTime();
-			uint32_t keyframe_duration = now_time - last_keyframe_time; /// 距离上一个关键帧已经经过多少时间
-			aw_log("keyframe_duration:%ld\n",keyframe_duration);
-			last_keyframe_time = now_time; /// 更新关键帧时间
-			/// 关键帧之间至少等待 1s
-			const uint32_t max_keyframe_duration = 1500;
-			if (keyframe_duration < max_keyframe_duration) {
-				wait_ms = max_keyframe_duration - keyframe_duration;
-			}
-
-		}
-		aw_log("wait_ms:%ld\n",wait_ms);
-		sleep_ms(wait_ms);	
 		///
-		/*
-		uint32_t end_time_2 = RTMP_GetTime();
-		aw_log("start_time:%ld,end_time:%ld, duration:%ld,keyframe:%d\n",
-				start_time_2,
-				end_time_2,
-				end_time_2 - start_time_2,
+		uint32_t end_time = RTMP_GetTime();
+		aw_log("LOOP start_time:%ld,end_time:%ld, duration:%ld,keyframe:%d\n",
+				start_time,
+				end_time,
+				end_time - start_time,
 				keyframe);
-		*/
 		
 	}
 	return 0;
