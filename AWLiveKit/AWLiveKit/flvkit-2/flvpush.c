@@ -49,6 +49,10 @@ uint32_t last_keyframe_time = 0; /// 上一个视频关键帧的处理时间
 
 const uint32_t max_keyframe_timestamp_duration = 2000; /// 两个关键帧之间的时间距离
 
+/// 在用 rtmp 发送的时候，不使用 flv tag 中的时间戳，而是用这个累计的时间戳
+uint32_t push_timestamp_audio = 0;
+uint32_t push_timestamp_video = 0;
+
 
 /// read flv file
 int flv_file_open_position(char position) {
@@ -331,6 +335,8 @@ int do_cmd() {
 		last_keyframe_time = 0;
 		last_keyframe_timestamp = 0;
 		cmd_clear(); /// 清空命令
+		//push_timestamp_audio += 23;
+		//push_timestamp_video += 67;
 		return 1; /// 返回后他将跳过后续操作，继续后面的循环
 	}
 	else {
@@ -367,7 +373,7 @@ int start_socket() {
         unlink(UNIX_DOMAIN);  
         return -2;  
     }  
-    printf("binded\n");
+    aw_log("binded\n");
     //listen sockfd   
     ret=listen(socket_listen_fd,1);  
     if(ret==-1)  
@@ -505,33 +511,65 @@ int _do_push_flv_file(int counter,
 		}
 		else if (tag.is_audio_tag) {
 			aw_log("audio tag\n");
-			/// 计算上一个音频帧之间的间隔时间，他们之间要价格 21 ms
+			/// 计算上一个音频帧之间的间隔时间，他们之间要间隔 21 ms
 			uint32_t audio_duration = now_time - last_time_audio; /// 距离上一个帧的处理时间
+			/// 当切换文件后，last_timestamp_audio = 0,下一个文件的时间距离就按照 22 ms 计算；否则就按两个时间戳继续计算
 			uint32_t audio_timestamp_duration = tag.tag_header_timestamp - last_timestamp_audio; /// 距离上一个音频帧的距离
+			if (last_time_audio > 0) {
+				push_timestamp_audio += audio_timestamp_duration;	
+			}
 			if (audio_duration < audio_timestamp_duration) {
 				*wait_ms = audio_timestamp_duration - audio_duration;
 			}
 			else {
 				*wait_ms = 0;
 			}
+			aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
+					tag.tag_header_timestamp,
+					last_timestamp_audio,
+					audio_timestamp_duration);
+			aw_log("now_time:%ld,last_time:%ld,audio_duration:%ld\n",
+					now_time,
+					last_time_audio,
+					audio_duration);
 			aw_log("wait_ms:%ld\n",*wait_ms);
 			last_timestamp_audio = tag.tag_header_timestamp;
 			last_time_audio = now_time;
 			sleep_ms(*wait_ms);
+			/*
+			if (tag.tag_header_timestamp == 0) {
+				push_timestamp_audio = 0;
+			}
+			else if (tag.tag_header_timestamp == 10) {
+				push_timestamp_audio = 10;
+			}
+			else {
+				push_timestamp_audio += 23;
+			}
+			*/
+			aw_log("push_timestamp_audio:%ld,tag_timestamp:%ld\n",push_timestamp_audio,tag.tag_header_timestamp);
 			/// send
 			flv_rtmp_send_data(tag.tag_data, 
 				tag.tag_header_data_size,
 				tag.tag_header_timestamp,
+				//push_timestamp_audio,
 				RTMP_PACKET_TYPE_AUDIO);
 		}
 		else if (tag.is_video_tag) {
 			aw_log("video_tag:%d\n",tag.is_video_key_frame);
+			*keyframe = tag.is_video_key_frame;
 			if (tag.is_video_key_frame) {
 				/// 开始执行命令
 				int cmd_result = do_cmd();	
 				/// 只有返回 0 的时候才继续下面的操作
 				if (!cmd_result) {	
 					/// 两个关键帧之间的时间间隔要保持在一个距离
+					/// 切换之后就使用一个默认的下一帧时间戳
+					/// 切换之后用一个默认的时间戳累加,否则就用两帧之间的时间累加
+					if (last_timestamp_video > 0) {
+						uint32_t video_timestamp_duration = tag.tag_header_timestamp - last_timestamp_video;
+						push_timestamp_video += video_timestamp_duration;
+					}
 					uint32_t keyframe_duration = now_time - last_keyframe_time;
 					uint32_t keyframe_timestamp_duration = 
 						tag.tag_header_timestamp - last_keyframe_timestamp;
@@ -568,6 +606,10 @@ int _do_push_flv_file(int counter,
 				/// 计算上一个视频的间隔时间，他们之间要间隔 40ms
 				uint32_t video_duration = now_time - last_time_video;
 				uint32_t video_timestamp_duration = tag.tag_header_timestamp - last_timestamp_video;
+				/// 切换之后用一个默认的时间戳累加,否则就用两帧之间的时间累加
+				if (last_timestamp_video > 0) {
+					push_timestamp_video += video_timestamp_duration;
+				}
 				if (video_duration < video_timestamp_duration ) {
 					*wait_ms = video_timestamp_duration - video_duration;
 				}
@@ -587,10 +629,12 @@ int _do_push_flv_file(int counter,
 			last_timestamp_video = tag.tag_header_timestamp; /// 记录上一次时间戳
 			last_time_video = now_time; /// 记录上一次视频帧处理时间
 			sleep_ms(*wait_ms);
+			aw_log("push_timestamp_video:%ld,tag_timestamp:%ld\n",push_timestamp_video,tag.tag_header_timestamp);
 			/// send
 			flv_rtmp_send_data(tag.tag_data, 
 				tag.tag_header_data_size,
 				tag.tag_header_timestamp,
+				//push_timestamp_video,
 				RTMP_PACKET_TYPE_VIDEO);
 		}
 	}
