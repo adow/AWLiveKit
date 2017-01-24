@@ -71,3 +71,15 @@ make flv-rtmp-push
 push-set-filename:/Users/reynoldqin/Downloads/243.flv
 
 push-set-filename:/Users/reynoldqin/Downloads/245.flv
+
+//////////////////////
+
+./cli pull
+
+./cli push
+
+./cli push-set-filename /Users/reynoldqin/Downloads/243.flv
+
+./cli push-set-filename /Users/reynoldqin/Downloads/245.flv
+
+./cli stop
