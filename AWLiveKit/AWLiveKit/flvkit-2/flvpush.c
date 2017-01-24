@@ -549,12 +549,13 @@ int _do_push_flv_file(int counter,
 					if (last_keyframe_timestamp > 0 ) {
 						//*wait_ms = int_max(keyframe_timestamp_duration,3000);
 						//*wait_ms = int_min(*wait_ms, 4000);
-						*wait_ms = 1500;
+						//*wait_ms = 1000;
 						//*wait_ms = keyframe_timestamp_duration - 300;
 					}
 					else {
 						*wait_ms = 0;
 					}
+					*wait_ms = 1000; /// 所有的关键帧都等待
 					aw_log("keyframe_timestamp:%ld,last_keyframe_timestamp:%ld,keyframe_timestamp_duration:%ld\n",
 							tag.tag_header_timestamp,
 							last_keyframe_timestamp,
