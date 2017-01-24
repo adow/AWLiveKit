@@ -522,7 +522,7 @@ int _do_push_flv_file(int counter,
 					now_time,
 					last_time_audio,
 					audio_duration);
-			*wait_ms = 10; /// 音频帧不等待
+			*wait_ms = 0; /// 音频帧不等待
 			aw_log("wait_ms:%ld\n",*wait_ms);
 			last_timestamp_audio = tag.tag_header_timestamp;
 			last_time_audio = now_time;
@@ -555,7 +555,7 @@ int _do_push_flv_file(int counter,
 					else {
 						*wait_ms = 0;
 					}
-					*wait_ms = 1000; /// 所有的关键帧都等待
+					*wait_ms = 2000; /// 所有的关键帧都等待
 					aw_log("keyframe_timestamp:%ld,last_keyframe_timestamp:%ld,keyframe_timestamp_duration:%ld\n",
 							tag.tag_header_timestamp,
 							last_keyframe_timestamp,
@@ -576,7 +576,7 @@ int _do_push_flv_file(int counter,
 				uint32_t video_duration = now_time - last_time_video;
 				uint32_t video_timestamp_duration = tag.tag_header_timestamp - last_timestamp_video;
 				
-				*wait_ms = 10; /// 非关键帧不等待
+				*wait_ms = 0; /// 非关键帧不等待
 				aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
 						tag.tag_header_timestamp,
 						last_timestamp_video,
