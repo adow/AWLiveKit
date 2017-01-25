@@ -10,6 +10,8 @@
 #include "util.h"
 #include "flvrtmp.h"
 
+uint32_t pull_flv_file_previous_keyframe_timestamp = 0; /// 上一个关键帧的时间戳
+
 /// pull 
 int pull_flv_file(const char* flv_filename,
 		const char* rtmp_url) {
@@ -122,8 +124,11 @@ int pull_flv_file(const char* flv_filename,
                 aw_log("iframe will start from:%ld\n",pos);
                 fseek(file_tag, 0, SEEK_SET);
                 fwrite(&pos,sizeof(long),1,file_tag); /// 将当前位置写入到 tag 文件中
+                fwrite(&pull_flv_file_previous_keyframe_timestamp,
+                        sizeof(uint32_t),1,file_tag); /// 将上一个关键帧的时间戳写入到文件里面
             }
         }
+        pull_flv_file_previous_keyframe_timestamp = tag_header_timestamp; /// 记录这一帧的时间戳在后面用来记录
 		free(tag_data);
 		///
 		fflush(stdout);

@@ -85,3 +85,8 @@ push-set-filename:/Users/reynoldqin/Downloads/245.flv
 ./cli push-set-filename /Users/reynoldqin/Downloads/245.flv
 
 ./cli stop
+
+///////////////////////////
+rtmp://m.push.wifiwx.com:1935/live/wifiwx-239
+
+./flv-rtmp-pull -f "/Users/reynoldqin/Downloads/239.flv" -u "rtmp://m.push.wifiwx.com:1935/live/wifiwx-239"

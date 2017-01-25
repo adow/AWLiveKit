@@ -96,16 +96,26 @@ int flv_file_open_position(char position) {
 		strcat(filename_tag,".tag");
 		long pos = 0;
 		FILE *file_tag = fopen(filename_tag,"r");
+		uint32_t old_keyframe_timestamp = last_keyframe_timestamp;
 		if (file_tag) {
+			/// 读取最后一个关键帧的位置
 			fread(&pos,sizeof(long),1,file_tag);
+			/// 读取倒数第二个关键帧时间戳，作为上一个时间戳
+			fread(&last_keyframe_timestamp,
+					sizeof(uint32_t),1,file_tag);
 		}
 		fclose(file_tag);
 		//aw_log("tag pos:%ld\n",pos);
 		aw_log("tag pos:%ld\n",pos);
+		aw_log("keyframe_timestmap changes from %ld to %ld\n",
+			old_keyframe_timestamp,
+			last_keyframe_timestamp);
+		/// 打开 flv 文件
 		flv_fd = open(flv_filename, O_RDONLY);
 		if (flv_fd == -1) {
 			return -1;
 		}
+		/// 定位到指定的位置
 		lseek(flv_fd, pos,SEEK_SET);
 		return 0;
 	}	
@@ -570,6 +580,9 @@ int _do_push_flv_file(int counter,
 					last_keyframe_timestamp = tag.tag_header_timestamp; /// 记录上一个关键帧的时间戳
 					last_time_video = RTMP_GetTime();
 					last_timestamp_video = tag.tag_header_timestamp;
+					if (exit_on_next) {
+						exit(0);
+					}
 				}
 				else {
 					/// 完成切换文件命令，后面的操作不要操作了，将读取下一个 tag
