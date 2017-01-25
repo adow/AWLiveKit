@@ -54,13 +54,19 @@ int int_max(int a, int b) {
 
 /// 等待多少毫秒
 int sleep_ms(uint32_t ms) {
+	if (ms == 0) {
+		return 0;
+	}
 	uint32_t seconds = ms / 1000;
 	uint32_t ns = (ms % 1000) * 1000000L;
-	/*
-	struct timespec wait_time = {0,0.0 * 1000000000L}; ///0.03s
-	wait_time.tv_sec = 0;
-	wait_time.tv_nsec = ms *1000000L;
-	*/
 	struct timespec wait_time = {seconds, ns};
 	return nanosleep(&wait_time,NULL);
+}
+/// 获取当前时间的毫秒
+long now_ms() {
+	struct timespec t;
+	clock_gettime(CLOCK_REALTIME,&t);
+	long ms = t.tv_sec * 1000;
+	ms += (t.tv_nsec / 1000000L);
+	return ms;
 }

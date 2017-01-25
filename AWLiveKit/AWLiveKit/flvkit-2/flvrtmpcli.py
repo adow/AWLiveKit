@@ -15,7 +15,8 @@ pull_script = {
         }
 
 #push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\"  -l \"/Users/reynoldqin/Downloads/push.log\""
-push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\""
+#push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\""
+push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://172.18.10.72:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\""
 
 p_pushing = None #(process,url,filename)
 p_pulling = {}

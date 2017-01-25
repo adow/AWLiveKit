@@ -40,19 +40,20 @@ const size_t cmd_buf_size = 1024; /// 命令最大长度
 char waiting_cmd_name[cmd_buf_size] = {'\0'}; /// 下一个要运行的命令名字
 char waiting_cmd_value[cmd_buf_size] = {'\0'}; /// 下一个要运行的命令参数
 
-uint32_t last_timestamp_video = 0; /// 上一个音频帧的时间戳
-uint32_t last_timestamp_audio = 0; /// 上一个视频帧的时间戳
-uint32_t last_time_video = 0; /// 上一个视频处理的时间
-uint32_t last_time_audio = 0; /// 上一个音频处理的时间
-uint32_t last_keyframe_timestamp = 0; /// 上一个视频关键帧的时间戳
-uint32_t last_keyframe_time = 0; /// 上一个视频关键帧的处理时间
+long last_timestamp_video = 0; /// 上一个音频帧的时间戳
+long last_timestamp_audio = 0; /// 上一个视频帧的时间戳
+long last_time_video = 0; /// 上一个视频处理的时间
+long last_time_audio = 0; /// 上一个音频处理的时间
+long last_keyframe_timestamp = 0; /// 上一个视频关键帧的时间戳
+long last_keyframe_time = 0; /// 上一个视频关键帧的处理时间
 
-const uint32_t max_keyframe_timestamp_duration = 2000; /// 两个关键帧之间的时间距离
+const long max_keyframe_timestamp_duration = 2000; /// 两个关键帧之间的时间距离
 
 /// 在用 rtmp 发送的时候，不使用 flv tag 中的时间戳，而是用这个累计的时间戳
-uint32_t push_timestamp_audio = 0;
-uint32_t push_timestamp_video = 0;
+long push_timestamp_audio = 0;
+long push_timestamp_video = 0;
 
+int exit_on_next = 0; /// 下一个循环中退出程序
 
 /// read flv file
 int flv_file_open_position(char position) {
@@ -328,12 +329,12 @@ int do_cmd() {
 		aw_log("filename has been changed:%s\n",flv_filename);
 		flv_file_open_position('T');/// 使用 tag 文件打开文件位置
 		/// 重置以下数字
-		last_time_audio = 0;
-		last_timestamp_audio = 0;
-		last_time_video = 0;
-		last_timestamp_video = 0;
-		last_keyframe_time = 0;
-		last_keyframe_timestamp = 0;
+		//last_time_audio = 0;
+		//last_timestamp_audio = 0;
+		//last_time_video = 0;
+		//last_timestamp_video = 0;
+		//last_keyframe_time = 0;
+		//last_keyframe_timestamp = 0;
 		cmd_clear(); /// 清空命令
 		//push_timestamp_audio += 23;
 		//push_timestamp_video += 67;
@@ -503,17 +504,17 @@ int _do_push_flv_file(int counter,
 		FLV_RTMP_PUSH_FLV_HEADER_SENT = 1;
 	}
 	/// flv body
-	uint32_t now_time = RTMP_GetTime();
+	long now_time = RTMP_GetTime();
 	struct flv_tag tag;
 	if (flv_file_read_tag(&tag) > 0) {
+		*wait_ms = 0; /// 默认都是不等待
 		if (tag.is_script_tag) {
 			aw_log("script tag\n");	
 		}
 		else if (tag.is_audio_tag) {
 			aw_log("audio tag\n");
-			/// 计算上一个音频帧之间的间隔时间，他们之间要间隔 21 ms
-			uint32_t audio_duration = now_time - last_time_audio; /// 距离上一个帧的处理时间
-			uint32_t audio_timestamp_duration = tag.tag_header_timestamp - last_timestamp_audio; /// 距离上一个音频帧的距离
+			long audio_duration = now_time - last_time_audio; /// 距离上一个帧的处理时间
+			long audio_timestamp_duration = tag.tag_header_timestamp - last_timestamp_audio; /// 距离上一个音频帧的距离
 			aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
 					tag.tag_header_timestamp,
 					last_timestamp_audio,
@@ -522,17 +523,14 @@ int _do_push_flv_file(int counter,
 					now_time,
 					last_time_audio,
 					audio_duration);
-			*wait_ms = 0; /// 音频帧不等待
-			aw_log("wait_ms:%ld\n",*wait_ms);
-			last_timestamp_audio = tag.tag_header_timestamp;
-			last_time_audio = now_time;
-			sleep_ms(*wait_ms);
-			aw_log("push_timestamp_audio:%ld,tag_timestamp:%ld\n",push_timestamp_audio,tag.tag_header_timestamp);
 			/// send
 			flv_rtmp_send_data(tag.tag_data, 
 				tag.tag_header_data_size,
 				tag.tag_header_timestamp,
 				RTMP_PACKET_TYPE_AUDIO);
+			last_time_audio = RTMP_GetTime(); /// 发送完后现在的时间
+			last_timestamp_audio = tag.tag_header_timestamp;
+			aw_log("rtmp audio timestamp:%ld\n",tag.tag_header_timestamp);
 		}
 		else if (tag.is_video_tag) {
 			aw_log("video_tag:%d\n",tag.is_video_key_frame);
@@ -543,15 +541,14 @@ int _do_push_flv_file(int counter,
 				/// 只有返回 0 的时候才继续下面的操作
 				if (!cmd_result) {	
 					
-					uint32_t keyframe_duration = now_time - last_keyframe_time;
-					uint32_t keyframe_timestamp_duration = 
-						tag.tag_header_timestamp - last_keyframe_timestamp;
+					long keyframe_duration = 
+						now_time > last_keyframe_time ? 
+						now_time - last_keyframe_time : 0;
+					long keyframe_timestamp_duration = 
+						tag.tag_header_timestamp > last_keyframe_timestamp ?  tag.tag_header_timestamp - last_keyframe_timestamp : 0;
 					if (keyframe_timestamp_duration > keyframe_duration) {
 						*wait_ms = keyframe_timestamp_duration - keyframe_duration;
 					}	
-					*wait_ms = int_min(*wait_ms, 4000);
-					*wait_ms = int_max(*wait_ms, 1000);
-					//*wait_ms = 2000; /// 所有的关键帧都等待
 					aw_log("keyframe_timestamp:%ld,last_keyframe_timestamp:%ld,keyframe_timestamp_duration:%ld\n",
 							tag.tag_header_timestamp,
 							last_keyframe_timestamp,
@@ -560,19 +557,33 @@ int _do_push_flv_file(int counter,
 							now_time,
 							last_keyframe_time,
 							keyframe_duration);
-					last_keyframe_time = now_time;	/// 记录上一次关键帧时间
+					////
+					aw_log("wait_ms:%ld\n",*wait_ms);
+					sleep_ms(*wait_ms);
+					/// send
+					flv_rtmp_send_data(tag.tag_data, 
+						tag.tag_header_data_size,
+						tag.tag_header_timestamp,
+						RTMP_PACKET_TYPE_VIDEO);
+					/// 发送完之后在记录时间
+					last_keyframe_time = RTMP_GetTime();	/// 记录上一次关键帧时间
 					last_keyframe_timestamp = tag.tag_header_timestamp; /// 记录上一个关键帧的时间戳
+					last_time_video = RTMP_GetTime();
+					last_timestamp_video = tag.tag_header_timestamp;
 				}
 				else {
-					//*wait_ms = 2000;
+					/// 完成切换文件命令，后面的操作不要操作了，将读取下一个 tag
+					flv_file_release_tag(&tag);
+					//exit_on_next = 1;
+					return 0;
 				}
+				
 			}
 			else {
 				/// 计算上一个视频的间隔时间，他们之间要间隔 40ms
-				uint32_t video_duration = now_time - last_time_video;
-				uint32_t video_timestamp_duration = tag.tag_header_timestamp - last_timestamp_video;
+				long video_duration = now_time - last_time_video;
+				long video_timestamp_duration = tag.tag_header_timestamp - last_timestamp_video;
 				
-				*wait_ms = 0; /// 非关键帧不等待
 				aw_log("now_timestamp:%ld,last_timestamp:%ld,timestamp_duration:%ld\n",
 						tag.tag_header_timestamp,
 						last_timestamp_video,
@@ -581,17 +592,18 @@ int _do_push_flv_file(int counter,
 						now_time,
 						last_time_video,
 						video_duration);
+				/// send
+				flv_rtmp_send_data(tag.tag_data, 
+					tag.tag_header_data_size,
+					tag.tag_header_timestamp,
+					RTMP_PACKET_TYPE_VIDEO);
+				/// 发送完之后在记录时间
+				last_timestamp_video = tag.tag_header_timestamp; /// 记录上一次时间戳
+				last_time_video = RTMP_GetTime(); /// 记录上一次视频帧处理时间
 			}
-			aw_log("wait_ms:%ld\n",*wait_ms);
-			last_timestamp_video = tag.tag_header_timestamp; /// 记录上一次时间戳
-			last_time_video = now_time; /// 记录上一次视频帧处理时间
-			sleep_ms(*wait_ms);
-			aw_log("push_timestamp_video:%ld,tag_timestamp:%ld\n",push_timestamp_video,tag.tag_header_timestamp);
-			/// send
-			flv_rtmp_send_data(tag.tag_data, 
-				tag.tag_header_data_size,
-				tag.tag_header_timestamp,
-				RTMP_PACKET_TYPE_VIDEO);
+			aw_log("rtmp video timestamp:%ld\n",tag.tag_header_timestamp);
+			
+			
 		}
 	}
 	else {
@@ -691,15 +703,16 @@ int _execute_cmd(int arg_c, char *arg_v[]) {
 
 int _test_sleep() {
 	set_log_file(NULL);
-	uint32_t start_time = RTMP_GetTime();
+	long start_time = RTMP_GetTime();
 	int a = 0;
 	for(a=0;a<100;a++) {
-		uint32_t now_time = RTMP_GetTime();
-		aw_log("%ld\n",now_time);
+		long now_time = RTMP_GetTime();
+		long ms = now_ms();
+		aw_log("%ld,%ld\n",ms,now_time);
 		fflush(stdout);
 		sleep_ms(100);
 	}
-	uint32_t end_time = RTMP_GetTime();
+	long end_time = RTMP_GetTime();
 	aw_log("start_time:%ld, end_time:%ld,duration:%ld\n",
 			start_time,
 			end_time,
