@@ -55,6 +55,7 @@ long push_timestamp_video = 0;
 
 int exit_on_next = 0; /// 下一个循环中退出程序
 
+
 /// read flv file
 int flv_file_open_position(char position) {
 	/// 从开始位置打开文件,'S' 开始位置，'C' 当前位置，'T' Tag 文件位置
@@ -288,6 +289,7 @@ int read_cmd(int fd) {
 		return -1;
 	}
 	else if (len == 0) {
+		socket_com_fd = -1; /// 客户端关闭 socket 时这里关闭文件
 		return 0;
 	}
 	else {
@@ -637,9 +639,10 @@ int flv_push_loop() {
 	fd_set write_set;
 	struct timeval timeout={0,0};
 	const size_t cmd_buf_size = 1024;
+	long loop_start_time = now_ms();/// 记录整个循环开始的时间
 	while(1) {
 		aw_log("-----------LOOP:%d----------\n",counter);	
-		uint32_t start_time = RTMP_GetTime();
+		long start_time = RTMP_GetTime();
 		_select_cmd(); /// 从 socket, pipline 中获取命令参数
 		int keyframe = 0; /// 这一次推送的是否是关键帧
 		/// push flv file
@@ -658,11 +661,12 @@ int flv_push_loop() {
 		    break;
 		}
 		///
-		uint32_t end_time = RTMP_GetTime();
-		aw_log("LOOP start_time:%ld,end_time:%ld, duration:%ld,keyframe:%d\n",
+		long end_time = RTMP_GetTime();
+		aw_log("LOOP start_time:%ld,end_time:%ld, duration:%ld,total:%ld,keyframe:%d\n",
 				start_time,
 				end_time,
 				end_time - start_time,
+				end_time - loop_start_time,
 				keyframe);
 		
 	}
