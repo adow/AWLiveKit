@@ -56,6 +56,7 @@ long push_timestamp_audio = 0;
 long push_timestamp_video = 0;
 
 int exit_on_next = 0; /// 下一个循环中退出程序
+int wait_on_push = 0; /// 在 push 的每一个循环中进行等待
 
 
 /// read flv file
@@ -582,8 +583,13 @@ int _do_push_flv_file(int counter,
 							last_keyframe_time,
 							keyframe_duration);
 					////
-					aw_log("wait_ms:%ld\n",*wait_ms);
-					//sleep_ms(*wait_ms);
+					if (wait_on_push) {
+						aw_log("wait_ms:%ld\n",*wait_ms);
+						sleep_ms(*wait_ms);
+					}
+					else {
+						aw_log("no wait\n");
+					}
 					/// send
 					flv_rtmp_send_data(tag.tag_data, 
 						tag.tag_header_data_size,
@@ -699,10 +705,15 @@ int flv_push_loop() {
 
 /// execute
 /// 获取外部参数, 执行拉流
+/// -f flv 文件地址
+/// -u rtmp url
+/// -l 输出日志地址
+/// -w 在 push 循环中需要等待
+/// -v 显示
 int _execute_cmd(int arg_c, char *arg_v[]) {
 	char *cmd = arg_v[1];
 
-    char format[] = "f::u:vl::";
+    char format[] = "f::u:vl::w";
     int verbose = 0; /// 显示输出过程
     int ch;
     char log_filename[PATH_MAX] = {'\0'};
@@ -720,6 +731,9 @@ int _execute_cmd(int arg_c, char *arg_v[]) {
 	    case 'l':
 		strcpy(log_filename,optarg);
 		break;
+	    case 'w':
+		wait_on_push = 1;
+		break;
         }
     }
     if (strlen(log_filename) > 0) {
@@ -731,6 +745,7 @@ int _execute_cmd(int arg_c, char *arg_v[]) {
     aw_log("flv_filename:%s\n",flv_filename);
     aw_log("url:%s\n",rtmp_url);
     aw_log("log_filename:%s\n",log_filename);
+    aw_log("wait on push:%d\n",wait_on_push);
     
     if (!strlen(rtmp_url)) {
         aw_log("need -u: url to push rtmp\n");
