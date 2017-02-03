@@ -8,13 +8,13 @@ import time
 import socket
 
 pull_script = {
-        #"243":"./flv-rtmp-pull -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live/wifiwx-243\"",
-        #"245":"./flv-rtmp-pull -f \"/Users/reynoldqin/Downloads/245.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live/wifiwx-245\"",
-        "239":"./flv-rtmp-pull -f \"/Users/reynoldqin/Downloads/239.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live/wifiwx-239\"",
+        "243":"./flv-rtmp-pull -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live/wifiwx-243\"",
+        "245":"./flv-rtmp-pull -f \"/Users/reynoldqin/Downloads/245.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live/wifiwx-245\"",
+        #"239":"./flv-rtmp-pull -f \"/Users/reynoldqin/Downloads/239.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live/wifiwx-239\"",
         }
 
-#push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\"  -l \"push.log\""
-push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/239.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\"  -l \"push.log\""
+push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\"  -l \"push.log\""
+#push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/239.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\"  -l \"push.log\""
 #push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\""
 #push_script = "./flv-rtmp-push -f \"/Users/reynoldqin/Downloads/243.flv\" -u \"rtmp://172.18.10.72:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84\""
 

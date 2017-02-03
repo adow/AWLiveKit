@@ -3,4 +3,6 @@
 *.dSYM
 flv-rtmp-pull
 flv-rtmp-push
+live
 *.log
+*.swp

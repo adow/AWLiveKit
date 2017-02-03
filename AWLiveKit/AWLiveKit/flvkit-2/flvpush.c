@@ -47,6 +47,8 @@ long last_time_audio = 0; /// 上一个音频处理的时间
 long last_keyframe_timestamp = 0; /// 上一个视频关键帧的时间戳
 long last_keyframe_time = 0; /// 上一个视频关键帧的处理时间
 
+long loop_start_time = 0; /// 循环开始的时间
+
 const long max_keyframe_timestamp_duration = 2000; /// 两个关键帧之间的时间距离
 
 /// 在用 rtmp 发送的时候，不使用 flv tag 中的时间戳，而是用这个累计的时间戳
@@ -463,6 +465,11 @@ int _select_cmd() {
 }
 
 /// push
+/// 开始到现在的时间
+long duration_to_loop_start() {
+	long now = now_ms();
+	return now - loop_start_time;
+}
 int _do_push_flv_file(int counter,
 		uint32_t *wait_ms, /// 下面需要等待的时间
 		int *keyframe) {
@@ -542,7 +549,12 @@ int _do_push_flv_file(int counter,
 				RTMP_PACKET_TYPE_AUDIO);
 			last_time_audio = RTMP_GetTime(); /// 发送完后现在的时间
 			last_timestamp_audio = tag.tag_header_timestamp;
-			aw_log("rtmp audio timestamp:%ld\n",tag.tag_header_timestamp);
+			/// 发送的时间戳和运行到现在的时间戳
+			long now_timestamp = duration_to_loop_start();
+			aw_log("rtmp audio timestamp:%ld,total:%ld,diff:%ld\n",
+					tag.tag_header_timestamp,
+					now_timestamp,
+					now_timestamp - tag.tag_header_timestamp);
 		}
 		else if (tag.is_video_tag) {
 			aw_log("video_tag:%d\n",tag.is_video_key_frame);
@@ -571,7 +583,7 @@ int _do_push_flv_file(int counter,
 							keyframe_duration);
 					////
 					aw_log("wait_ms:%ld\n",*wait_ms);
-					sleep_ms(*wait_ms);
+					//sleep_ms(*wait_ms);
 					/// send
 					flv_rtmp_send_data(tag.tag_data, 
 						tag.tag_header_data_size,
@@ -616,7 +628,12 @@ int _do_push_flv_file(int counter,
 				last_timestamp_video = tag.tag_header_timestamp; /// 记录上一次时间戳
 				last_time_video = RTMP_GetTime(); /// 记录上一次视频帧处理时间
 			}
-			aw_log("rtmp video timestamp:%ld\n",tag.tag_header_timestamp);
+			/// 发送的时间戳和运行到现在的时间戳
+			long now_timestamp = duration_to_loop_start();
+			aw_log("rtmp video timestamp:%ld,total:%ld,diff:%ld\n",
+					tag.tag_header_timestamp,
+					now_timestamp,
+					now_timestamp - tag.tag_header_timestamp);
 			
 			
 		}
@@ -639,9 +656,16 @@ int flv_push_loop() {
 	fd_set write_set;
 	struct timeval timeout={0,0};
 	const size_t cmd_buf_size = 1024;
-	long loop_start_time = now_ms();/// 记录整个循环开始的时间
+	loop_start_time = now_ms();/// 记录整个循环开始的时间
 	while(1) {
 		aw_log("-----------LOOP:%d----------\n",counter);	
+		///跳转到 tag 指定位置, 0 script tag, 1 audio header, 2 sps pps
+		if (counter == 3) {
+			counter += 1;
+			aw_log("open file to tag position");
+			flv_file_open_position('T');
+			continue;
+		}
 		long start_time = RTMP_GetTime();
 		_select_cmd(); /// 从 socket, pipline 中获取命令参数
 		int keyframe = 0; /// 这一次推送的是否是关键帧
@@ -662,11 +686,10 @@ int flv_push_loop() {
 		}
 		///
 		long end_time = RTMP_GetTime();
-		aw_log("LOOP start_time:%ld,end_time:%ld, duration:%ld,total:%ld,keyframe:%d\n",
+		aw_log("LOOP start_time:%ld,end_time:%ld, duration:%ld,keyframe:%d\n",
 				start_time,
 				end_time,
 				end_time - start_time,
-				end_time - loop_start_time,
 				keyframe);
 		
 	}
