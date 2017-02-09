@@ -353,6 +353,7 @@ int do_cmd() {
 		cmd_clear(); /// 清空命令
 		//push_timestamp_audio += 23;
 		//push_timestamp_video += 67;
+		//exit_on_next += 1;
 		return 1; /// 返回后他将跳过后续操作，继续后面的循环
 	}
 	else {
@@ -600,7 +601,8 @@ int _do_push_flv_file(int counter,
 					last_keyframe_timestamp = tag.tag_header_timestamp; /// 记录上一个关键帧的时间戳
 					last_time_video = RTMP_GetTime();
 					last_timestamp_video = tag.tag_header_timestamp;
-					if (exit_on_next) {
+					if (exit_on_next >= 5) {
+						aw_log("exit next");
 						exit(0);
 					}
 				}
