@@ -14,6 +14,7 @@ class StartViewController: UIViewController {
     @IBOutlet weak var qualityPicker : UIPickerView!
     @IBOutlet weak var orientationSegment : UISegmentedControl!
     var videoQualities : [AWLiveCaptureVideoQuality] = [._480,._540i, ._720,  ._1080, ._4k]
+    var videoLandscape : Bool = true
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -44,14 +45,30 @@ class StartViewController: UIViewController {
             guard let url = urlTextField.text, url != "" else {
                 return
             }
+            
+            
             let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
-            let landscape = (self.orientationSegment.selectedSegmentIndex == 0)
+            //let landscape = (self.orientationSegment.selectedSegmentIndex == 0)
+            let landscape = self.videoLandscape
             if let destinationViewController = segue.destination as? LiveViewController {
                 destinationViewController.push_url = url
                 destinationViewController.orientation =  landscape ? .landscapeRight : .portrait
                 destinationViewController.videoQuality = videoQuality
                 
             }
+        }
+    }
+    @IBAction func onButtonStart(sender:UIButton) {
+        let alert = UIAlertController(title: "进入直播", message: "选择屏幕方向", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "横屏", style: .destructive, handler: { (_) in
+            self.videoLandscape = true
+            self.performSegue(withIdentifier: "segue_start_to_live", sender: sender)
+        }))
+        alert.addAction(UIAlertAction(title: "竖屏", style: .default, handler: { (_) in
+            self.videoLandscape = false
+            self.performSegue(withIdentifier: "segue_start_to_live", sender: sender)
+        }))
+        self.present(alert, animated: true) {
         }
     }
     
