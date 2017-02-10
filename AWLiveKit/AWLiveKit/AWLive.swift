@@ -17,7 +17,9 @@ class AWLive {
     var audioEncoder : AWAudioEncoder!
     weak var preview : AWLivePreview?
     var videoQuality : AWLiveCaptureVideoQuality!
-    var live : Bool = false
+    var isLive : Bool? {
+        return self.push?.isLive
+    }
     init(url:String,
          onPreview preview : AWLivePreview,
          withQuality videoQuality : AWLiveCaptureVideoQuality = AWLiveCaptureVideoQuality._720,
@@ -26,6 +28,7 @@ class AWLive {
         self.preview = preview
         /// push
         push = AWLivePush2(url: url)
+        push.delegate = self
         /// capture
         capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
                                 orientation: orientation)
@@ -54,8 +57,9 @@ class AWLive {
     deinit {
         self.close()
     }
-    func close() {
+    fileprivate func close() {
         self.stopLive()
+        self.push.disconnect()
         self.capture?.stop()
     }
 }
@@ -134,13 +138,19 @@ extension AWLive {
             self?.push?.pushAudioBufferList(bufferList) /// push
         }
         self.push?.start()
-        self.live = true
     }
     func stopLive() {
         self.push?.stop()
         self.videoEncoder?.close()
         self.videoEncoder = nil
         self.audioEncoder = nil
-        self.live = false
+    }
+}
+extension AWLive : AWLivePushDeletate {
+    func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
+        NSLog("push connect changed:\(state)")
+    }
+    func pushLiveChanged(_ push: AWLivePush2) {
+        NSLog("push live changed:\(push.isLive)")
     }
 }

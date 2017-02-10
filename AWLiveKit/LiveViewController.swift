@@ -22,6 +22,7 @@ class LiveViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.showInfo(push_url, duration: 5.0)
+        self.startButton.isHidden = true
         var videoOrientation : AVCaptureVideoOrientation = .portrait
         if orientation == .landscapeRight {
             videoOrientation = .landscapeRight
@@ -39,6 +40,7 @@ class LiveViewController: UIViewController {
                            onPreview: self.preview,
                            withQuality: self.videoQuality,
                            atOrientation : videoOrientation)
+        self.live.push?.delegate = self
         
     }
     
@@ -54,7 +56,7 @@ class LiveViewController: UIViewController {
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.live.close()
+        self.live?.stopLive()
     }
     override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
 //        return UIInterfaceOrientationMask(rawValue: UInt(self.orientation.rawValue))
@@ -103,7 +105,10 @@ extension LiveViewController {
         }
     }
     @IBAction func onButtonLive(_ sender : UIButton!) {
-        if !live.live {
+        guard let _isLive = self.live.isLive else {
+            return
+        }
+        if !_isLive {
             live.startLive()
             sender.isSelected = true
             self.showInfo("Start", duration: 5.0)
@@ -126,5 +131,25 @@ extension LiveViewController {
     @IBAction func onButtonMirror(_ sender : UIButton!) {
         sender.isSelected = !sender.isSelected
         self.live.mirror = sender.isSelected
+    }
+}
+extension LiveViewController : AWLivePushDeletate {
+    func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
+        DispatchQueue.main.async {
+//            if state == .Connected {
+//                self.startButton.isEnabled = true
+//            }
+//            else {
+//                self.startButton.isEnabled = false
+//            }
+            self.startButton.isHidden = (state != .Connected)
+            self.showInfo("\(state)",duration: 5.0)
+        }
+    }
+    func pushLiveChanged(_ push: AWLivePush2) {
+        DispatchQueue.main.async {
+            self.startButton.isSelected = push.isLive
+            self.showInfo("\(push.isLive ? "start" : "stop")", duration: 5.0)
+        }
     }
 }

@@ -169,10 +169,13 @@ int aw_push_video_samplebuffer(CMSampleBufferRef sample_buffer,
 //        printf("frame_type:%d,%s\n",frame_type,aw_get_frametypename(frame_type));
         int idr_frame = (frame_type == 5 ? 1 : 0);
         /// send data
-        aw_rtmp_send_h264_video(data_pointer_u + buffer_offset + avvc_header_length,
+        int push_result = aw_rtmp_send_h264_video(data_pointer_u + buffer_offset + avvc_header_length,
                                 nal_unit_length,
                                 idr_frame,
                                 time_offset);
+        if (push_result == 0) {
+            return -5; /// 推送失败
+        }
         /// buffer_offset to the next frame
         buffer_offset = buffer_offset + avvc_header_length + nal_unit_length;
     }
@@ -183,6 +186,9 @@ int aw_push_audio_bufferlist(AudioBufferList buffer_list,
     AudioBuffer buffer = buffer_list.mBuffers[0];
     uint32_t audio_data_length = buffer.mDataByteSize;
     unsigned char *data = buffer.mData;
-    aw_rtmp_send_audio(data, audio_data_length, time_offset);
+    int push_result = aw_rtmp_send_audio(data, audio_data_length, time_offset);
+    if (push_result == 0) {
+        return -5; /// 推送失败
+    }
     return 0;
 }

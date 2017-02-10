@@ -70,6 +70,7 @@
                                         <state key="normal" title="开始">
                                             <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                         </state>
+                                        <state key="disabled" title="未连接"/>
                                         <state key="selected" title="直播"/>
                                         <connections>
                                             <action selector="onButtonLive:" destination="BYZ-38-t0r" eventType="touchUpInside" id="GsD-e6-eWk"/>

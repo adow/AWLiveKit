@@ -79,10 +79,12 @@ void aw_rtmp_close() {
     if (aw_m_pFileBuf != NULL)
     {
         free(aw_m_pFileBuf);
+        aw_m_pFileBuf = NULL;
     }
     if (aw_m_pFileBuf_tmp != NULL)
     {  
         free(aw_m_pFileBuf_tmp);
+        aw_m_pFileBuf_tmp = NULL;
     }
 }
 
