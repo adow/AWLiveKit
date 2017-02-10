@@ -48,12 +48,13 @@ int aw_rtmp_connection(const char *url) {
         RTMP_Free(aw_m_pRtmp);
         return false;
     }
+    aw_m_pRtmp->Link.timeout = 5;
     /*设置可写,即发布流,这个函数必须在连接前使用,否则无效*/
     RTMP_EnableWrite(aw_m_pRtmp);
     /*连接服务器*/
     if (RTMP_Connect(aw_m_pRtmp, NULL) == FALSE)
     {
-        printf("Connect RTMP Failed");
+        printf("Connect RTMP Failed\n");
         RTMP_Free(aw_m_pRtmp);
         return false;
     }
@@ -61,7 +62,7 @@ int aw_rtmp_connection(const char *url) {
     /*连接流*/
     if (RTMP_ConnectStream(aw_m_pRtmp,0) == FALSE)
     {
-        printf("Connect Stream Failed");
+        printf("Connect Stream Failed\n");
         RTMP_Close(aw_m_pRtmp);
         RTMP_Free(aw_m_pRtmp);
         return false;
@@ -91,6 +92,10 @@ void aw_rtmp_close() {
 /// 发送 sps, pps
 int aw_rtmp_send_sps_pps(unsigned char *sps, int sps_length,
                          unsigned char *pps, int pps_length) {
+    if (!RTMP_IsConnected(aw_m_pRtmp)) {
+        printf("not connected\n");
+        return false;
+    }
     RTMPPacket * packet=NULL;//rtmp包结构
     unsigned char * body=NULL;
     int i;
@@ -142,7 +147,7 @@ int aw_rtmp_send_sps_pps(unsigned char *sps, int sps_length,
     aw_debug_print(body, i);
     free(packet);    //释放内存
     if (!nRet) {
-        printf("Send sps, pps failed");
+        printf("Send sps, pps failed\n");
     }
     return nRet;
 }
@@ -150,6 +155,10 @@ int aw_rtmp_send_sps_pps(unsigned char *sps, int sps_length,
 int aw_rtmp_send_h264_video(unsigned char *data,
                 unsigned int size,
                 int bIsKeyFrame, unsigned int nTimeStamp) {
+    if (!RTMP_IsConnected(aw_m_pRtmp)) {
+        printf("not connected\n");
+        return false;
+    }
     if(data == NULL && size<11){
         return false;
     }
@@ -194,12 +203,16 @@ int aw_rtmp_send_h264_video(unsigned char *data,
 //    aw_debug_print(body,i + size);
     free(packet);
     if (!result) {
-        printf("Send video failed");
+        printf("Send video failed\n");
     }
     return result;
 }
 
 int aw_rtmp_send_audio_header() {
+    if (!RTMP_IsConnected(aw_m_pRtmp)) {
+        printf("not connected\n");
+        return false;
+    }
     RTMPPacket * packet;
     int body_size = 4;
     packet = (RTMPPacket *)malloc(AW_RTMP_HEAD_SIZE + body_size);
@@ -227,14 +240,18 @@ int aw_rtmp_send_audio_header() {
     aw_debug_print(body,4);
     free(packet);
     if (!result) {
-        printf("Send audio head failed");
+        printf("Send audio head failed\n");
     }
     return result;
 }
 
-int aw_rtmp_send_audio(unsigned char *data, 
+int aw_rtmp_send_audio(unsigned char *data,
 		unsigned int data_size,
 		unsigned int nTimeStamp) {
+    if (!RTMP_IsConnected(aw_m_pRtmp)) {
+        printf("not connected\n");
+        return false;
+    }
     RTMPPacket * packet;
     unsigned int body_size = data_size + 2;
     packet = (RTMPPacket *)malloc(AW_RTMP_HEAD_SIZE+body_size);
@@ -261,7 +278,7 @@ int aw_rtmp_send_audio(unsigned char *data,
 //    aw_debug_print(body,2 + size);
     free(packet);
     if (!result) {
-        printf("Send audio failed");
+        printf("Send audio failed\n");
     }
     return result;
 }
