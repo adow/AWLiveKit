@@ -23,6 +23,10 @@ class LiveViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         self.showInfo(push_url, duration: 5.0)
         self.startButton.isHidden = true
+        
+        
+        
+        ///
         var videoOrientation : AVCaptureVideoOrientation = .portrait
         if orientation == .landscapeRight {
             videoOrientation = .landscapeRight
@@ -109,13 +113,37 @@ extension LiveViewController {
             return
         }
         if !_isLive {
-            live.startLive()
-            sender.isSelected = true
-            self.showInfo("Start", duration: 5.0)
+            /// 不要重复创建
+            guard self.view.subviews.filter({ (v) -> Bool in
+                return v is StartAnimationView
+            }).count <= 0 else {
+                return
+            }
+            /// startAnimationView
+            let startAnimationView = StartAnimationView()
+            startAnimationView.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(startAnimationView)
+            let d_startAnimationView = ["sv":startAnimationView]
+            let startAnimationView_constraints_h =
+                NSLayoutConstraint.constraints(withVisualFormat: "H:|-(0.0)-[sv]-(0.0)-|",
+                                               options: [.alignAllCenterX,],
+                                               metrics: nil,
+                                               views: d_startAnimationView)
+            self.view.addConstraints(startAnimationView_constraints_h)
+            let startAnimationView_constraint_height =
+                NSLayoutConstraint(item: startAnimationView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 80.0)
+            let startAnimationView_constraint_centerY =
+                NSLayoutConstraint(item: startAnimationView, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+            self.view.addConstraint(startAnimationView_constraint_height)
+            self.view.addConstraint(startAnimationView_constraint_centerY)
+            startAnimationView.startAnimation(completionBlock: {
+                [weak self] in
+                self?.live.startLive()
+                self?.showInfo("Start", duration: 5.0)
+            })
         }
         else {
-            live.stopLive()
-            sender.isSelected = false
+            self.live.stopLive()
             self.showInfo("Stop")
         }
     }

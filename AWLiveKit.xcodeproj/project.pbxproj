@@ -27,6 +27,7 @@
 		685100701E1BF39A00A835A2 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6851006F1E1BF39A00A835A2 /* StartViewController.swift */; };
 		68C9BD1F1E14BE2800D2E127 /* aw_live_push.c in Sources */ = {isa = PBXBuildFile; fileRef = 68C9BD1D1E14BE2800D2E127 /* aw_live_push.c */; };
 		68C9BD231E15662E00D2E127 /* AWLivePush2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C9BD221E15662E00D2E127 /* AWLivePush2.swift */; };
+		68EC2CB71E50528C00518825 /* StartAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EC2CB61E50528C00518825 /* StartAnimationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,7 @@
 		68C9BD1D1E14BE2800D2E127 /* aw_live_push.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aw_live_push.c; path = AWLiveKit/aw_live_push.c; sourceTree = "<group>"; };
 		68C9BD1E1E14BE2800D2E127 /* aw_live_push.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aw_live_push.h; path = AWLiveKit/aw_live_push.h; sourceTree = "<group>"; };
 		68C9BD221E15662E00D2E127 /* AWLivePush2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLivePush2.swift; path = AWLiveKit/AWLivePush2.swift; sourceTree = "<group>"; };
+		68EC2CB61E50528C00518825 /* StartAnimationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartAnimationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +126,7 @@
 				68348FFB1D58692E00C2A72E /* AppDelegate.swift */,
 				68348FFD1D58692E00C2A72E /* LiveViewController.swift */,
 				6851006F1E1BF39A00A835A2 /* StartViewController.swift */,
+				68EC2CB61E50528C00518825 /* StartAnimationView.swift */,
 				68348FFF1D58692E00C2A72E /* Main.storyboard */,
 				683490021D58692E00C2A72E /* Assets.xcassets */,
 				683490041D58692E00C2A72E /* LaunchScreen.storyboard */,
@@ -232,6 +235,7 @@
 				68C9BD1F1E14BE2800D2E127 /* aw_live_push.c in Sources */,
 				68220A7D1D59761C00715E37 /* AWEncoder.swift in Sources */,
 				683490111D587EA900C2A72E /* AWLivePreview.swift in Sources */,
+				68EC2CB71E50528C00518825 /* StartAnimationView.swift in Sources */,
 				68220A911D59A30300715E37 /* parseurl.c in Sources */,
 				685100701E1BF39A00A835A2 /* StartViewController.swift in Sources */,
 				68348FFE1D58692E00C2A72E /* LiveViewController.swift in Sources */,
