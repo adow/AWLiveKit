@@ -135,21 +135,11 @@ extension LiveViewController {
 }
 extension LiveViewController : AWLivePushDeletate {
     func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
-        DispatchQueue.main.async {
-//            if state == .Connected {
-//                self.startButton.isEnabled = true
-//            }
-//            else {
-//                self.startButton.isEnabled = false
-//            }
-            self.startButton.isHidden = (state != .Connected)
-            self.showInfo("\(state)",duration: 5.0)
-        }
+        self.startButton.isHidden = (state != .Connected)
+        self.showInfo("\(state)",duration: 5.0)
     }
     func pushLiveChanged(_ push: AWLivePush2) {
-        DispatchQueue.main.async {
-            self.startButton.isSelected = push.isLive
-            self.showInfo("\(push.isLive ? "start" : "stop")", duration: 5.0)
-        }
+        self.startButton.isSelected = push.isLive
+        self.showInfo("\(push.isLive ? "start" : "stop")", duration: 5.0)
     }
 }

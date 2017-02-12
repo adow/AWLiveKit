@@ -41,13 +41,17 @@ class AWLivePush2 {
     weak var delegate : AWLivePushDeletate? = nil
     var connectState : AWLiveConnectState = .NotConnect {
         didSet {
-            self.delegate?.push(self, connectedStateChanged: self.connectState)
+            DispatchQueue.main.async {
+                self.delegate?.push(self, connectedStateChanged: self.connectState)
+            }
         }
     }
     /// 播出
     var isLive : Bool = false {
         didSet {
-            self.delegate?.pushLiveChanged(self)
+            DispatchQueue.main.async {
+                self.delegate?.pushLiveChanged(self)
+            }
         }
     }
     init(url:String) {
