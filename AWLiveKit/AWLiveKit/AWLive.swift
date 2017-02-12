@@ -20,6 +20,7 @@ class AWLive {
     var isLive : Bool? {
         return self.push?.isLive
     }
+    var isInterruption : Bool = false
     init(url:String,
          onPreview preview : AWLivePreview,
          withQuality videoQuality : AWLiveCaptureVideoQuality = AWLiveCaptureVideoQuality._720,
@@ -51,11 +52,24 @@ class AWLive {
             _self.capture.connectPreView(preview)
             _self.capture.start()
         }
-        
+        /// notification
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onNotificationResign(_:)),
+                                               name: NSNotification.Name.UIApplicationWillResignActive,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onNotificationEnterForeground(_:)),
+                                               name: NSNotification.Name.UIApplicationDidBecomeActive,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onNotificationTerminate(_:)),
+                                               name: NSNotification.Name.UIApplicationWillTerminate,
+                                               object: nil)
         
     }
     deinit {
         self.close()
+        NotificationCenter.default.removeObserver(self)
     }
     fileprivate func close() {
         self.stopLive()
@@ -152,5 +166,22 @@ extension AWLive : AWLivePushDeletate {
     }
     func pushLiveChanged(_ push: AWLivePush2) {
         NSLog("push live changed:\(push.isLive)")
+    }
+}
+extension AWLive {
+    @objc fileprivate func onNotificationEnterForeground(_ notification:Notification) {
+        if self.isInterruption {
+            self.isInterruption = false
+            self.startLive()
+        }
+    }
+    @objc fileprivate func onNotificationResign(_ notification:Notification) {
+        if let _isLive = self.isLive , _isLive{
+            self.stopLive()
+            self.isInterruption = true
+        }
+    }
+    @objc fileprivate func onNotificationTerminate(_ notification:Notification) {
+        self.close()
     }
 }
