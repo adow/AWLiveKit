@@ -17,6 +17,8 @@ class AWLive {
     var audioEncoder : AWAudioEncoder!
     weak var preview : AWLivePreview?
     var videoQuality : AWLiveCaptureVideoQuality!
+    /// 请求权限后的返回结果
+    var requestCaptureCallback : ((Bool,String?)->())? = nil
     var isLive : Bool? {
         return self.push?.isLive
     }
@@ -123,6 +125,32 @@ extension AWLive {
         }
         get {
             return self.capture.videoMirror
+        }
+    }
+}
+extension AWLive {
+    /// 获取摄像头权限
+    static func requestCapture(callback:@escaping ((Bool,String?)->())) {
+        AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { (succeed_video) in
+            if succeed_video {
+                AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeAudio, completionHandler: { (succeed_audio) in
+                    if succeed_audio {
+                        DispatchQueue.main.async(execute: {
+                            callback(true,nil)
+                        })
+                    }
+                    else {
+                        DispatchQueue.main.async(execute: {
+                            callback(false,"无法获取麦克风，请在设置中打开麦克风权限")
+                        })
+                    }
+                })
+            }
+            else {
+                DispatchQueue.main.async(execute: {
+                    callback(false,"无法获取摄像头，请在设置中获取摄像头权限")
+                })
+            }
         }
     }
 }

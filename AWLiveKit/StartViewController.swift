@@ -15,11 +15,24 @@ class StartViewController: UIViewController {
     @IBOutlet weak var orientationSegment : UISegmentedControl!
     var videoQualities : [AWLiveCaptureVideoQuality] = [._480,._540i, ._720,  ._1080, ._4k]
     var videoLandscape : Bool = true
+    var isCaptureAuthorized : Bool = false
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.urlTextField.text = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
         self.qualityPicker.selectRow(2, inComponent: 0, animated: false)
+        AWLive.requestCapture { [weak self](succeed, message) in
+            self?.isCaptureAuthorized = succeed
+            if !succeed {
+                let alert = UIAlertController(title: "无法获取权限", message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
+                    
+                }))
+                self?.present(alert, animated: true, completion: {
+                    
+                })
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,6 +72,9 @@ class StartViewController: UIViewController {
         }
     }
     @IBAction func onButtonStart(sender:UIButton) {
+        guard self.isCaptureAuthorized else {
+            return
+        }
         let alert = UIAlertController(title: "进入直播", message: "选择屏幕方向", preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "横屏", style: .destructive, handler: { (_) in
             self.videoLandscape = true
