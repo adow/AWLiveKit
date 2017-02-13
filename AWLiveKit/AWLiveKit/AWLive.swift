@@ -23,6 +23,8 @@ class AWLive {
         return self.push?.isLive
     }
     var isInterruption : Bool = false
+    /// 状态监控
+    var liveStat : AWLiveStat!
     init(url:String,
          onPreview preview : AWLivePreview,
          withQuality videoQuality : AWLiveCaptureVideoQuality = AWLiveCaptureVideoQuality._720,
@@ -54,6 +56,8 @@ class AWLive {
             _self.capture.connectPreView(preview)
             _self.capture.start()
         }
+        ///
+        self.liveStat = AWLiveStat()
         /// notification
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(onNotificationResign(_:)),
@@ -180,8 +184,11 @@ extension AWLive {
             self?.push?.pushAudioBufferList(bufferList) /// push
         }
         self.push?.start()
+        ///
+        self.liveStat?.start()
     }
     func stopLive() {
+        self.liveStat?.stop()
         self.push?.stop()
         self.videoEncoder?.close()
         self.videoEncoder = nil
@@ -213,3 +220,4 @@ extension AWLive {
         self.close()
     }
 }
+

@@ -11,5 +11,7 @@
 
 #include "aw_rtmp.h"
 #include "aw_live_push.h"
+#include "NetworkHelper.h"
+#include "NetworkInterface.h"
 
 #endif /* Bridging_header_h */
