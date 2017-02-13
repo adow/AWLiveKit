@@ -77,6 +77,7 @@ class AWLive {
     deinit {
         self.close()
         NotificationCenter.default.removeObserver(self)
+        NSLog("AWLive release")
     }
     fileprivate func close() {
         self.stopLive()

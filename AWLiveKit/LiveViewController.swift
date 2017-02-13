@@ -102,6 +102,10 @@ class LiveViewController: UIViewController {
         self.live?.rotateWithCurrentOrientation()
     }
     
+    deinit {
+        NSLog("LiveViewController release")
+    }
+    
 }
 
 extension LiveViewController {
@@ -176,7 +180,7 @@ extension LiveViewController {
     }
     fileprivate func toggleUI() {
         let ui : [UIView] = [self.cameraSegmentControl, self.mirrorButton, self.liveStatLabel]
-        UIView.animate(withDuration: 0.5, delay: 0.5, options: [.curveEaseOut,.allowUserInteraction], animations: { 
+        UIView.animate(withDuration: 0.5, delay: 0.5, options: [.curveEaseOut,.allowUserInteraction], animations: {
             ui.forEach({ (v) in
                 if v.alpha == 1.0 {
                     v.alpha = 0.0
