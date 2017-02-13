@@ -17,6 +17,8 @@ class LiveViewController: UIViewController {
     @IBOutlet var startButton : UIButton!
     @IBOutlet var liveStatLabel : UILabel!
     @IBOutlet var closeButton : UIButton!
+    @IBOutlet var cameraSegmentControl : UISegmentedControl!
+    @IBOutlet var mirrorButton : UIButton!
     var push_url : String! = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
     var orientation : UIInterfaceOrientation! = .portrait
     var videoQuality : AWLiveCaptureVideoQuality = ._720
@@ -25,6 +27,9 @@ class LiveViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         self.showInfo(push_url, duration: 5.0)
         self.startButton.isHidden = true
+        /// tap
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGesture(_:)))
+        self.view.addGestureRecognizer(tapGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -165,6 +170,25 @@ extension LiveViewController {
         self.dismiss(animated: true) { 
             
         }
+    }
+    func onTapGesture(_ recognizer:UITapGestureRecognizer) {
+        self.toggleUI()
+    }
+    fileprivate func toggleUI() {
+        let ui : [UIView] = [self.cameraSegmentControl, self.mirrorButton, self.liveStatLabel]
+        UIView.animate(withDuration: 0.5, delay: 0.5, options: [.curveEaseOut,.allowUserInteraction], animations: { 
+            ui.forEach({ (v) in
+                if v.alpha == 1.0 {
+                    v.alpha = 0.0
+                }
+                else {
+                    v.alpha = 1.0
+                }
+            })
+        }, completion: { (completed) in
+            
+        })
+        
     }
 }
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {

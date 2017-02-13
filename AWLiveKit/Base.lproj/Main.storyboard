@@ -121,9 +121,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="nbc-9l-hdp"/>
                     <connections>
+                        <outlet property="cameraSegmentControl" destination="MLi-7U-7yb" id="9SH-ve-iL9"/>
                         <outlet property="closeButton" destination="O6I-8P-BFP" id="Dg7-mA-m4W"/>
                         <outlet property="infoLabel" destination="4tN-e5-Xwo" id="bBp-0a-Erm"/>
                         <outlet property="liveStatLabel" destination="pff-xf-Gq1" id="fmC-S4-kyD"/>
+                        <outlet property="mirrorButton" destination="vR0-zD-EaZ" id="LLw-L1-ErJ"/>
                         <outlet property="preview" destination="J5W-TL-CIx" id="Ix7-XU-fXh"/>
                         <outlet property="startButton" destination="vaF-IK-jY8" id="d17-90-J0u"/>
                     </connections>
