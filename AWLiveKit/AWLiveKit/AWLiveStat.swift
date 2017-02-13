@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import AVFoundation
 protocol AWLiveStatDelegate : class{
     func updateLiveStat(stat:AWLiveStat)
 }
@@ -43,11 +44,18 @@ class AWLiveStat {
     var lastUpdateBatteryTime : Date = Date()
     /// 电池
     var battery : Int?
+    /// 当前麦克风
+    var microphone : String = ""
     /// 计时器更新后回调
     weak var delegate : AWLiveStatDelegate? = nil
     init() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onNotificationRouteChange(_:)),
+                                               name: NSNotification.Name.AVAudioSessionRouteChange,
+                                               object: nil)
     }
     deinit {
+        NotificationCenter.default.removeObserver(self)
         self.stop()
     }
     func start() {
@@ -80,7 +88,7 @@ class AWLiveStat {
     }
     /// 输出
     var outputDescription : String {
-        return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkSignalStrgenth) 网络\n"
+        return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkSignalStrgenth) 网络\n \(self.microphone)"
     }
 }
 extension AWLiveStat {
@@ -131,6 +139,17 @@ extension AWLiveStat {
         device.isBatteryMonitoringEnabled = true
         self.battery = Int(device.batteryLevel * 100.0)
         device.isBatteryMonitoringEnabled = false
+    }
+    @objc func onNotificationRouteChange(_ notification:Notification) {
+        let inputs = AVAudioSession.sharedInstance().currentRoute.inputs
+        for one_input in inputs {
+            NSLog("input:\(one_input.portName),\(one_input.portType)")
+            self.microphone = "\(one_input.portName)\n\(one_input.portType)"
+        }
+        let outputs = AVAudioSession.sharedInstance().currentRoute.outputs
+        for one_output in outputs {
+            NSLog("output:\(one_output.portName),\(one_output.portType)")
+        }
     }
     
 }
