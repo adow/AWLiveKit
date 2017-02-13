@@ -126,12 +126,17 @@ extension AWLiveStat {
         let networkSpeed = Int64((self.secondsFromLastUpdate != 0.0) ?
                             Double(append_bytes) / self.secondsFromLastUpdate : 0.0)
         self.networkSpeedKB = Int(networkSpeed) / 1000
-        self.networkSpeedKB_str = "\(networkSpeedKB) KB/s"
+        if self.networkSpeedKB > 80 {
+            self.networkSpeedKB_str = "\(networkSpeedKB) KB/s"
+        }
+        else {
+            self.networkSpeedKB_str = "🚀网速过低 \(networkSpeedKB) KB/s"
+        }
         /// signalStrength
         self.networkSignalStrgenth = NetworkHelper.signalStrength() ?? "-"
     }
     fileprivate func updateBattery() {
-        guard abs(self.lastUpdateBatteryTime.timeIntervalSince1970) >= 10 else {
+        guard abs(self.lastUpdateBatteryTime.timeIntervalSinceNow) >= 10 else {
             return
         }
         self.lastUpdateBatteryTime = Date()
@@ -139,6 +144,7 @@ extension AWLiveStat {
         device.isBatteryMonitoringEnabled = true
         self.battery = Int(device.batteryLevel * 100.0)
         device.isBatteryMonitoringEnabled = false
+        NSLog("battery:\(self.battery ?? 0)")
     }
     @objc func onNotificationRouteChange(_ notification:Notification) {
         let inputs = AVAudioSession.sharedInstance().currentRoute.inputs
