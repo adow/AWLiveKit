@@ -16,6 +16,7 @@ class LiveViewController: UIViewController {
     @IBOutlet var infoLabel : UILabel!
     @IBOutlet var startButton : UIButton!
     @IBOutlet var liveStatLabel : UILabel!
+    @IBOutlet var closeButton : UIButton!
     var push_url : String! = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
     var orientation : UIInterfaceOrientation! = .portrait
     var videoQuality : AWLiveCaptureVideoQuality = ._720
@@ -160,6 +161,11 @@ extension LiveViewController {
         sender.isSelected = !sender.isSelected
         self.live?.mirror = sender.isSelected
     }
+    @IBAction func onButtonClose(_ sender : UIButton!) {
+        self.dismiss(animated: true) { 
+            
+        }
+    }
 }
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
     func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
@@ -168,6 +174,7 @@ extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
     }
     func pushLiveChanged(_ push: AWLivePush2) {
         self.startButton.isSelected = push.isLive
+        self.closeButton.isHidden = push.isLive
         self.showInfo("\(push.isLive ? "start" : "stop")", duration: 5.0)
     }
     func updateLiveStat(stat: AWLiveStat) {

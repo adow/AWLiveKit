@@ -29,6 +29,21 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VAJ-OE-gCN">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vaF-IK-jY8">
+                                        <rect key="frame" x="15" y="30" width="62" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="zMa-hO-kWu"/>
+                                        </constraints>
+                                        <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" title="开始直播">
+                                            <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <state key="disabled" title="未连接"/>
+                                        <state key="selected" title="直播"/>
+                                        <connections>
+                                            <action selector="onButtonLive:" destination="BYZ-38-t0r" eventType="touchUpInside" id="GsD-e6-eWk"/>
+                                        </connections>
+                                    </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4tN-e5-Xwo">
                                         <rect key="frame" x="0.0" y="78" width="375" height="57"/>
                                         <constraints>
@@ -60,39 +75,33 @@
                                             <action selector="onButtonMirror:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zBR-Dy-p14"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vaF-IK-jY8">
-                                        <rect key="frame" x="15" y="30" width="46" height="30"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="46" id="s3I-Ax-HAb"/>
-                                            <constraint firstAttribute="height" constant="30" id="zMa-hO-kWu"/>
-                                        </constraints>
-                                        <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                        <state key="normal" title="开始">
-                                            <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
-                                        <state key="disabled" title="未连接"/>
-                                        <state key="selected" title="直播"/>
-                                        <connections>
-                                            <action selector="onButtonLive:" destination="BYZ-38-t0r" eventType="touchUpInside" id="GsD-e6-eWk"/>
-                                        </connections>
-                                    </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pff-xf-Gq1">
                                         <rect key="frame" x="367" y="149" width="0.0" height="0.0"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="textColor" white="0.90000000000000002" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O6I-8P-BFP">
+                                        <rect key="frame" x="328" y="30" width="31" height="30"/>
+                                        <color key="tintColor" red="0.95872321510000003" green="0.95872321510000003" blue="0.95872321510000003" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" title="退出"/>
+                                        <connections>
+                                            <action selector="onButtonClose:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rar-hh-fDT"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="pff-xf-Gq1" secondAttribute="trailing" constant="8" id="CI8-Ds-SwL"/>
                                     <constraint firstItem="MLi-7U-7yb" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="15" id="DgO-6K-hX0"/>
                                     <constraint firstItem="4tN-e5-Xwo" firstAttribute="top" secondItem="vaF-IK-jY8" secondAttribute="bottom" constant="18" id="Eic-MJ-jVS"/>
+                                    <constraint firstAttribute="trailing" secondItem="O6I-8P-BFP" secondAttribute="trailing" constant="16" id="FeA-W8-qZb"/>
                                     <constraint firstItem="vR0-zD-EaZ" firstAttribute="centerY" secondItem="MLi-7U-7yb" secondAttribute="centerY" id="JZ7-Qq-h5T"/>
                                     <constraint firstItem="vaF-IK-jY8" firstAttribute="top" secondItem="VAJ-OE-gCN" secondAttribute="top" constant="30" id="Mc8-ZX-9nd"/>
                                     <constraint firstItem="vaF-IK-jY8" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="15" id="ONp-Iv-Ez9"/>
                                     <constraint firstItem="pff-xf-Gq1" firstAttribute="top" secondItem="4tN-e5-Xwo" secondAttribute="bottom" constant="14" id="Rgl-oe-FKl"/>
                                     <constraint firstItem="4tN-e5-Xwo" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" id="WvN-5x-jjZ"/>
                                     <constraint firstItem="vR0-zD-EaZ" firstAttribute="leading" secondItem="MLi-7U-7yb" secondAttribute="trailing" constant="21" id="Yug-Qa-URe"/>
+                                    <constraint firstItem="O6I-8P-BFP" firstAttribute="centerY" secondItem="vaF-IK-jY8" secondAttribute="centerY" id="eJS-7e-G3T"/>
                                     <constraint firstAttribute="trailing" secondItem="4tN-e5-Xwo" secondAttribute="trailing" id="fyv-Hd-tIS"/>
                                     <constraint firstAttribute="bottom" secondItem="MLi-7U-7yb" secondAttribute="bottom" constant="25" id="m39-sI-qz1"/>
                                 </constraints>
@@ -112,6 +121,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="nbc-9l-hdp"/>
                     <connections>
+                        <outlet property="closeButton" destination="O6I-8P-BFP" id="Dg7-mA-m4W"/>
                         <outlet property="infoLabel" destination="4tN-e5-Xwo" id="bBp-0a-Erm"/>
                         <outlet property="liveStatLabel" destination="pff-xf-Gq1" id="fmC-S4-kyD"/>
                         <outlet property="preview" destination="J5W-TL-CIx" id="Ix7-XU-fXh"/>
