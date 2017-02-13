@@ -11,7 +11,7 @@ import AVFoundation
 
 class LiveViewController: UIViewController {
 
-    var live : AWLive!
+    var live : AWLive?
     @IBOutlet var preview : AWLivePreview!
     @IBOutlet var infoLabel : UILabel!
     @IBOutlet var startButton : UIButton!
@@ -24,30 +24,6 @@ class LiveViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         self.showInfo(push_url, duration: 5.0)
         self.startButton.isHidden = true
-        
-        
-        
-        ///
-        var videoOrientation : AVCaptureVideoOrientation = .portrait
-        if orientation == .landscapeRight {
-            videoOrientation = .landscapeRight
-        }
-        else if orientation == .landscapeLeft {
-            videoOrientation = .landscapeLeft
-        }
-        else if orientation == .portrait {
-            videoOrientation = .portrait
-        }
-        else if orientation == .portraitUpsideDown {
-            videoOrientation = .portraitUpsideDown
-        }
-        self.live = AWLive(url: self.push_url,
-                           onPreview: self.preview,
-                           withQuality: self.videoQuality,
-                           atOrientation : videoOrientation)
-        self.live.push?.delegate = self
-        self.live.liveStat?.delegate = self
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,6 +32,28 @@ class LiveViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         UIApplication.shared.isIdleTimerDisabled = true
+        if self.live == nil {
+            ///
+            var videoOrientation : AVCaptureVideoOrientation = .portrait
+            if orientation == .landscapeRight {
+                videoOrientation = .landscapeRight
+            }
+            else if orientation == .landscapeLeft {
+                videoOrientation = .landscapeLeft
+            }
+            else if orientation == .portrait {
+                videoOrientation = .portrait
+            }
+            else if orientation == .portraitUpsideDown {
+                videoOrientation = .portraitUpsideDown
+            }
+            self.live = AWLive(url: self.push_url,
+                               onPreview: self.preview,
+                               withQuality: self.videoQuality,
+                               atOrientation : videoOrientation)
+            self.live?.push?.delegate = self
+            self.live?.liveStat?.delegate = self
+        }
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -95,7 +93,7 @@ class LiveViewController: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.live.rotateWithCurrentOrientation()
+        self.live?.rotateWithCurrentOrientation()
     }
     
 }
@@ -111,7 +109,7 @@ extension LiveViewController {
         }
     }
     @IBAction func onButtonLive(_ sender : UIButton!) {
-        guard let _isLive = self.live.isLive else {
+        guard let _isLive = self.live?.isLive else {
             return
         }
         if !_isLive {
@@ -140,27 +138,27 @@ extension LiveViewController {
             self.view.addConstraint(startAnimationView_constraint_centerY)
             startAnimationView.startAnimation(completionBlock: {
                 [weak self] in
-                self?.live.startLive()
+                self?.live?.startLive()
                 self?.showInfo("Start", duration: 5.0)
             })
         }
         else {
-            self.live.stopLive()
+            self.live?.stopLive()
             self.showInfo("Stop")
         }
     }
     @IBAction func onCameraChanged(_ sender : UISegmentedControl!) {
         if sender.selectedSegmentIndex == 0 {
-            self.live.frontCamera = false
+            self.live?.frontCamera = false
         }
         else if sender.selectedSegmentIndex == 1 {
-            self.live.frontCamera = true
+            self.live?.frontCamera = true
         }
         
     }
     @IBAction func onButtonMirror(_ sender : UIButton!) {
         sender.isSelected = !sender.isSelected
-        self.live.mirror = sender.isSelected
+        self.live?.mirror = sender.isSelected
     }
 }
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
