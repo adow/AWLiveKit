@@ -12,10 +12,10 @@ import VideoToolbox
 
 
 // MARK: - VideoEncoder
-typealias AWVideoEncoderCallback = (CMSampleBuffer) -> ()
+public typealias AWVideoEncoderCallback = (CMSampleBuffer) -> ()
 
 // MARK: Bitrate
-enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
+public enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
     case _450kbs = 0, _500kbs,_600kbs, _800kbs, _1000kbs, _1200kbs, _1500kbs, _2000kbs, _2500kbs, _3000kbs, _4000kbs
     var bitrates : Int {
         switch self {
@@ -44,7 +44,7 @@ enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
         }
     }
     /// 相关的 fps
-    var recommandedFPS : AWVideoEncoderFPS {
+    public var recommandedFPS : AWVideoEncoderFPS {
         switch self {
         case ._450kbs:
             return AWVideoEncoderFPS._20
@@ -55,7 +55,7 @@ enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
         }
     }
     /// 相关的 profile
-    var recommandedProfile : AWVideoEncoderProfile {
+    public var recommandedProfile : AWVideoEncoderProfile {
         switch self {
         case ._450kbs, ._500kbs:
             return AWVideoEncoderProfile.baseline
@@ -65,7 +65,7 @@ enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
             return AWVideoEncoderProfile.high
         }
     }
-    var description: String {
+    public var description: String {
         switch self {
         case ._450kbs:
             return "450kbs"
@@ -93,9 +93,9 @@ enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
     }
 }
 // MARK: fps
-enum AWVideoEncoderFPS : Int , CustomStringConvertible{
+public enum AWVideoEncoderFPS : Int , CustomStringConvertible{
     case _20 = 20, _25 = 25, _30 = 30, _60 = 60
-    var fps : Int {
+    public var fps : Int {
         switch self {
         case ._20:
             return 20
@@ -107,14 +107,14 @@ enum AWVideoEncoderFPS : Int , CustomStringConvertible{
             return 60
         }
     }
-    var description: String {
+    public var description: String {
         return String(self.rawValue)
     }
 }
 // MARK: profile
-enum AWVideoEncoderProfile : Int , CustomStringConvertible{
+public enum AWVideoEncoderProfile : Int , CustomStringConvertible{
     case baseline = 0, main, high
-    var profile : CFString {
+    public var profile : CFString {
         switch self {
         case .baseline:
             return kVTProfileLevel_H264_Baseline_AutoLevel
@@ -124,7 +124,7 @@ enum AWVideoEncoderProfile : Int , CustomStringConvertible{
             return kVTProfileLevel_H264_High_AutoLevel
         }
     }
-    var description: String {
+    public var description: String {
         switch self {
         case .baseline:
             return "kVTProfileLevel_H264_Baseline_AutoLevel"
@@ -137,11 +137,11 @@ enum AWVideoEncoderProfile : Int , CustomStringConvertible{
 }
 
 // MARK: Video Encoder
-class AWVideoEncoder: NSObject {
+public class AWVideoEncoder: NSObject {
     fileprivate var videoCompressionSession : VTCompressionSession? = nil
-    var attributes : [NSString:AnyObject]!
-    var onEncoded : AWVideoEncoderCallback? = nil
-    init(outputSize:CGSize,
+    public var attributes : [NSString:AnyObject]!
+    public var onEncoded : AWVideoEncoderCallback? = nil
+    public init(outputSize:CGSize,
          bitrate : AWVideoEncoderBitrate = ._600kbs,
          fps : AWVideoEncoderFPS = ._30,
          profile : AWVideoEncoderProfile = .main) {
@@ -198,7 +198,7 @@ class AWVideoEncoder: NSObject {
         }
     
     }
-    func close() {
+    public func close() {
         guard let _videoCompressionSession = self.videoCompressionSession else {
             return
         }
@@ -208,7 +208,7 @@ class AWVideoEncoder: NSObject {
         self.videoCompressionSession = nil
     }
     /// 编码
-    func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer){
+    public func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer){
         let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
         guard let _pixelBuffer = pixelBuffer else {
             NSLog("No Pixel Buffer")
@@ -220,7 +220,7 @@ class AWVideoEncoder: NSObject {
         
     }
     /// 编码
-    func encodePixelBuffer(_ pixelBuffer:CVPixelBuffer, presentationTime: CMTime, duration : CMTime) {
+    public func encodePixelBuffer(_ pixelBuffer:CVPixelBuffer, presentationTime: CMTime, duration : CMTime) {
         guard let _compressionSeession = self.videoCompressionSession else {
             NSLog("No VideoCompressionSession")
             return
@@ -243,7 +243,7 @@ class AWVideoEncoder: NSObject {
         CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
     }
     /// 编码回调
-    var encodeCallback : VTCompressionOutputCallback = {
+    public var encodeCallback : VTCompressionOutputCallback = {
         (outputCallbackRefCon: UnsafeMutableRawPointer?,
         sourceFrameRefCon: UnsafeMutableRawPointer?,
         status: OSStatus,
@@ -259,11 +259,11 @@ class AWVideoEncoder: NSObject {
 }
 // MARK: Audio Encoder
 private var g_audioInputFormat : AudioStreamBasicDescription!
-typealias AWAudioEncoderCallback = (AudioBufferList) -> ()
-class AWAudioEncoder {
-    var audioConverter : AudioConverterRef? = nil
-    var onEncoded : AWAudioEncoderCallback? = nil
-    init() {
+public typealias AWAudioEncoderCallback = (AudioBufferList) -> ()
+public class AWAudioEncoder {
+    public var audioConverter : AudioConverterRef? = nil
+    public var onEncoded : AWAudioEncoderCallback? = nil
+    public init() {
         
     }
     /// 初始化编码器，因为要知道 audioInputFormat, 所以必须从第一个 sampleBuffer 获取格式后创建
@@ -293,7 +293,7 @@ class AWAudioEncoder {
         }
         NSLog("AudioEncoder Setup")
     }
-    func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
+    public func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
         let format = CMSampleBufferGetFormatDescription(sampleBuffer)
         let sourceFormat = CMAudioFormatDescriptionGetStreamBasicDescription(format!)?.pointee
         g_audioInputFormat = sourceFormat
@@ -342,7 +342,7 @@ class AWAudioEncoder {
         
         self.onEncoded?(outBufferList)
     }
-    var encoderCallback : AudioConverterComplexInputDataProc = {
+    public var encoderCallback : AudioConverterComplexInputDataProc = {
         (setupAudioEncoderFromSampleBufferinAudioConverter: AudioConverterRef,
         ioNumberDataPackets: UnsafeMutablePointer<UInt32>,
         ioData: UnsafeMutablePointer<AudioBufferList>,

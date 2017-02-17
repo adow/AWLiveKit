@@ -12,7 +12,7 @@ import VideoToolbox
 
 extension CMSampleBuffer {
     
-    var isKeyFrame: Bool? {
+    public var isKeyFrame: Bool? {
         let attachments = CMSampleBufferGetSampleAttachmentsArray(self, true)
         guard attachments != nil else { return nil }
         
@@ -28,7 +28,7 @@ extension CMSampleBuffer {
         return keyFrame
     }
     
-    var dependsOnOthers: Bool {
+    public var dependsOnOthers: Bool {
         guard let
             attachments = CMSampleBufferGetSampleAttachmentsArray(self, false),
             let attachment = unsafeBitCast(CFArrayGetValueAtIndex(attachments, 0), to: NSDictionary.self) as? Dictionary<String,AnyObject>
@@ -37,7 +37,7 @@ extension CMSampleBuffer {
         return attachment["DependsOnOthers"] as! Bool
     }
     
-    var dataBuffer: CMBlockBuffer? {
+    public var dataBuffer: CMBlockBuffer? {
         get {
             return CMSampleBufferGetDataBuffer(self)
         }
@@ -49,33 +49,33 @@ extension CMSampleBuffer {
         }
     }
     
-    var duration: CMTime {
+    public var duration: CMTime {
         return CMSampleBufferGetDuration(self)
     }
     
-    var formatDescription: CMFormatDescription? {
+    public var formatDescription: CMFormatDescription? {
         return CMSampleBufferGetFormatDescription(self)
     }
-    var isDataReady : Bool {
+    public var isDataReady : Bool {
         return CMSampleBufferDataIsReady(self)
     }
     
-    var decodeTimeStamp: CMTime {
+    public var decodeTimeStamp: CMTime {
         let decodeTimestamp = CMSampleBufferGetDecodeTimeStamp(self)
         return decodeTimestamp == kCMTimeInvalid ? presentationTimeStamp : decodeTimestamp
     }
     
-    var presentationTimeStamp: CMTime {
+    public var presentationTimeStamp: CMTime {
         return CMSampleBufferGetPresentationTimeStamp(self)
     }
-    var sps_data : Data? {
+    public var sps_data : Data? {
         return self.get_sps_or_pps_data(0, sampleBuffer: self)
     }
-    var pps_data : Data? {
+    public var pps_data : Data? {
         return self.get_sps_or_pps_data(1, sampleBuffer: self)
     }
     
-    func get_sps_or_pps_data(_ choice : Int ,sampleBuffer:CMSampleBuffer) -> Data?{
+    public func get_sps_or_pps_data(_ choice : Int ,sampleBuffer:CMSampleBuffer) -> Data?{
         let format = CMSampleBufferGetFormatDescription(sampleBuffer)
         guard format != nil else { return nil }
         
@@ -127,19 +127,19 @@ extension ExpressibleByIntegerLiteral {
 }
 extension String {
     
-    var pointer: UnsafePointer<Int8> {
+    public var pointer: UnsafePointer<Int8> {
         return withCString { (ptr) -> UnsafePointer<Int8> in
             return ptr
         }
     }
     
-    var mutablePointer: UnsafeMutablePointer<Int8> {
+    public var mutablePointer: UnsafeMutablePointer<Int8> {
         return withCString({ (ptr) -> UnsafeMutablePointer<Int8> in
             return UnsafeMutablePointer(mutating: ptr)
         })
     }
     
-    var asciiString: UnsafePointer<Int8> {
+    public var asciiString: UnsafePointer<Int8> {
         return (self as NSString).cString(using: String.Encoding.ascii.rawValue)!
     }
     

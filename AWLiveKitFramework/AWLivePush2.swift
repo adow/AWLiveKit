@@ -11,10 +11,10 @@ import AVFoundation
 import VideoToolbox
 import AudioToolbox
 
-enum AWLiveConnectState : Int ,CustomStringConvertible{
+public enum AWLiveConnectState : Int ,CustomStringConvertible{
     case NotConnect = 0, Connecting = 1, Connected = 2
     
-    var description: String {
+    public var description: String {
         let d : [AWLiveConnectState:String] =
             [.NotConnect:"NotConnect",
              .Connecting : "Connecting",
@@ -22,13 +22,13 @@ enum AWLiveConnectState : Int ,CustomStringConvertible{
         return d[self] ?? "Unknown"
     }
 }
-protocol AWLivePushDeletate : class{
+public protocol AWLivePushDeletate : class{
     /// 连接状态改变
     func push(_ push:AWLivePush2, connectedStateChanged state:AWLiveConnectState)
     /// 播出状态改变
     func pushLiveChanged(_ push:AWLivePush2)
 }
-class AWLivePush2 {
+public class AWLivePush2 {
     var rtmp_queue : DispatchQueue = DispatchQueue(label: "adow.rtmp", attributes: [])
     var sps_pps_sent : Int32 = 0
     let avvc_header_length : size_t = 4
@@ -38,8 +38,8 @@ class AWLivePush2 {
     fileprivate var pushFailedCounter : Int = 0
     var rtmpUrl : String!
     var reconnectTimer : Timer?
-    weak var delegate : AWLivePushDeletate? = nil
-    var connectState : AWLiveConnectState = .NotConnect {
+    public weak var delegate : AWLivePushDeletate? = nil
+    public var connectState : AWLiveConnectState = .NotConnect {
         didSet {
             DispatchQueue.main.async {
                 self.delegate?.push(self, connectedStateChanged: self.connectState)
@@ -47,14 +47,14 @@ class AWLivePush2 {
         }
     }
     /// 播出
-    var isLive : Bool = false {
+    public var isLive : Bool = false {
         didSet {
             DispatchQueue.main.async {
                 self.delegate?.pushLiveChanged(self)
             }
         }
     }
-    init(url:String) {
+    public init(url:String) {
         self.rtmpUrl = url
         self.connectURL(url)
     }
@@ -82,7 +82,7 @@ class AWLivePush2 {
         }
     }
     /// 关闭 rtmp 连接
-    func disconnect() {
+    public func disconnect() {
         guard self.connectState == .Connected else {
             return
         }
@@ -109,11 +109,11 @@ class AWLivePush2 {
         self.connectURL(self.rtmpUrl)
     }
     /// 开始推流
-    func start() {
+    public func start() {
         self.isLive = true
     }
     /// 结束推流
-    func stop() {
+    public func stop() {
         self.isLive = false
     }
 }
@@ -129,10 +129,10 @@ extension AWLivePush2 {
     fileprivate func resetPushFailed() {
         self.pushFailedCounter = 0
     }
-    var timeOffset : Double {
+    public var timeOffset : Double {
         return abs(self.start_time?.timeIntervalSinceNow ?? 0.0) * 1000;
     }
-    func pushVideoSampleBuffer(_ sampleBuffer : CMSampleBuffer) {
+    public func pushVideoSampleBuffer(_ sampleBuffer : CMSampleBuffer) {
         rtmp_queue.async {
             /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
@@ -155,7 +155,7 @@ extension AWLivePush2 {
             }
         }
     }
-    func pushAudioBufferList(_ audioList : AudioBufferList) {
+    public func pushAudioBufferList(_ audioList : AudioBufferList) {
         rtmp_queue.async {
             /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {

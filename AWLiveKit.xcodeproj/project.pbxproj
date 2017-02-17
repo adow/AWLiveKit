@@ -7,77 +7,128 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		68220A7D1D59761C00715E37 /* AWEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68220A7C1D59761C00715E37 /* AWEncoder.swift */; };
-		68220A8D1D59A30300715E37 /* amf.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A7F1D59A30300715E37 /* amf.c */; };
-		68220A8E1D59A30300715E37 /* aw_rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A811D59A30300715E37 /* aw_rtmp.c */; };
-		68220A8F1D59A30300715E37 /* hashswf.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A851D59A30300715E37 /* hashswf.c */; };
-		68220A901D59A30300715E37 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A871D59A30300715E37 /* log.c */; };
-		68220A911D59A30300715E37 /* parseurl.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A891D59A30300715E37 /* parseurl.c */; };
-		68220A921D59A30300715E37 /* rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 68220A8A1D59A30300715E37 /* rtmp.c */; };
-		68220A971D59A5C900715E37 /* AWLivePush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68220A961D59A5C900715E37 /* AWLivePush.swift */; };
-		68220A991D59A93100715E37 /* AWLiveExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68220A981D59A93100715E37 /* AWLiveExtension.swift */; };
-		68348FFC1D58692E00C2A72E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68348FFB1D58692E00C2A72E /* AppDelegate.swift */; };
-		68348FFE1D58692E00C2A72E /* LiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68348FFD1D58692E00C2A72E /* LiveViewController.swift */; };
-		683490011D58692E00C2A72E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68348FFF1D58692E00C2A72E /* Main.storyboard */; };
-		683490031D58692E00C2A72E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 683490021D58692E00C2A72E /* Assets.xcassets */; };
-		683490061D58692E00C2A72E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 683490041D58692E00C2A72E /* LaunchScreen.storyboard */; };
-		6834900F1D586AA000C2A72E /* AWCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6834900E1D586AA000C2A72E /* AWCapture.swift */; };
-		683490111D587EA900C2A72E /* AWLivePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683490101D587EA900C2A72E /* AWLivePreview.swift */; };
-		6851006E1E1B8F3D00A835A2 /* AWLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6851006D1E1B8F3D00A835A2 /* AWLive.swift */; };
-		685100701E1BF39A00A835A2 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6851006F1E1BF39A00A835A2 /* StartViewController.swift */; };
-		687D80BF1E50929E0059BBDC /* NetworkHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 687D80BC1E50929E0059BBDC /* NetworkHelper.m */; };
-		687D80C01E50929E0059BBDC /* NetworkInterface.c in Sources */ = {isa = PBXBuildFile; fileRef = 687D80BD1E50929E0059BBDC /* NetworkInterface.c */; };
-		687D80C21E5092F30059BBDC /* AWLiveStat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687D80C11E5092F30059BBDC /* AWLiveStat.swift */; };
-		68C9BD1F1E14BE2800D2E127 /* aw_live_push.c in Sources */ = {isa = PBXBuildFile; fileRef = 68C9BD1D1E14BE2800D2E127 /* aw_live_push.c */; };
-		68C9BD231E15662E00D2E127 /* AWLivePush2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C9BD221E15662E00D2E127 /* AWLivePush2.swift */; };
-		68EC2CB71E50528C00518825 /* StartAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EC2CB61E50528C00518825 /* StartAnimationView.swift */; };
+		684DE6101E56901D000C6C92 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE5C51E56901C000C6C92 /* AppDelegate.swift */; };
+		684DE6111E56901D000C6C92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 684DE5C61E56901C000C6C92 /* Assets.xcassets */; };
+		684DE6121E56901D000C6C92 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 684DE5C71E56901C000C6C92 /* LaunchScreen.storyboard */; };
+		684DE6131E56901D000C6C92 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 684DE5C91E56901C000C6C92 /* Main.storyboard */; };
+		684DE6151E56901D000C6C92 /* LiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE5CD1E56901C000C6C92 /* LiveViewController.swift */; };
+		684DE6161E56901D000C6C92 /* StartAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE5CE1E56901C000C6C92 /* StartAnimationView.swift */; };
+		684DE6171E56901D000C6C92 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE5CF1E56901C000C6C92 /* StartViewController.swift */; };
+		684DE64D1E569070000C6C92 /* AWLiveKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE64B1E569070000C6C92 /* AWLiveKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE6501E569070000C6C92 /* AWLiveKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 684DE6491E569070000C6C92 /* AWLiveKit.framework */; };
+		684DE6511E569070000C6C92 /* AWLiveKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 684DE6491E569070000C6C92 /* AWLiveKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		684DE6751E5690EC000C6C92 /* aw_live_push.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6551E5690EC000C6C92 /* aw_live_push.c */; };
+		684DE6761E5690EC000C6C92 /* aw_live_push.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6561E5690EC000C6C92 /* aw_live_push.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE6771E5690EC000C6C92 /* AWCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6571E5690EC000C6C92 /* AWCapture.swift */; };
+		684DE6781E5690EC000C6C92 /* AWEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6581E5690EC000C6C92 /* AWEncoder.swift */; };
+		684DE6791E5690EC000C6C92 /* AWLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6591E5690EC000C6C92 /* AWLive.swift */; };
+		684DE67A1E5690EC000C6C92 /* AWLiveExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */; };
+		684DE67B1E5690EC000C6C92 /* AWLivePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */; };
+		684DE67C1E5690EC000C6C92 /* AWLivePush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65C1E5690EC000C6C92 /* AWLivePush.swift */; };
+		684DE67D1E5690EC000C6C92 /* AWLivePush2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65D1E5690EC000C6C92 /* AWLivePush2.swift */; };
+		684DE67E1E5690EC000C6C92 /* AWLiveStat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */; };
+		684DE67F1E5690EC000C6C92 /* NetworkHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6601E5690EC000C6C92 /* NetworkHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE6801E5690EC000C6C92 /* NetworkHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6611E5690EC000C6C92 /* NetworkHelper.m */; };
+		684DE6811E5690EC000C6C92 /* NetworkInterface.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6621E5690EC000C6C92 /* NetworkInterface.c */; };
+		684DE6821E5690EC000C6C92 /* NetworkInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6631E5690EC000C6C92 /* NetworkInterface.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE6831E5690EC000C6C92 /* amf.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6651E5690EC000C6C92 /* amf.c */; };
+		684DE6841E5690EC000C6C92 /* amf.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6661E5690EC000C6C92 /* amf.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE6851E5690EC000C6C92 /* aw_rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6671E5690EC000C6C92 /* aw_rtmp.c */; };
+		684DE6861E5690EC000C6C92 /* aw_rtmp.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6681E5690EC000C6C92 /* aw_rtmp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE6871E5690EC000C6C92 /* bytes.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6691E5690EC000C6C92 /* bytes.h */; };
+		684DE6881E5690EC000C6C92 /* dh.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE66A1E5690EC000C6C92 /* dh.h */; };
+		684DE6891E5690EC000C6C92 /* dhgroups.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE66B1E5690EC000C6C92 /* dhgroups.h */; };
+		684DE68A1E5690EC000C6C92 /* handshake.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE66C1E5690EC000C6C92 /* handshake.h */; };
+		684DE68B1E5690EC000C6C92 /* hashswf.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE66D1E5690EC000C6C92 /* hashswf.c */; };
+		684DE68C1E5690EC000C6C92 /* http.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE66E1E5690EC000C6C92 /* http.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE68D1E5690EC000C6C92 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE66F1E5690EC000C6C92 /* log.c */; };
+		684DE68E1E5690EC000C6C92 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6701E5690EC000C6C92 /* log.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE68F1E5690EC000C6C92 /* parseurl.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6711E5690EC000C6C92 /* parseurl.c */; };
+		684DE6901E5690EC000C6C92 /* rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6721E5690EC000C6C92 /* rtmp.c */; };
+		684DE6921E5690EC000C6C92 /* rtmp_sys.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6741E5690EC000C6C92 /* rtmp_sys.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		684DE6951E5693D2000C6C92 /* rtmp.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6731E5690EC000C6C92 /* rtmp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		684DE64E1E569070000C6C92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 68348FF01D58692E00C2A72E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 684DE6481E569070000C6C92;
+			remoteInfo = AWLiveKitFramework;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		684DE5C31E568FAE000C6C92 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				684DE6511E569070000C6C92 /* AWLiveKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		68220A7C1D59761C00715E37 /* AWEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWEncoder.swift; path = AWLiveKit/AWEncoder.swift; sourceTree = "<group>"; };
-		68220A7F1D59A30300715E37 /* amf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = amf.c; sourceTree = "<group>"; };
-		68220A801D59A30300715E37 /* amf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amf.h; sourceTree = "<group>"; };
-		68220A811D59A30300715E37 /* aw_rtmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_rtmp.c; sourceTree = "<group>"; };
-		68220A821D59A30300715E37 /* aw_rtmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_rtmp.h; sourceTree = "<group>"; };
-		68220A831D59A30300715E37 /* dhgroups.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dhgroups.h; sourceTree = "<group>"; };
-		68220A841D59A30300715E37 /* handshake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = handshake.h; sourceTree = "<group>"; };
-		68220A851D59A30300715E37 /* hashswf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hashswf.c; sourceTree = "<group>"; };
-		68220A861D59A30300715E37 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http.h; sourceTree = "<group>"; };
-		68220A871D59A30300715E37 /* log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = log.c; sourceTree = "<group>"; };
-		68220A881D59A30300715E37 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
-		68220A891D59A30300715E37 /* parseurl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parseurl.c; sourceTree = "<group>"; };
-		68220A8A1D59A30300715E37 /* rtmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtmp.c; sourceTree = "<group>"; };
-		68220A8B1D59A30300715E37 /* rtmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp.h; sourceTree = "<group>"; };
-		68220A8C1D59A30300715E37 /* rtmp_sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp_sys.h; sourceTree = "<group>"; };
-		68220A931D59A32C00715E37 /* Bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-header.h"; sourceTree = "<group>"; };
-		68220A941D59A3BB00715E37 /* bytes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bytes.h; sourceTree = "<group>"; };
-		68220A951D59A3BB00715E37 /* dh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dh.h; sourceTree = "<group>"; };
-		68220A961D59A5C900715E37 /* AWLivePush.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLivePush.swift; path = AWLiveKit/AWLivePush.swift; sourceTree = "<group>"; };
-		68220A981D59A93100715E37 /* AWLiveExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLiveExtension.swift; path = AWLiveKit/AWLiveExtension.swift; sourceTree = "<group>"; };
-		68348FF81D58692E00C2A72E /* AWLiveKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWLiveKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		68348FFB1D58692E00C2A72E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		68348FFD1D58692E00C2A72E /* LiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveViewController.swift; sourceTree = "<group>"; };
-		683490001D58692E00C2A72E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		683490021D58692E00C2A72E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		683490051D58692E00C2A72E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		683490071D58692E00C2A72E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6834900E1D586AA000C2A72E /* AWCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWCapture.swift; path = AWLiveKit/AWCapture.swift; sourceTree = "<group>"; };
-		683490101D587EA900C2A72E /* AWLivePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLivePreview.swift; path = AWLiveKit/AWLivePreview.swift; sourceTree = "<group>"; };
-		6851006D1E1B8F3D00A835A2 /* AWLive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLive.swift; path = AWLiveKit/AWLive.swift; sourceTree = "<group>"; };
-		6851006F1E1BF39A00A835A2 /* StartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
-		687D80BB1E50929E0059BBDC /* NetworkHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkHelper.h; sourceTree = "<group>"; };
-		687D80BC1E50929E0059BBDC /* NetworkHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkHelper.m; sourceTree = "<group>"; };
-		687D80BD1E50929E0059BBDC /* NetworkInterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NetworkInterface.c; sourceTree = "<group>"; };
-		687D80BE1E50929E0059BBDC /* NetworkInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkInterface.h; sourceTree = "<group>"; };
-		687D80C11E5092F30059BBDC /* AWLiveStat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLiveStat.swift; path = AWLiveKit/AWLiveStat.swift; sourceTree = "<group>"; };
-		68C9BD1D1E14BE2800D2E127 /* aw_live_push.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aw_live_push.c; path = AWLiveKit/aw_live_push.c; sourceTree = "<group>"; };
-		68C9BD1E1E14BE2800D2E127 /* aw_live_push.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aw_live_push.h; path = AWLiveKit/aw_live_push.h; sourceTree = "<group>"; };
-		68C9BD221E15662E00D2E127 /* AWLivePush2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AWLivePush2.swift; path = AWLiveKit/AWLivePush2.swift; sourceTree = "<group>"; };
-		68EC2CB61E50528C00518825 /* StartAnimationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartAnimationView.swift; sourceTree = "<group>"; };
+		68348FF81D58692E00C2A72E /* AWLiveKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWLiveKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		684DE5C51E56901C000C6C92 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		684DE5C61E56901C000C6C92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		684DE5C81E56901C000C6C92 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		684DE5CA1E56901C000C6C92 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		684DE5CB1E56901C000C6C92 /* Bridging-header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bridging-header.h"; sourceTree = "<group>"; };
+		684DE5CC1E56901C000C6C92 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		684DE5CD1E56901C000C6C92 /* LiveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveViewController.swift; sourceTree = "<group>"; };
+		684DE5CE1E56901C000C6C92 /* StartAnimationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartAnimationView.swift; sourceTree = "<group>"; };
+		684DE5CF1E56901C000C6C92 /* StartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
+		684DE6491E569070000C6C92 /* AWLiveKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AWLiveKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		684DE64B1E569070000C6C92 /* AWLiveKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AWLiveKit.h; sourceTree = "<group>"; };
+		684DE64C1E569070000C6C92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		684DE6551E5690EC000C6C92 /* aw_live_push.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_live_push.c; sourceTree = "<group>"; };
+		684DE6561E5690EC000C6C92 /* aw_live_push.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_live_push.h; sourceTree = "<group>"; };
+		684DE6571E5690EC000C6C92 /* AWCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWCapture.swift; sourceTree = "<group>"; };
+		684DE6581E5690EC000C6C92 /* AWEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWEncoder.swift; sourceTree = "<group>"; };
+		684DE6591E5690EC000C6C92 /* AWLive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLive.swift; sourceTree = "<group>"; };
+		684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveExtension.swift; sourceTree = "<group>"; };
+		684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePreview.swift; sourceTree = "<group>"; };
+		684DE65C1E5690EC000C6C92 /* AWLivePush.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePush.swift; sourceTree = "<group>"; };
+		684DE65D1E5690EC000C6C92 /* AWLivePush2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePush2.swift; sourceTree = "<group>"; };
+		684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveStat.swift; sourceTree = "<group>"; };
+		684DE6601E5690EC000C6C92 /* NetworkHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkHelper.h; sourceTree = "<group>"; };
+		684DE6611E5690EC000C6C92 /* NetworkHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkHelper.m; sourceTree = "<group>"; };
+		684DE6621E5690EC000C6C92 /* NetworkInterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NetworkInterface.c; sourceTree = "<group>"; };
+		684DE6631E5690EC000C6C92 /* NetworkInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkInterface.h; sourceTree = "<group>"; };
+		684DE6651E5690EC000C6C92 /* amf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = amf.c; sourceTree = "<group>"; };
+		684DE6661E5690EC000C6C92 /* amf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amf.h; sourceTree = "<group>"; };
+		684DE6671E5690EC000C6C92 /* aw_rtmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_rtmp.c; sourceTree = "<group>"; };
+		684DE6681E5690EC000C6C92 /* aw_rtmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_rtmp.h; sourceTree = "<group>"; };
+		684DE6691E5690EC000C6C92 /* bytes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bytes.h; sourceTree = "<group>"; };
+		684DE66A1E5690EC000C6C92 /* dh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dh.h; sourceTree = "<group>"; };
+		684DE66B1E5690EC000C6C92 /* dhgroups.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dhgroups.h; sourceTree = "<group>"; };
+		684DE66C1E5690EC000C6C92 /* handshake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = handshake.h; sourceTree = "<group>"; };
+		684DE66D1E5690EC000C6C92 /* hashswf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hashswf.c; sourceTree = "<group>"; };
+		684DE66E1E5690EC000C6C92 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http.h; sourceTree = "<group>"; };
+		684DE66F1E5690EC000C6C92 /* log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = log.c; sourceTree = "<group>"; };
+		684DE6701E5690EC000C6C92 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
+		684DE6711E5690EC000C6C92 /* parseurl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parseurl.c; sourceTree = "<group>"; };
+		684DE6721E5690EC000C6C92 /* rtmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtmp.c; sourceTree = "<group>"; };
+		684DE6731E5690EC000C6C92 /* rtmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp.h; sourceTree = "<group>"; };
+		684DE6741E5690EC000C6C92 /* rtmp_sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp_sys.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		68348FF51D58692E00C2A72E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				684DE6501E569070000C6C92 /* AWLiveKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		684DE6451E569070000C6C92 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -87,34 +138,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		68220A7E1D59A30300715E37 /* rtmp */ = {
-			isa = PBXGroup;
-			children = (
-				68220A941D59A3BB00715E37 /* bytes.h */,
-				68220A951D59A3BB00715E37 /* dh.h */,
-				68220A7F1D59A30300715E37 /* amf.c */,
-				68220A801D59A30300715E37 /* amf.h */,
-				68220A811D59A30300715E37 /* aw_rtmp.c */,
-				68220A821D59A30300715E37 /* aw_rtmp.h */,
-				68220A831D59A30300715E37 /* dhgroups.h */,
-				68220A841D59A30300715E37 /* handshake.h */,
-				68220A851D59A30300715E37 /* hashswf.c */,
-				68220A861D59A30300715E37 /* http.h */,
-				68220A871D59A30300715E37 /* log.c */,
-				68220A881D59A30300715E37 /* log.h */,
-				68220A891D59A30300715E37 /* parseurl.c */,
-				68220A8A1D59A30300715E37 /* rtmp.c */,
-				68220A8B1D59A30300715E37 /* rtmp.h */,
-				68220A8C1D59A30300715E37 /* rtmp_sys.h */,
-			);
-			name = rtmp;
-			path = AWLiveKit/rtmp;
-			sourceTree = "<group>";
-		};
 		68348FEF1D58692E00C2A72E = {
 			isa = PBXGroup;
 			children = (
-				68348FFA1D58692E00C2A72E /* AWLiveKit */,
+				684DE5C41E56901C000C6C92 /* AWLiveKitDemo */,
+				684DE64A1E569070000C6C92 /* AWLiveKitFramework */,
 				68348FF91D58692E00C2A72E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -122,78 +150,146 @@
 		68348FF91D58692E00C2A72E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				68348FF81D58692E00C2A72E /* AWLiveKit.app */,
+				68348FF81D58692E00C2A72E /* AWLiveKitDemo.app */,
+				684DE6491E569070000C6C92 /* AWLiveKit.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		68348FFA1D58692E00C2A72E /* AWLiveKit */ = {
+		684DE5C41E56901C000C6C92 /* AWLiveKitDemo */ = {
 			isa = PBXGroup;
 			children = (
-				6834900D1D586A8200C2A72E /* AWLiveKit */,
-				68348FFB1D58692E00C2A72E /* AppDelegate.swift */,
-				68348FFD1D58692E00C2A72E /* LiveViewController.swift */,
-				6851006F1E1BF39A00A835A2 /* StartViewController.swift */,
-				68EC2CB61E50528C00518825 /* StartAnimationView.swift */,
-				68348FFF1D58692E00C2A72E /* Main.storyboard */,
-				683490021D58692E00C2A72E /* Assets.xcassets */,
-				683490041D58692E00C2A72E /* LaunchScreen.storyboard */,
-				683490071D58692E00C2A72E /* Info.plist */,
-				68220A931D59A32C00715E37 /* Bridging-header.h */,
+				684DE5C51E56901C000C6C92 /* AppDelegate.swift */,
+				684DE5C61E56901C000C6C92 /* Assets.xcassets */,
+				684DE5C71E56901C000C6C92 /* LaunchScreen.storyboard */,
+				684DE5C91E56901C000C6C92 /* Main.storyboard */,
+				684DE5CB1E56901C000C6C92 /* Bridging-header.h */,
+				684DE5CC1E56901C000C6C92 /* Info.plist */,
+				684DE5CD1E56901C000C6C92 /* LiveViewController.swift */,
+				684DE5CE1E56901C000C6C92 /* StartAnimationView.swift */,
+				684DE5CF1E56901C000C6C92 /* StartViewController.swift */,
 			);
-			path = AWLiveKit;
+			path = AWLiveKitDemo;
 			sourceTree = "<group>";
 		};
-		6834900D1D586A8200C2A72E /* AWLiveKit */ = {
+		684DE64A1E569070000C6C92 /* AWLiveKitFramework */ = {
 			isa = PBXGroup;
 			children = (
-				687D80BA1E50929E0059BBDC /* network */,
-				68220A7E1D59A30300715E37 /* rtmp */,
-				6834900E1D586AA000C2A72E /* AWCapture.swift */,
-				6851006D1E1B8F3D00A835A2 /* AWLive.swift */,
-				683490101D587EA900C2A72E /* AWLivePreview.swift */,
-				68220A7C1D59761C00715E37 /* AWEncoder.swift */,
-				68220A961D59A5C900715E37 /* AWLivePush.swift */,
-				68C9BD221E15662E00D2E127 /* AWLivePush2.swift */,
-				68220A981D59A93100715E37 /* AWLiveExtension.swift */,
-				687D80C11E5092F30059BBDC /* AWLiveStat.swift */,
-				68C9BD1D1E14BE2800D2E127 /* aw_live_push.c */,
-				68C9BD1E1E14BE2800D2E127 /* aw_live_push.h */,
+				684DE64B1E569070000C6C92 /* AWLiveKit.h */,
+				684DE6551E5690EC000C6C92 /* aw_live_push.c */,
+				684DE6561E5690EC000C6C92 /* aw_live_push.h */,
+				684DE6571E5690EC000C6C92 /* AWCapture.swift */,
+				684DE6581E5690EC000C6C92 /* AWEncoder.swift */,
+				684DE6591E5690EC000C6C92 /* AWLive.swift */,
+				684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */,
+				684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */,
+				684DE65C1E5690EC000C6C92 /* AWLivePush.swift */,
+				684DE65D1E5690EC000C6C92 /* AWLivePush2.swift */,
+				684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */,
+				684DE65F1E5690EC000C6C92 /* network */,
+				684DE6641E5690EC000C6C92 /* rtmp */,
+				684DE64C1E569070000C6C92 /* Info.plist */,
 			);
-			name = AWLiveKit;
+			path = AWLiveKitFramework;
 			sourceTree = "<group>";
 		};
-		687D80BA1E50929E0059BBDC /* network */ = {
+		684DE65F1E5690EC000C6C92 /* network */ = {
 			isa = PBXGroup;
 			children = (
-				687D80BB1E50929E0059BBDC /* NetworkHelper.h */,
-				687D80BC1E50929E0059BBDC /* NetworkHelper.m */,
-				687D80BD1E50929E0059BBDC /* NetworkInterface.c */,
-				687D80BE1E50929E0059BBDC /* NetworkInterface.h */,
+				684DE6601E5690EC000C6C92 /* NetworkHelper.h */,
+				684DE6611E5690EC000C6C92 /* NetworkHelper.m */,
+				684DE6621E5690EC000C6C92 /* NetworkInterface.c */,
+				684DE6631E5690EC000C6C92 /* NetworkInterface.h */,
 			);
-			name = network;
-			path = AWLiveKit/network;
+			path = network;
+			sourceTree = "<group>";
+		};
+		684DE6641E5690EC000C6C92 /* rtmp */ = {
+			isa = PBXGroup;
+			children = (
+				684DE6651E5690EC000C6C92 /* amf.c */,
+				684DE6661E5690EC000C6C92 /* amf.h */,
+				684DE6671E5690EC000C6C92 /* aw_rtmp.c */,
+				684DE6681E5690EC000C6C92 /* aw_rtmp.h */,
+				684DE6691E5690EC000C6C92 /* bytes.h */,
+				684DE66A1E5690EC000C6C92 /* dh.h */,
+				684DE66B1E5690EC000C6C92 /* dhgroups.h */,
+				684DE66C1E5690EC000C6C92 /* handshake.h */,
+				684DE66D1E5690EC000C6C92 /* hashswf.c */,
+				684DE66E1E5690EC000C6C92 /* http.h */,
+				684DE66F1E5690EC000C6C92 /* log.c */,
+				684DE6701E5690EC000C6C92 /* log.h */,
+				684DE6711E5690EC000C6C92 /* parseurl.c */,
+				684DE6721E5690EC000C6C92 /* rtmp.c */,
+				684DE6731E5690EC000C6C92 /* rtmp.h */,
+				684DE6741E5690EC000C6C92 /* rtmp_sys.h */,
+			);
+			path = rtmp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		684DE6461E569070000C6C92 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				684DE64D1E569070000C6C92 /* AWLiveKit.h in Headers */,
+				684DE67F1E5690EC000C6C92 /* NetworkHelper.h in Headers */,
+				684DE6861E5690EC000C6C92 /* aw_rtmp.h in Headers */,
+				684DE6761E5690EC000C6C92 /* aw_live_push.h in Headers */,
+				684DE6821E5690EC000C6C92 /* NetworkInterface.h in Headers */,
+				684DE6951E5693D2000C6C92 /* rtmp.h in Headers */,
+				684DE6921E5690EC000C6C92 /* rtmp_sys.h in Headers */,
+				684DE68C1E5690EC000C6C92 /* http.h in Headers */,
+				684DE68E1E5690EC000C6C92 /* log.h in Headers */,
+				684DE6841E5690EC000C6C92 /* amf.h in Headers */,
+				684DE6891E5690EC000C6C92 /* dhgroups.h in Headers */,
+				684DE68A1E5690EC000C6C92 /* handshake.h in Headers */,
+				684DE6871E5690EC000C6C92 /* bytes.h in Headers */,
+				684DE6881E5690EC000C6C92 /* dh.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
-		68348FF71D58692E00C2A72E /* AWLiveKit */ = {
+		68348FF71D58692E00C2A72E /* AWLiveKitDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6834900A1D58692E00C2A72E /* Build configuration list for PBXNativeTarget "AWLiveKit" */;
+			buildConfigurationList = 6834900A1D58692E00C2A72E /* Build configuration list for PBXNativeTarget "AWLiveKitDemo" */;
 			buildPhases = (
 				68348FF41D58692E00C2A72E /* Sources */,
 				68348FF51D58692E00C2A72E /* Frameworks */,
 				68348FF61D58692E00C2A72E /* Resources */,
+				684DE5C31E568FAE000C6C92 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				684DE64F1E569070000C6C92 /* PBXTargetDependency */,
+			);
+			name = AWLiveKitDemo;
+			productName = AWLiveKit;
+			productReference = 68348FF81D58692E00C2A72E /* AWLiveKitDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		684DE6481E569070000C6C92 /* AWLiveKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 684DE6521E569070000C6C92 /* Build configuration list for PBXNativeTarget "AWLiveKit" */;
+			buildPhases = (
+				684DE6441E569070000C6C92 /* Sources */,
+				684DE6451E569070000C6C92 /* Frameworks */,
+				684DE6461E569070000C6C92 /* Headers */,
+				684DE6471E569070000C6C92 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = AWLiveKit;
-			productName = AWLiveKit;
-			productReference = 68348FF81D58692E00C2A72E /* AWLiveKit.app */;
-			productType = "com.apple.product-type.application";
+			productName = AWLiveKitFramework;
+			productReference = 684DE6491E569070000C6C92 /* AWLiveKit.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -210,6 +306,12 @@
 						DevelopmentTeam = 656GZ3SAAP;
 						LastSwiftMigration = 0820;
 					};
+					684DE6481E569070000C6C92 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 656GZ3SAAP;
+						LastSwiftMigration = 0820;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 68348FF31D58692E00C2A72E /* Build configuration list for PBXProject "AWLiveKit" */;
@@ -225,7 +327,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				68348FF71D58692E00C2A72E /* AWLiveKit */,
+				68348FF71D58692E00C2A72E /* AWLiveKitDemo */,
+				684DE6481E569070000C6C92 /* AWLiveKit */,
 			);
 		};
 /* End PBXProject section */
@@ -235,9 +338,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				683490061D58692E00C2A72E /* LaunchScreen.storyboard in Resources */,
-				683490031D58692E00C2A72E /* Assets.xcassets in Resources */,
-				683490011D58692E00C2A72E /* Main.storyboard in Resources */,
+				684DE6131E56901D000C6C92 /* Main.storyboard in Resources */,
+				684DE6111E56901D000C6C92 /* Assets.xcassets in Resources */,
+				684DE6121E56901D000C6C92 /* LaunchScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		684DE6471E569070000C6C92 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,47 +358,62 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				68220A901D59A30300715E37 /* log.c in Sources */,
-				687D80C21E5092F30059BBDC /* AWLiveStat.swift in Sources */,
-				68220A991D59A93100715E37 /* AWLiveExtension.swift in Sources */,
-				68C9BD231E15662E00D2E127 /* AWLivePush2.swift in Sources */,
-				68220A8D1D59A30300715E37 /* amf.c in Sources */,
-				68220A8E1D59A30300715E37 /* aw_rtmp.c in Sources */,
-				68220A971D59A5C900715E37 /* AWLivePush.swift in Sources */,
-				68C9BD1F1E14BE2800D2E127 /* aw_live_push.c in Sources */,
-				68220A7D1D59761C00715E37 /* AWEncoder.swift in Sources */,
-				683490111D587EA900C2A72E /* AWLivePreview.swift in Sources */,
-				68EC2CB71E50528C00518825 /* StartAnimationView.swift in Sources */,
-				68220A911D59A30300715E37 /* parseurl.c in Sources */,
-				685100701E1BF39A00A835A2 /* StartViewController.swift in Sources */,
-				68348FFE1D58692E00C2A72E /* LiveViewController.swift in Sources */,
-				68348FFC1D58692E00C2A72E /* AppDelegate.swift in Sources */,
-				68220A8F1D59A30300715E37 /* hashswf.c in Sources */,
-				6834900F1D586AA000C2A72E /* AWCapture.swift in Sources */,
-				68220A921D59A30300715E37 /* rtmp.c in Sources */,
-				6851006E1E1B8F3D00A835A2 /* AWLive.swift in Sources */,
-				687D80C01E50929E0059BBDC /* NetworkInterface.c in Sources */,
-				687D80BF1E50929E0059BBDC /* NetworkHelper.m in Sources */,
+				684DE6151E56901D000C6C92 /* LiveViewController.swift in Sources */,
+				684DE6171E56901D000C6C92 /* StartViewController.swift in Sources */,
+				684DE6101E56901D000C6C92 /* AppDelegate.swift in Sources */,
+				684DE6161E56901D000C6C92 /* StartAnimationView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		684DE6441E569070000C6C92 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				684DE6781E5690EC000C6C92 /* AWEncoder.swift in Sources */,
+				684DE67A1E5690EC000C6C92 /* AWLiveExtension.swift in Sources */,
+				684DE67C1E5690EC000C6C92 /* AWLivePush.swift in Sources */,
+				684DE6851E5690EC000C6C92 /* aw_rtmp.c in Sources */,
+				684DE68B1E5690EC000C6C92 /* hashswf.c in Sources */,
+				684DE6771E5690EC000C6C92 /* AWCapture.swift in Sources */,
+				684DE6801E5690EC000C6C92 /* NetworkHelper.m in Sources */,
+				684DE67E1E5690EC000C6C92 /* AWLiveStat.swift in Sources */,
+				684DE6831E5690EC000C6C92 /* amf.c in Sources */,
+				684DE6901E5690EC000C6C92 /* rtmp.c in Sources */,
+				684DE68F1E5690EC000C6C92 /* parseurl.c in Sources */,
+				684DE6811E5690EC000C6C92 /* NetworkInterface.c in Sources */,
+				684DE6751E5690EC000C6C92 /* aw_live_push.c in Sources */,
+				684DE67B1E5690EC000C6C92 /* AWLivePreview.swift in Sources */,
+				684DE68D1E5690EC000C6C92 /* log.c in Sources */,
+				684DE67D1E5690EC000C6C92 /* AWLivePush2.swift in Sources */,
+				684DE6791E5690EC000C6C92 /* AWLive.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXVariantGroup section */
-		68348FFF1D58692E00C2A72E /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				683490001D58692E00C2A72E /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
+/* Begin PBXTargetDependency section */
+		684DE64F1E569070000C6C92 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 684DE6481E569070000C6C92 /* AWLiveKit */;
+			targetProxy = 684DE64E1E569070000C6C92 /* PBXContainerItemProxy */;
 		};
-		683490041D58692E00C2A72E /* LaunchScreen.storyboard */ = {
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		684DE5C71E56901C000C6C92 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				683490051D58692E00C2A72E /* Base */,
+				684DE5C81E56901C000C6C92 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		684DE5C91E56901C000C6C92 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				684DE5CA1E56901C000C6C92 /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -382,13 +507,14 @@
 		6834900B1D58692E00C2A72E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 656GZ3SAAP;
-				INFOPLIST_FILE = AWLiveKit/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/AWLiveKitDemo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKit;
+				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "AWLiveKit/Bridging-header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -396,14 +522,76 @@
 		6834900C1D58692E00C2A72E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 656GZ3SAAP;
-				INFOPLIST_FILE = AWLiveKit/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/AWLiveKitDemo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKitDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		684DE6531E569070000C6C92 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 656GZ3SAAP;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = AWLiveKitFramework/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "AWLiveKit/Bridging-header.h";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		684DE6541E569070000C6C92 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 656GZ3SAAP;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = AWLiveKitFramework/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -419,11 +607,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6834900A1D58692E00C2A72E /* Build configuration list for PBXNativeTarget "AWLiveKit" */ = {
+		6834900A1D58692E00C2A72E /* Build configuration list for PBXNativeTarget "AWLiveKitDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6834900B1D58692E00C2A72E /* Debug */,
 				6834900C1D58692E00C2A72E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		684DE6521E569070000C6C92 /* Build configuration list for PBXNativeTarget "AWLiveKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				684DE6531E569070000C6C92 /* Debug */,
+				684DE6541E569070000C6C92 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

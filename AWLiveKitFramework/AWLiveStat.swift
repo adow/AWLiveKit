@@ -9,11 +9,11 @@
 import Foundation
 import UIKit
 import AVFoundation
-protocol AWLiveStatDelegate : class{
+public protocol AWLiveStatDelegate : class{
     func updateLiveStat(stat:AWLiveStat)
 }
 
-class AWLiveStat {
+public class AWLiveStat {
     fileprivate var timer : Timer!
     fileprivate var startTime : Date = Date()
     var nowTimeStr : String = "-"
@@ -23,15 +23,15 @@ class AWLiveStat {
     /// 系统内的流量统计
     fileprivate var networkTotalSystem : Int64! = 0
     /// 直播中输出的网络流量
-    var networkCostsMB : Float = 0.0
-    var networkCostsMB_str : String = "-"
+    public var networkCostsMB : Float = 0.0
+    public var networkCostsMB_str : String = "-"
     /// 输出的网速
-    var networkSpeedKB : Int = 0
-    var networkSpeedKB_str = "-"
+    public var networkSpeedKB : Int = 0
+    public var networkSpeedKB_str = "-"
     /// 网络信号强度
-    var networkSignalStrgenth : String = "-"
+    public var networkSignalStrgenth : String = "-"
     /// 从开始到现在的时间
-    var secondsFromStart : Double {
+    public var secondsFromStart : Double {
         return abs(startTime.timeIntervalSinceNow)
     }
     /// 上一次计数器更新时间
@@ -43,12 +43,12 @@ class AWLiveStat {
     /// 上一次更新电池的时间
     var lastUpdateBatteryTime : Date = Date()
     /// 电池
-    var battery : Int?
+    public var battery : Int?
     /// 当前麦克风
-    var microphone : String = ""
+    public var microphone : String = ""
     /// 计时器更新后回调
-    weak var delegate : AWLiveStatDelegate? = nil
-    init() {
+    public weak var delegate : AWLiveStatDelegate? = nil
+    public init() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(onNotificationRouteChange(_:)),
                                                name: NSNotification.Name.AVAudioSessionRouteChange,
@@ -58,7 +58,7 @@ class AWLiveStat {
         NotificationCenter.default.removeObserver(self)
         self.stop()
     }
-    func start() {
+    public func start() {
         self.startTime = Date()
         self.networkTotal = 0
         self.networkTotalSystem = 0
@@ -76,7 +76,7 @@ class AWLiveStat {
                                      userInfo: nil,
                                      repeats: true)
     }
-    func stop() {
+    public func stop() {
         self.timer?.invalidate()
     }
     @objc fileprivate func onTimer(sender:Timer!) {
@@ -87,7 +87,7 @@ class AWLiveStat {
         self.delegate?.updateLiveStat(stat: self)
     }
     /// 输出
-    var outputDescription : String {
+    public var outputDescription : String {
         return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkSignalStrgenth) 网络\n \(self.microphone)"
     }
 }

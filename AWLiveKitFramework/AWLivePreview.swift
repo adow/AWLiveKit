@@ -9,13 +9,13 @@
 import UIKit
 import AVFoundation
 
-class AWLivePreview: UIView {
+public class AWLivePreview: UIView {
 
-    class override var layerClass:(AnyClass){
+    public class override var layerClass:(AnyClass){
         return AVCaptureVideoPreviewLayer.self
     }
     
-    var session:AVCaptureSession!{
+    public var session:AVCaptureSession!{
         get{
             let layer=self.layer as! AVCaptureVideoPreviewLayer
             return layer.session
@@ -25,7 +25,7 @@ class AWLivePreview: UIView {
             layer.session=newValue
         }
     }
-    var connection : AVCaptureConnection? {
+    public var connection : AVCaptureConnection? {
         if let connection = (self.layer as? AVCaptureVideoPreviewLayer)?.connection {
             return connection
         }
@@ -33,7 +33,7 @@ class AWLivePreview: UIView {
             return nil
         }
     }
-    var mirror : Bool {
+    public var mirror : Bool {
         get {
             return self.connection?.isVideoMirrored ?? false
         }
@@ -45,7 +45,7 @@ class AWLivePreview: UIView {
         }
         
     }
-    var videoOrientation : AVCaptureVideoOrientation? {
+    public var videoOrientation : AVCaptureVideoOrientation? {
         get {
             return self.connection?.videoOrientation
         }

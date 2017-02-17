@@ -12,9 +12,9 @@ import VideoToolbox
 import AudioToolbox
 
 // MARK: Frame
-enum AWLivePushFrameType:Int, CustomStringConvertible {
+public enum AWLivePushFrameType:Int, CustomStringConvertible {
     case slice = 0, slice_DPA, slice_DPB,slice_DPC, slice_IDR, slice_SEI, slice_SPS,slice_PPS,aud, filler,unknown
-    init(first_bit:UInt8) {
+    public init(first_bit:UInt8) {
         switch first_bit & 0x1f {
         case 1:
             self =  .slice
@@ -40,7 +40,7 @@ enum AWLivePushFrameType:Int, CustomStringConvertible {
             self = .unknown
         }
     }
-    var name : String {
+    public var name : String {
         switch self {
         case .slice:
             return "SLICE"
@@ -66,21 +66,21 @@ enum AWLivePushFrameType:Int, CustomStringConvertible {
             return "UNKNOWN"
         }
     }
-    var description: String {
+    public var description: String {
         return self.name
     }
     
 }
 
 // MARK: - Push
-class AWLivePush: NSObject {
-   var rtmpQueue : DispatchQueue = DispatchQueue(label: "adow.rtmp", attributes: [])
-    var sps_pps_sended : Bool = false
-    let avvc_header_length : size_t = 4
-    var startTime : Date = Date()
+public class AWLivePush: NSObject {
+    public var rtmpQueue : DispatchQueue = DispatchQueue(label: "adow.rtmp", attributes: [])
+    public var sps_pps_sended : Bool = false
+    public let avvc_header_length : size_t = 4
+    public var startTime : Date = Date()
     /// 连接是否准备就绪, 必须连接完成，并且发送完音频头之后才算完成
-    var ready : Bool = false
-    init(url:String) {
+    public var ready : Bool = false
+    public init(url:String) {
         super.init()
 //        let start_time = NSDate()
         rtmpQueue.async {
@@ -103,7 +103,7 @@ class AWLivePush: NSObject {
 // MARK: Video
 extension AWLivePush {
     /// 推送视频
-    func pushVideoSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
+    public func pushVideoSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
         self.rtmpQueue.async { 
             self._go_pushVideoSampleBuffer(sampleBuffer)
         }
@@ -181,7 +181,7 @@ extension AWLivePush {
 // MARK: Audio
 extension AWLivePush {
     /// 推送音频内容
-    func pushAudioBufferList(_ bufferList: AudioBufferList) {
+    public func pushAudioBufferList(_ bufferList: AudioBufferList) {
         self.rtmpQueue.async { 
             self._goto_pushAudioBufferList(bufferList)
         }

@@ -11,22 +11,22 @@ import Foundation
 import UIKit
 import AVFoundation
 
-class AWLive {
-    var push : AWLivePush2!
-    var capture : AWLiveCapture!
-    var videoEncoder : AWVideoEncoder!
-    var audioEncoder : AWAudioEncoder!
-    weak var preview : AWLivePreview?
-    var videoQuality : AWLiveCaptureVideoQuality!
+public class AWLive {
+    public var push : AWLivePush2!
+    public var capture : AWLiveCapture!
+    public var videoEncoder : AWVideoEncoder!
+    public var audioEncoder : AWAudioEncoder!
+    public weak var preview : AWLivePreview?
+    public var videoQuality : AWLiveCaptureVideoQuality!
     /// 请求权限后的返回结果
-    var requestCaptureCallback : ((Bool,String?)->())? = nil
-    var isLive : Bool? {
+    public var requestCaptureCallback : ((Bool,String?)->())? = nil
+    public var isLive : Bool? {
         return self.push?.isLive
     }
-    var isInterruption : Bool = false
+    public var isInterruption : Bool = false
     /// 状态监控
-    var liveStat : AWLiveStat!
-    init(url:String,
+    public var liveStat : AWLiveStat!
+    public init(url:String,
          onPreview preview : AWLivePreview,
          withQuality videoQuality : AWLiveCaptureVideoQuality = AWLiveCaptureVideoQuality._720,
          atOrientation orientation : AVCaptureVideoOrientation = .portrait) {
@@ -86,7 +86,7 @@ class AWLive {
     }
 }
 extension AWLive {
-    var videoOrientation : AVCaptureVideoOrientation? {
+    public var videoOrientation : AVCaptureVideoOrientation? {
         set {
             if let _orientation = newValue {
                 self.preview?.videoOrientation = _orientation
@@ -98,7 +98,7 @@ extension AWLive {
         }
     }
     /// 设置当前的屏幕方向
-    func rotateWithCurrentOrientation() {
+    public func rotateWithCurrentOrientation() {
         let device_orientation = UIApplication.shared.statusBarOrientation
         switch device_orientation {
         case .landscapeLeft:
@@ -113,7 +113,7 @@ extension AWLive {
             self.videoOrientation = .portrait
         }
     }
-    var frontCamera : Bool {
+    public var frontCamera : Bool {
         set {
             self.capture.frontCammera = newValue
             self.rotateWithCurrentOrientation()
@@ -122,7 +122,7 @@ extension AWLive {
             return self.capture.frontCammera
         }
     }
-    var mirror : Bool? {
+    public var mirror : Bool? {
         set {
             if let _mirror = newValue {
                 self.capture.videoMirror = _mirror
@@ -136,7 +136,7 @@ extension AWLive {
 }
 extension AWLive {
     /// 获取摄像头权限
-    static func requestCapture(callback:@escaping ((Bool,String?)->())) {
+    public static func requestCapture(callback:@escaping ((Bool,String?)->())) {
         AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { (succeed_video) in
             if succeed_video {
                 AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeAudio, completionHandler: { (succeed_audio) in
@@ -162,7 +162,7 @@ extension AWLive {
 }
 extension AWLive {
     /// 开始直播，指定当前的旋转位置, 只有开始直播的时候才进行编码
-    func startLive() {
+    public func startLive() {
         guard let orientation = self.videoOrientation else {
             NSLog("No Video Orientation")
             return
@@ -189,7 +189,7 @@ extension AWLive {
         ///
         self.liveStat?.start()
     }
-    func stopLive() {
+    public func stopLive() {
         self.liveStat?.stop()
         self.push?.stop()
         self.videoEncoder?.close()
@@ -198,10 +198,10 @@ extension AWLive {
     }
 }
 extension AWLive : AWLivePushDeletate {
-    func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
+    public func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
         NSLog("push connect changed:\(state)")
     }
-    func pushLiveChanged(_ push: AWLivePush2) {
+    public func pushLiveChanged(_ push: AWLivePush2) {
         NSLog("push live changed:\(push.isLive)")
     }
 }
