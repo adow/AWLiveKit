@@ -58,8 +58,13 @@ class LiveViewController: UIViewController {
                                onPreview: self.preview,
                                withQuality: self.videoQuality,
                                atOrientation : videoOrientation)
+            guard self.live != nil else {
+                NSLog("AWLive failed")
+                return
+            }
             self.live?.push?.delegate = self
             self.live?.liveStat?.delegate = self
+            self.cameraSegmentControl.isHidden = (self.live?.canUseFrontCamera != true)
         }
     }
     override func viewWillDisappear(_ animated: Bool) {
@@ -160,10 +165,10 @@ extension LiveViewController {
     }
     @IBAction func onCameraChanged(_ sender : UISegmentedControl!) {
         if sender.selectedSegmentIndex == 0 {
-            self.live?.frontCamera = false
+            self.live?.useFrontCamera = false
         }
         else if sender.selectedSegmentIndex == 1 {
-            self.live?.frontCamera = true
+            self.live?.useFrontCamera = true
         }
         
     }

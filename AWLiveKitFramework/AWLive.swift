@@ -26,7 +26,7 @@ public class AWLive {
     public var isInterruption : Bool = false
     /// 状态监控
     public var liveStat : AWLiveStat!
-    public init(url:String,
+    public init?(url:String,
          onPreview preview : AWLivePreview,
          withQuality videoQuality : AWLiveCaptureVideoQuality = AWLiveCaptureVideoQuality._720,
          atOrientation orientation : AVCaptureVideoOrientation = .portrait) {
@@ -38,6 +38,10 @@ public class AWLive {
         /// capture
         capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
                                 orientation: orientation)
+        if capture == nil {
+            NSLog("AVLiveCapture failed")
+            return nil
+        }
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
             self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
@@ -113,14 +117,18 @@ extension AWLive {
             self.videoOrientation = .portrait
         }
     }
-    public var frontCamera : Bool {
+    public var useFrontCamera : Bool {
         set {
-            self.capture.frontCammera = newValue
+            self.capture.useFrontCammera = newValue
             self.rotateWithCurrentOrientation()
         }
         get {
-            return self.capture.frontCammera
+            return self.capture.useFrontCammera
         }
+    }
+    /// 是否可以使用前置摄像头
+    public var canUseFrontCamera : Bool {
+        return self.capture.frontCameraDevice != nil
     }
     public var mirror : Bool? {
         set {

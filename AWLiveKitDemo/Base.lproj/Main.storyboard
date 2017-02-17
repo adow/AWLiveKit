@@ -68,7 +68,7 @@
                                         </connections>
                                     </segmentedControl>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vR0-zD-EaZ">
-                                        <rect key="frame" x="157" y="613" width="31" height="30"/>
+                                        <rect key="frame" x="323" y="613" width="31" height="30"/>
                                         <state key="normal" title="镜像"/>
                                         <state key="selected" title="正常"/>
                                         <connections>
@@ -100,9 +100,9 @@
                                     <constraint firstItem="vaF-IK-jY8" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="15" id="ONp-Iv-Ez9"/>
                                     <constraint firstItem="pff-xf-Gq1" firstAttribute="top" secondItem="4tN-e5-Xwo" secondAttribute="bottom" constant="14" id="Rgl-oe-FKl"/>
                                     <constraint firstItem="4tN-e5-Xwo" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" id="WvN-5x-jjZ"/>
-                                    <constraint firstItem="vR0-zD-EaZ" firstAttribute="leading" secondItem="MLi-7U-7yb" secondAttribute="trailing" constant="21" id="Yug-Qa-URe"/>
                                     <constraint firstItem="O6I-8P-BFP" firstAttribute="centerY" secondItem="vaF-IK-jY8" secondAttribute="centerY" id="eJS-7e-G3T"/>
                                     <constraint firstAttribute="trailing" secondItem="4tN-e5-Xwo" secondAttribute="trailing" id="fyv-Hd-tIS"/>
+                                    <constraint firstAttribute="trailing" secondItem="vR0-zD-EaZ" secondAttribute="trailing" constant="21" id="kZ4-eH-Bnc"/>
                                     <constraint firstAttribute="bottom" secondItem="MLi-7U-7yb" secondAttribute="bottom" constant="25" id="m39-sI-qz1"/>
                                 </constraints>
                             </view>

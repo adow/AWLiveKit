@@ -26,7 +26,12 @@ public enum AWLiveCaptureVideoQuality :Int,CustomStringConvertible, CustomDebugS
         case ._1080:
             return AVCaptureSessionPreset1920x1080
         case ._4k:
-            return AVCaptureSessionPreset3840x2160
+            if #available(iOS 9.0, *) {
+                return AVCaptureSessionPreset3840x2160
+            } else {
+                // 如果不支持的话还是使用 1920 * 1080
+                return AVCaptureSessionPreset1920x1080
+            }
         }
     }
     /// 输出视频
@@ -112,7 +117,12 @@ public typealias AWLiveCaptureReadyCallback = () -> ()
 public class AWLiveCapture : NSObject{
     /// session
     public var captureSession : AVCaptureSession!
+    /// 前置摄像头
+    var frontCameraDevice : AVCaptureDevice?
+    /// 背后摄像头
+    var backCameraDevice : AVCaptureDevice!
     /// 设备
+    /// videoDevice 是 backCameraDevice(默认) 或者 frontCameraDevice(切换之后)
     fileprivate var videoDevice : AVCaptureDevice!
     fileprivate var audioDevice : AVCaptureDevice!
     /// 输入
@@ -131,16 +141,39 @@ public class AWLiveCapture : NSObject{
     /// 准备好后发出回调
     public var onReady : AWLiveCaptureReadyCallback? = nil
     public var ready : Bool = false
-    public init (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .portrait) {
+    public init? (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .portrait) {
         super.init()
 //        let start_time = NSDate()
         /// session
         captureSession = AVCaptureSession()
+        guard captureSession.canSetSessionPreset(sessionPreset) else {
+            return nil
+        }
         captureSession.sessionPreset = sessionPreset ///AVCaptureSessionPresetiFrame960x540
-        sessionQueue.async { 
-            /// device
-            self.videoDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
-            self.audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+        /// cameras
+        if let cameras = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as? [AVCaptureDevice] {
+            for one_camera in cameras {
+                if one_camera.position == .back {
+                    if one_camera.supportsAVCaptureSessionPreset(sessionPreset) {
+                        self.backCameraDevice = one_camera
+                        self.videoDevice = one_camera /// current video device is back camera
+                    }
+                    else {
+                        /// TODO: Failed init because back camera
+                        return nil
+                    }
+                }
+                else if one_camera.position == .front {
+                    if one_camera.supportsAVCaptureSessionPreset(sessionPreset) {
+                        self.frontCameraDevice = one_camera
+                    }
+                }
+            }
+        }
+        /// audio
+        self.audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+        /// input and output
+        sessionQueue.async {
             self.captureSession.beginConfiguration()
             defer {
                 self.captureSession.commitConfiguration()
@@ -161,6 +194,7 @@ public class AWLiveCapture : NSObject{
             }
             catch let error as NSError {
                 NSLog("Input Device Error:%@", error)
+                return
             }
             /// videoOutput
             self.videoOutput = AVCaptureVideoDataOutput()
@@ -174,6 +208,7 @@ public class AWLiveCapture : NSObject{
             }
             else {
                 NSLog("Can not add Video Output")
+                return
             }
             self.videoOrientation = orientation
     //        self.videoOrientation = .Portrait
@@ -185,6 +220,7 @@ public class AWLiveCapture : NSObject{
             }
             else {
                 NSLog("Can not add Audio Output")
+                return
             }
             
             self.ready = true
@@ -238,26 +274,29 @@ public class AWLiveCapture : NSObject{
         }
     }
     /// 切换摄像头
-    public var frontCammera : Bool{
+    public var useFrontCammera : Bool{
         set {
-            let position = newValue ? AVCaptureDevicePosition.front : AVCaptureDevicePosition.back
+            guard useFrontCammera != newValue else {
+                return
+            }
+            guard let _frontCamera = self.frontCameraDevice else {
+                NSLog("front camera is not supported")
+                return
+            }
             do {
                 self.captureSession.beginConfiguration()
+                /// remove
                 try self.videoDevice.lockForConfiguration()
                 self.captureSession.removeInput(self.videoInput)
                 self.videoDevice.unlockForConfiguration()
                 self.videoDevice = nil
-                if let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as? [AVCaptureDevice] {
-                    if let camera = (devices.filter {
-                        return $0.position == position
-                    }).first {
-                        self.videoDevice = camera
-                        try camera.lockForConfiguration()
-                        videoInput = try AVCaptureDeviceInput(device: camera)
-                        self.captureSession.addInput(videoInput)
-                        camera.unlockForConfiguration()
-                    }
-                }
+                /// set
+                self.videoDevice = newValue ? _frontCamera : self.backCameraDevice
+                try self.videoDevice.lockForConfiguration()
+                videoInput = try AVCaptureDeviceInput(device: self.videoDevice)
+                self.captureSession.addInput(videoInput)
+                self.videoDevice.unlockForConfiguration()
+                ///
                 self.captureSession.commitConfiguration()
             
             }
@@ -286,6 +325,32 @@ extension AWLiveCapture {
             return
         }
         self.captureSession.stopRunning()
+    }
+    /// 测试可以使用哪些 session_preset
+    func testSessionPreset() {
+        var session_preset_list : [String:String] = [ "AVCaptureSessionPresetPhoto":AVCaptureSessionPresetPhoto,
+                                                 "AVCaptureSessionPresetHigh": AVCaptureSessionPresetHigh,
+                                                 "AVCaptureSessionPresetMedium":AVCaptureSessionPresetMedium,
+                                                 "AVCaptureSessionPresetLow":AVCaptureSessionPresetLow,
+                                                 "AVCaptureSessionPreset352x288":AVCaptureSessionPreset352x288,
+                                                 "AVCaptureSessionPreset640x480":AVCaptureSessionPreset640x480,
+                                                 "AVCaptureSessionPreset1280x720":AVCaptureSessionPreset1280x720,
+                                                 "AVCaptureSessionPreset1920x1080":AVCaptureSessionPreset1920x1080,
+                                                 "AVCaptureSessionPresetiFrame960x540":AVCaptureSessionPresetiFrame960x540,
+                                                 "AVCaptureSessionPresetiFrame1280x720":AVCaptureSessionPresetiFrame1280x720,
+                                                 "AVCaptureSessionPresetInputPriority":AVCaptureSessionPresetInputPriority,
+            
+        ]
+        if #available(iOS 9.0, *) {
+            session_preset_list["AVCaptureSessionPreset3840x2160"] = AVCaptureSessionPreset3840x2160
+        } else {
+            // Fallback on earlier versions
+        }
+        session_preset_list.forEach { (k,v) in
+            let result = self.captureSession.canSetSessionPreset(v)
+            debugPrint("\(k):\(result)")
+        }
+        
     }
 }
 // MARK: Video and Audio SampleBuffer

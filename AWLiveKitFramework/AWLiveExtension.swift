@@ -145,3 +145,29 @@ extension String {
     
     
 }
+extension AVCaptureDevice {
+    public func testSessionPreset() {
+        var session_preset_list : [String:String] = [ "AVCaptureSessionPresetPhoto":AVCaptureSessionPresetPhoto,
+                                                      "AVCaptureSessionPresetHigh": AVCaptureSessionPresetHigh,
+                                                      "AVCaptureSessionPresetMedium":AVCaptureSessionPresetMedium,
+                                                      "AVCaptureSessionPresetLow":AVCaptureSessionPresetLow,
+                                                      "AVCaptureSessionPreset352x288":AVCaptureSessionPreset352x288,
+                                                      "AVCaptureSessionPreset640x480":AVCaptureSessionPreset640x480,
+                                                      "AVCaptureSessionPreset1280x720":AVCaptureSessionPreset1280x720,
+                                                      "AVCaptureSessionPreset1920x1080":AVCaptureSessionPreset1920x1080,
+                                                      "AVCaptureSessionPresetiFrame960x540":AVCaptureSessionPresetiFrame960x540,
+                                                      "AVCaptureSessionPresetiFrame1280x720":AVCaptureSessionPresetiFrame1280x720,
+                                                      "AVCaptureSessionPresetInputPriority":AVCaptureSessionPresetInputPriority,
+                                                      
+                                                      ]
+        if #available(iOS 9.0, *) {
+            session_preset_list["AVCaptureSessionPreset3840x2160"] = AVCaptureSessionPreset3840x2160
+        } else {
+            // Fallback on earlier versions
+        }
+        session_preset_list.forEach { (k,v) in
+            let result = self.supportsAVCaptureSessionPreset(v)
+            debugPrint("\(k):\(result)")
+        }
+    }
+}
