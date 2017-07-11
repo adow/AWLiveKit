@@ -19,5 +19,6 @@ FOUNDATION_EXPORT const unsigned char AWLiveKitFrameworkVersionString[];
 #include "rtmp_sys.h"
 #include "aw_rtmp.h"
 #include "aw_live_push.h"
+#include "aw_audio_encoder.h"
 #include "NetworkHelper.h"
 #include "NetworkInterface.h"

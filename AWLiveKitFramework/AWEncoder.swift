@@ -283,11 +283,12 @@ public class AWAudioEncoder {
             AudioClassDescription(mType: kAudioEncoderComponentType, mSubType: kAudioFormatMPEG4AAC, mManufacturer: kAppleHardwareAudioCodecManufacturer),
             AudioClassDescription(mType: kAudioEncoderComponentType, mSubType: kAudioFormatMPEG4AAC, mManufacturer: kAppleSoftwareAudioCodecManufacturer),
             ]
-        guard AudioConverterNewSpecific(&g_audioInputFormat!,
-                                        &outputFormat,
-                                        UInt32(audioClassDescription_list.count),
-                                        &audioClassDescription_list,
-                                        &audioConverter)  == noErr else {
+        guard AudioConverterNewSpecific(
+            &g_audioInputFormat!,
+            &outputFormat,
+            UInt32(audioClassDescription_list.count),
+            &audioClassDescription_list,
+            &audioConverter)  == noErr else {
                                             NSLog("AudioConverterNewSpecific Failed")
                                             return
         }
@@ -320,7 +321,8 @@ public class AWAudioEncoder {
         }
         
         let frameSize : UInt32 = 1024
-        let dataPtr = UnsafeMutableRawPointer.allocate(bytes: Int(frameSize),alignedTo: MemoryLayout<Int>.alignment)
+        let dataPtr = UnsafeMutableRawPointer.allocate(bytes: Int(frameSize),
+                                                       alignedTo: MemoryLayout<Int>.alignment)
         let channels = g_audioInputFormat.mChannelsPerFrame
         let  audioBuffer = AudioBuffer(mNumberChannels: channels,
                                        mDataByteSize: frameSize,
@@ -330,11 +332,11 @@ public class AWAudioEncoder {
         var outputDataPacketSize : UInt32 = 1
         var outputPacketDescription = AudioStreamPacketDescription()
         let status =  AudioConverterFillComplexBuffer(audioConverter!,
-                                                      self.encoderCallback,
-                                                      &inBufferList,
-                                                      &outputDataPacketSize,
-                                                      &outBufferList,
-                                                      &outputPacketDescription)
+            self.encoderCallback,
+            &inBufferList,
+            &outputDataPacketSize,
+            &outBufferList,
+            &outputPacketDescription)
         guard status == noErr else {
             NSLog("AudioConverterFillComplexBuffer Failed:\(status)")
             return
@@ -348,7 +350,7 @@ public class AWAudioEncoder {
         ioData: UnsafeMutablePointer<AudioBufferList>,
         outDataPacketDescription: UnsafeMutablePointer<UnsafeMutablePointer<AudioStreamPacketDescription>?>?,
         inUserData: UnsafeMutableRawPointer?) in
-        guard let inBufferList = unsafeBitCast(inUserData, to: (UnsafeMutablePointer<AudioBufferList>?.self)!) else {
+        guard let inBufferList = unsafeBitCast(inUserData, to: (UnsafeMutablePointer<AudioBufferList>?.self)) else {
             ioNumberDataPackets.pointee = 0
             NSLog("ioNumberDataPackets empty")
             return 1024

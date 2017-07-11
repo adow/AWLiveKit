@@ -47,6 +47,8 @@
 		684DE6901E5690EC000C6C92 /* rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6721E5690EC000C6C92 /* rtmp.c */; };
 		684DE6921E5690EC000C6C92 /* rtmp_sys.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6741E5690EC000C6C92 /* rtmp_sys.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		684DE6951E5693D2000C6C92 /* rtmp.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6731E5690EC000C6C92 /* rtmp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */; };
+		68AF1AC41E597DB600C01141 /* aw_audio_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +119,8 @@
 		684DE6721E5690EC000C6C92 /* rtmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtmp.c; sourceTree = "<group>"; };
 		684DE6731E5690EC000C6C92 /* rtmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp.h; sourceTree = "<group>"; };
 		684DE6741E5690EC000C6C92 /* rtmp_sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp_sys.h; sourceTree = "<group>"; };
+		68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_audio_encoder.c; sourceTree = "<group>"; };
+		68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_audio_encoder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +182,8 @@
 				684DE64B1E569070000C6C92 /* AWLiveKit.h */,
 				684DE6551E5690EC000C6C92 /* aw_live_push.c */,
 				684DE6561E5690EC000C6C92 /* aw_live_push.h */,
+				68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */,
+				68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */,
 				684DE6571E5690EC000C6C92 /* AWCapture.swift */,
 				684DE6581E5690EC000C6C92 /* AWEncoder.swift */,
 				684DE6591E5690EC000C6C92 /* AWLive.swift */,
@@ -237,6 +243,7 @@
 				684DE64D1E569070000C6C92 /* AWLiveKit.h in Headers */,
 				684DE67F1E5690EC000C6C92 /* NetworkHelper.h in Headers */,
 				684DE6861E5690EC000C6C92 /* aw_rtmp.h in Headers */,
+				68AF1AC41E597DB600C01141 /* aw_audio_encoder.h in Headers */,
 				684DE6761E5690EC000C6C92 /* aw_live_push.h in Headers */,
 				684DE6821E5690EC000C6C92 /* NetworkInterface.h in Headers */,
 				684DE6951E5693D2000C6C92 /* rtmp.h in Headers */,
@@ -386,6 +393,7 @@
 				684DE68D1E5690EC000C6C92 /* log.c in Sources */,
 				684DE67D1E5690EC000C6C92 /* AWLivePush2.swift in Sources */,
 				684DE6791E5690EC000C6C92 /* AWLive.swift in Sources */,
+				68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

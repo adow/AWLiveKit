@@ -51,6 +51,7 @@ public class AWLive {
             [weak self](sampleBuffer) -> () in
             //            print("audio")
             self?.audioEncoder?.encodeSampleBuffer(sampleBuffer)
+//            aw_audio_encode_samplebuffer(sampleBuffer)
         }
         capture.onReady = {
             [weak self] in
