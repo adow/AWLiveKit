@@ -45,13 +45,19 @@ public class AWLive {
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
             self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
-            
         }
         capture.onAudioSampleBuffer = {
             [weak self](sampleBuffer) -> () in
-            //            print("audio")
-            self?.audioEncoder?.encodeSampleBuffer(sampleBuffer)
-//            aw_audio_encode_samplebuffer(sampleBuffer)
+//            print("audio")
+//            self?.audioEncoder?.encodeSampleBuffer(sampleBuffer)
+            
+            let buffer_list = aw_audio_encode(sampleBuffer)
+            if let _buffer_list = buffer_list {
+                /// push
+                self?.push.pushAudioBufferList(_buffer_list.pointee)
+                aw_audio_release(_buffer_list)
+            }
+            
         }
         capture.onReady = {
             [weak self] in

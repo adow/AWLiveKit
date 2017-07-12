@@ -10,7 +10,6 @@ import UIKit
 import AVFoundation
 import VideoToolbox
 
-
 // MARK: - VideoEncoder
 public typealias AWVideoEncoderCallback = (CMSampleBuffer) -> ()
 

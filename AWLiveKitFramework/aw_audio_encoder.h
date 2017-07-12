@@ -15,5 +15,6 @@
 #include <CoreMedia/CoreMedia.h>
 
 int aw_audio_encode_samplebuffer(CMSampleBufferRef sampleBuffer);
-
+AudioBufferList *aw_audio_encode(CMSampleBufferRef sample_buffer);
+void aw_audio_release(AudioBufferList *buffer_list);
 #endif /* aw_audio_encoder_h */

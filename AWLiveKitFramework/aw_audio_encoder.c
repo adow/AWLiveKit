@@ -54,6 +54,7 @@ int aw_audio_encoder_setup() {
                 class_list,
                 &_audioConverter);
     if (ret == noErr) {
+        printf("setup audio encoder ok\n");
         return 0;
     }
     return 2;
@@ -148,4 +149,63 @@ int aw_audio_encode_samplebuffer(CMSampleBufferRef sampleBuffer) {
         printf("%d:%d,%d\n",_a, _v, _r);
     }
     return 3;
+}
+
+/// 编码
+AudioBufferList *aw_audio_encode(CMSampleBufferRef sample_buffer) {
+    /// format
+    CMFormatDescriptionRef format =
+        CMSampleBufferGetFormatDescription(sample_buffer);
+    _input_format =
+     *(CMAudioFormatDescriptionGetStreamBasicDescription(format));
+    aw_audio_encoder_setup();
+    if (_audioConverter == NULL) {
+        return NULL;
+    }
+    /// input
+    CMBlockBufferRef input_block_buffer;
+    AudioBufferList input_buffer_list;
+    int input_result =  CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sample_buffer,
+            NULL,
+            &input_buffer_list,
+            sizeof(input_buffer_list),
+            NULL,
+            NULL,
+            0,
+            &input_block_buffer);
+    CFRelease(input_block_buffer);
+    if (input_result != noErr) {
+        printf("get input buffer error:%d",input_result);
+        return NULL;
+    }
+    ///
+    const UInt32 frame_size = 1024;
+    uint8_t *data_ptr = malloc(frame_size);
+    memset(data_ptr, 0, frame_size);
+    int channels = _input_format.mChannelsPerFrame;
+    AudioBufferList *output_buffer_list = (AudioBufferList*)malloc(sizeof(AudioBufferList));
+    output_buffer_list->mNumberBuffers = 1;
+    output_buffer_list->mBuffers[0].mNumberChannels = channels;
+    output_buffer_list->mBuffers[0].mDataByteSize = frame_size;
+    output_buffer_list->mBuffers[0].mData = data_ptr;
+    UInt32 output_data_packet_size = 1;
+    
+    AudioStreamPacketDescription output_packet_description;
+    int fill_result = AudioConverterFillComplexBuffer(
+        _audioConverter,
+        aw_audio_data_proc,
+        &input_buffer_list,
+        &output_data_packet_size,
+        output_buffer_list,
+        &output_packet_description);
+    if (fill_result == noErr) {
+//        printf("audio encode ok:%u\n", (unsigned int)output_data_packet_size);
+        return output_buffer_list;
+    }
+    return NULL;
+}
+
+/// 释放编码后的内容
+void aw_audio_release(AudioBufferList *buffer_list) {
+    free(buffer_list);
 }
