@@ -32,6 +32,14 @@ public class AWLive {
          atOrientation orientation : AVCaptureVideoOrientation = .portrait) {
         self.videoQuality = videoQuality
         self.preview = preview
+   
+        let video_size = videoQuality.videoSizeForOrientation(orientation)
+        let ret = aw_video_encoder_init(Int32(video_size.width),
+                                        Int32(video_size.height),
+                             Int32(videoQuality.recommandVideoBiterates.bitrates),
+                             30,
+                             AWVideoEncoderProfile.main.profile)
+        NSLog("ret:\(ret)")
         /// push
         push = AWLivePush2(url: url)
         push.delegate = self
@@ -44,7 +52,22 @@ public class AWLive {
         }
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
-            self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
+            //self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
+            guard let _self = self, let _push = _self.push, _push.isLive else {
+                return
+            }
+//            aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer, context) in
+//                NSLog("video encoded")
+//                let _weak_self = unsafeBitCast(context, to: AWLive.self)
+//                _weak_self.push?.pushVideoSampleBuffer(sample_buffer!)
+//            }, unsafeBitCast(_self, to: UnsafeMutableRawPointer.self))
+            aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
+                if let sp = sample_buffer_encoded {
+                    let _weak_push = unsafeBitCast(context, to: AWLivePush2.self)
+                    _weak_push.pushVideoSampleBuffer(sp)
+                }
+                
+            }, unsafeBitCast(_push, to: UnsafeMutableRawPointer.self))
         }
         capture.onAudioSampleBuffer = {
             [weak self](sampleBuffer) -> () in
@@ -54,7 +77,7 @@ public class AWLive {
             let buffer_list = aw_audio_encode(sampleBuffer)
             if let _buffer_list = buffer_list {
                 /// push
-                self?.push.pushAudioBufferList(_buffer_list.pointee)
+                self?.push?.pushAudioBufferList(_buffer_list.pointee)
                 aw_audio_release(_buffer_list)
             }
             

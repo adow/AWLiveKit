@@ -199,9 +199,11 @@ AudioBufferList *aw_audio_encode(CMSampleBufferRef sample_buffer) {
         output_buffer_list,
         &output_packet_description);
     if (fill_result == noErr) {
+        free(data_ptr);
 //        printf("audio encode ok:%u\n", (unsigned int)output_data_packet_size);
         return output_buffer_list;
     }
+    free(data_ptr);
     return NULL;
 }
 
