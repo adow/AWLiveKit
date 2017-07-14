@@ -12,7 +12,7 @@ import UIKit
 import AVFoundation
 
 public class AWLive {
-    public var push : AWLivePush2!
+    public var push : AWLivePushC!
     public var capture : AWLiveCapture!
     public var videoEncoder : AWVideoEncoder!
     public var audioEncoder : AWAudioEncoder!
@@ -42,7 +42,7 @@ public class AWLive {
         /// 音频编码器
         audioEncoder = AWAudioEncoder()
         /// push
-        push = AWLivePush2(url: url)
+        push = AWLivePushC(url: url)
         push.delegate = self
         /// capture
         capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
@@ -204,10 +204,10 @@ extension AWLive {
     }
 }
 extension AWLive : AWLivePushDeletate {
-    public func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
+    public func push(_ push: AWLivePushC, connectedStateChanged state: AWLiveConnectState) {
         NSLog("push connect changed:\(state)")
     }
-    public func pushLiveChanged(_ push: AWLivePush2) {
+    public func pushLiveChanged(_ push: AWLivePushC) {
         NSLog("push live changed:\(push.isLive)")
     }
 }

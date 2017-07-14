@@ -11,7 +11,7 @@ import UIKit
 import AVFoundation
 
 public class AWLiveC {
-    public var push : AWLivePush2!
+    public var push : AWLivePushC!
     public var capture : AWLiveCapture!
     public weak var preview : AWLivePreview?
     public var videoQuality : AWLiveCaptureVideoQuality!
@@ -39,7 +39,7 @@ public class AWLiveC {
                 videoQuality.recommandVideoBiterates.recommandedProfile.profile)
         NSLog("ret:\(ret)")
         /// push
-        push = AWLivePush2(url: url)
+        push = AWLivePushC(url: url)
         push.delegate = self
         /// capture
         capture = AWLiveCapture(sessionPreset: videoQuality.sessionPreset,
@@ -56,7 +56,7 @@ public class AWLiveC {
             }
             aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
                 if let sp = sample_buffer_encoded {
-                    let _weak_push = unsafeBitCast(context, to: AWLivePush2.self)
+                    let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
                     _weak_push.pushVideoSampleBuffer(sp)
                 }
                 
@@ -210,10 +210,10 @@ extension AWLiveC {
     }
 }
 extension AWLiveC : AWLivePushDeletate {
-    public func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
+    public func push(_ push: AWLivePushC, connectedStateChanged state: AWLiveConnectState) {
         NSLog("push connect changed:\(state)")
     }
-    public func pushLiveChanged(_ push: AWLivePush2) {
+    public func pushLiveChanged(_ push: AWLivePushC) {
         NSLog("push live changed:\(push.isLive)")
     }
 }

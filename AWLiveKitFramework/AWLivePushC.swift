@@ -1,5 +1,5 @@
 //
-//  AWLivePush2.swift
+//  AWLivePushC.swift
 //  AWLiveKit
 //
 //  Created by 秦 道平 on 2016/12/29.
@@ -24,11 +24,11 @@ public enum AWLiveConnectState : Int ,CustomStringConvertible{
 }
 public protocol AWLivePushDeletate : class{
     /// 连接状态改变
-    func push(_ push:AWLivePush2, connectedStateChanged state:AWLiveConnectState)
+    func push(_ push:AWLivePushC, connectedStateChanged state:AWLiveConnectState)
     /// 播出状态改变
-    func pushLiveChanged(_ push:AWLivePush2)
+    func pushLiveChanged(_ push:AWLivePushC)
 }
-public class AWLivePush2 {
+public class AWLivePushC {
     var rtmp_queue : DispatchQueue = DispatchQueue(label: "adow.rtmp", attributes: [])
     var sps_pps_sent : Int32 = 0
     let avvc_header_length : size_t = 4
@@ -97,7 +97,7 @@ public class AWLivePush2 {
         DispatchQueue.main.async {
             self.reconnectTimer = Timer.scheduledTimer(timeInterval: 3.0,
                                                        target: self,
-                                                       selector: #selector(AWLivePush2.onReconnectTimer(sender:)),
+                                                       selector: #selector(AWLivePushC.onReconnectTimer(sender:)),
                                                        userInfo: nil,
                                                        repeats: false)    
         }
@@ -117,7 +117,7 @@ public class AWLivePush2 {
         self.isLive = false
     }
 }
-extension AWLivePush2 {
+extension AWLivePushC {
     fileprivate func counterPushFailed() {
         self.pushFailedCounter += 1
         NSLog("push failed:\(self.pushFailedCounter)")

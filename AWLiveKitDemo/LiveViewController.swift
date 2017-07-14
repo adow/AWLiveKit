@@ -12,7 +12,7 @@ import AWLiveKit
 
 class LiveViewController: UIViewController {
 
-    var live : AWLive?
+    var live : AWLiveC?
     @IBOutlet var preview : AWLivePreview!
     @IBOutlet var infoLabel : UILabel!
     @IBOutlet var startButton : UIButton!
@@ -54,7 +54,7 @@ class LiveViewController: UIViewController {
             else if orientation == .portraitUpsideDown {
                 videoOrientation = .portraitUpsideDown
             }
-            self.live = AWLive(url: self.push_url,
+            self.live = AWLiveC(url: self.push_url,
                                onPreview: self.preview,
                                withQuality: self.videoQuality,
                                atOrientation : videoOrientation)
@@ -202,11 +202,11 @@ extension LiveViewController {
     }
 }
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
-    func push(_ push: AWLivePush2, connectedStateChanged state: AWLiveConnectState) {
+    func push(_ push: AWLivePushC, connectedStateChanged state: AWLiveConnectState) {
         self.startButton.isHidden = (state != .Connected)
         self.showInfo("\(state)",duration: 5.0)
     }
-    func pushLiveChanged(_ push: AWLivePush2) {
+    func pushLiveChanged(_ push: AWLivePushC) {
         self.startButton.isSelected = push.isLive
         self.closeButton.isHidden = push.isLive
         self.showInfo("\(push.isLive ? "start" : "stop")", duration: 5.0)

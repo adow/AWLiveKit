@@ -25,7 +25,7 @@
 		684DE67A1E5690EC000C6C92 /* AWLiveExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */; };
 		684DE67B1E5690EC000C6C92 /* AWLivePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */; };
 		684DE67C1E5690EC000C6C92 /* AWLivePush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65C1E5690EC000C6C92 /* AWLivePush.swift */; };
-		684DE67D1E5690EC000C6C92 /* AWLivePush2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65D1E5690EC000C6C92 /* AWLivePush2.swift */; };
+		684DE67D1E5690EC000C6C92 /* AWLivePushC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65D1E5690EC000C6C92 /* AWLivePushC.swift */; };
 		684DE67E1E5690EC000C6C92 /* AWLiveStat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */; };
 		684DE67F1E5690EC000C6C92 /* NetworkHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6601E5690EC000C6C92 /* NetworkHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		684DE6801E5690EC000C6C92 /* NetworkHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6611E5690EC000C6C92 /* NetworkHelper.m */; };
@@ -100,7 +100,7 @@
 		684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveExtension.swift; sourceTree = "<group>"; };
 		684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePreview.swift; sourceTree = "<group>"; };
 		684DE65C1E5690EC000C6C92 /* AWLivePush.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePush.swift; sourceTree = "<group>"; };
-		684DE65D1E5690EC000C6C92 /* AWLivePush2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePush2.swift; sourceTree = "<group>"; };
+		684DE65D1E5690EC000C6C92 /* AWLivePushC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePushC.swift; sourceTree = "<group>"; };
 		684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveStat.swift; sourceTree = "<group>"; };
 		684DE6601E5690EC000C6C92 /* NetworkHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkHelper.h; sourceTree = "<group>"; };
 		684DE6611E5690EC000C6C92 /* NetworkHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkHelper.m; sourceTree = "<group>"; };
@@ -186,20 +186,20 @@
 			isa = PBXGroup;
 			children = (
 				684DE64B1E569070000C6C92 /* AWLiveKit.h */,
-				684DE6551E5690EC000C6C92 /* aw_live_push.c */,
-				684DE6561E5690EC000C6C92 /* aw_live_push.h */,
+				684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */,
+				684DE6571E5690EC000C6C92 /* AWCapture.swift */,
+				684DE6581E5690EC000C6C92 /* AWEncoder.swift */,
 				68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */,
 				68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */,
 				688BDA721F15F11B00F600CB /* aw_video_encoder.c */,
 				688BDA731F15F11B00F600CB /* aw_video_encoder.h */,
-				684DE6571E5690EC000C6C92 /* AWCapture.swift */,
-				684DE6581E5690EC000C6C92 /* AWEncoder.swift */,
+				684DE6551E5690EC000C6C92 /* aw_live_push.c */,
+				684DE6561E5690EC000C6C92 /* aw_live_push.h */,
+				684DE65C1E5690EC000C6C92 /* AWLivePush.swift */,
+				684DE65D1E5690EC000C6C92 /* AWLivePushC.swift */,
 				684DE6591E5690EC000C6C92 /* AWLive.swift */,
 				688BDA7C1F18695A00F600CB /* AWLiveC.swift */,
-				684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */,
 				684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */,
-				684DE65C1E5690EC000C6C92 /* AWLivePush.swift */,
-				684DE65D1E5690EC000C6C92 /* AWLivePush2.swift */,
 				684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */,
 				684DE65F1E5690EC000C6C92 /* network */,
 				684DE6641E5690EC000C6C92 /* rtmp */,
@@ -403,7 +403,7 @@
 				684DE6751E5690EC000C6C92 /* aw_live_push.c in Sources */,
 				684DE67B1E5690EC000C6C92 /* AWLivePreview.swift in Sources */,
 				684DE68D1E5690EC000C6C92 /* log.c in Sources */,
-				684DE67D1E5690EC000C6C92 /* AWLivePush2.swift in Sources */,
+				684DE67D1E5690EC000C6C92 /* AWLivePushC.swift in Sources */,
 				684DE6791E5690EC000C6C92 /* AWLive.swift in Sources */,
 				68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */,
 			);
