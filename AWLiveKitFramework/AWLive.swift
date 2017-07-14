@@ -32,14 +32,15 @@ public class AWLive {
          atOrientation orientation : AVCaptureVideoOrientation = .portrait) {
         self.videoQuality = videoQuality
         self.preview = preview
-   
-        let video_size = videoQuality.videoSizeForOrientation(orientation)
-        let ret = aw_video_encoder_init(Int32(video_size.width),
-                                        Int32(video_size.height),
-                             Int32(videoQuality.recommandVideoBiterates.bitrates),
-                             30,
-                             AWVideoEncoderProfile.main.profile)
-        NSLog("ret:\(ret)")
+
+        /// 视频编码器
+        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(orientation),
+                bitrate: videoQuality.recommandVideoBiterates,
+                fps:videoQuality.recommandVideoBiterates.recommandedFPS,
+                profile: videoQuality.recommandVideoBiterates.recommandedProfile)
+  
+        /// 音频编码器
+        audioEncoder = AWAudioEncoder()
         /// push
         push = AWLivePush2(url: url)
         push.delegate = self
@@ -52,34 +53,26 @@ public class AWLive {
         }
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
-            //self?.videoEncoder?.encodeSampleBuffer(sampleBuffer)
             guard let _self = self, let _push = _self.push, _push.isLive else {
                 return
             }
-//            aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer, context) in
-//                NSLog("video encoded")
-//                let _weak_self = unsafeBitCast(context, to: AWLive.self)
-//                _weak_self.push?.pushVideoSampleBuffer(sample_buffer!)
-//            }, unsafeBitCast(_self, to: UnsafeMutableRawPointer.self))
-            aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
-                if let sp = sample_buffer_encoded {
-                    let _weak_push = unsafeBitCast(context, to: AWLivePush2.self)
-                    _weak_push.pushVideoSampleBuffer(sp)
-                }
-                
-            }, unsafeBitCast(_push, to: UnsafeMutableRawPointer.self))
+            _self
+                .videoEncoder
+                .encodeSampleBuffer(sampleBuffer, callback: { (sampleBufferEncoded) in
+                _push.pushVideoSampleBuffer(sampleBufferEncoded)
+            })
+            
         }
         capture.onAudioSampleBuffer = {
             [weak self](sampleBuffer) -> () in
-//            print("audio")
-//            self?.audioEncoder?.encodeSampleBuffer(sampleBuffer)
-            
-            let buffer_list = aw_audio_encode(sampleBuffer)
-            if let _buffer_list = buffer_list {
-                /// push
-                self?.push?.pushAudioBufferList(_buffer_list.pointee)
-                aw_audio_release(_buffer_list)
+            guard let _self = self, let _push = _self.push, _push.isLive else {
+                return
             }
+            _self
+                .audioEncoder
+                .encodeSampleBuffer(sampleBuffer, callback: { (audio_buffer_list) in
+                _push.pushAudioBufferList(audio_buffer_list)
+            })
             
         }
         capture.onReady = {
@@ -95,28 +88,25 @@ public class AWLive {
         self.liveStat = AWLiveStat()
         /// notification
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onNotificationResign(_:)),
-                                               name: NSNotification.Name.UIApplicationWillResignActive,
+                selector: #selector(onNotificationResign(_:)),
+                name: NSNotification.Name.UIApplicationWillResignActive,
+                object: nil)
+        NotificationCenter.default.addObserver(self,
+                selector: #selector(onNotificationEnterForeground(_:)),
+                name: NSNotification.Name.UIApplicationDidBecomeActive,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onNotificationEnterForeground(_:)),
-                                               name: NSNotification.Name.UIApplicationDidBecomeActive,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onNotificationTerminate(_:)),
-                                               name: NSNotification.Name.UIApplicationWillTerminate,
-                                               object: nil)
+                selector: #selector(onNotificationTerminate(_:)),
+                name: NSNotification.Name.UIApplicationWillTerminate,
+                object: nil)
         
     }
     deinit {
-        self.close()
+        self.stopLive()
+        self.videoEncoder?.close()
+        self.capture?.stop()
         NotificationCenter.default.removeObserver(self)
         NSLog("AWLive release")
-    }
-    fileprivate func close() {
-        self.stopLive()
-        self.push.disconnect()
-        self.capture?.stop()
     }
 }
 extension AWLive {
@@ -201,38 +191,16 @@ extension AWLive {
 extension AWLive {
     /// 开始直播，指定当前的旋转位置, 只有开始直播的时候才进行编码
     public func startLive() {
-        guard let orientation = self.videoOrientation else {
-            NSLog("No Video Orientation")
-            return
-        }
-        /// videoEncoder
-        videoEncoder?.close()
-        videoEncoder = nil
-        videoEncoder = AWVideoEncoder(outputSize: videoQuality.videoSizeForOrientation(orientation),
-                                      bitrate: videoQuality.recommandVideoBiterates,
-                                      fps:videoQuality.recommandVideoBiterates.recommandedFPS,
-                                      profile: videoQuality.recommandVideoBiterates.recommandedProfile)
-        videoEncoder.onEncoded = {
-            [weak self](sampleBuffer) -> () in
-            //            print("video encoded")
-            self?.push?.pushVideoSampleBuffer(sampleBuffer) /// push
-        }
-        /// audioEncoder
-        audioEncoder = AWAudioEncoder()
-        audioEncoder.onEncoded = {
-            [weak self](bufferList) -> () in
-            self?.push?.pushAudioBufferList(bufferList) /// push
-        }
+        /// 开始推流
         self.push?.start()
-        ///
+        /// 开始检测状态数据
         self.liveStat?.start()
     }
     public func stopLive() {
+        /// 结束推流
         self.liveStat?.stop()
+        /// 结束检测状态数据
         self.push?.stop()
-        self.videoEncoder?.close()
-        self.videoEncoder = nil
-        self.audioEncoder = nil
     }
 }
 extension AWLive : AWLivePushDeletate {
@@ -257,7 +225,6 @@ extension AWLive {
         }
     }
     @objc fileprivate func onNotificationTerminate(_ notification:Notification) {
-        self.close()
     }
 }
 

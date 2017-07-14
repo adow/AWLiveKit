@@ -35,7 +35,7 @@ public class AWLiveC {
         let ret = aw_video_encoder_init(Int32(video_size.width),
                 Int32(video_size.height),
                 Int32(videoQuality.recommandVideoBiterates.bitrates),
-                Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
+            Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
                 videoQuality.recommandVideoBiterates.recommandedProfile.profile)
         NSLog("ret:\(ret)")
         /// push
@@ -90,17 +90,17 @@ public class AWLiveC {
         self.liveStat = AWLiveStat()
         /// notification
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onNotificationResign(_:)),
-                                               name: NSNotification.Name.UIApplicationWillResignActive,
-                                               object: nil)
+                selector: #selector(onNotificationResign(_:)),
+                name: NSNotification.Name.UIApplicationWillResignActive,
+                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onNotificationEnterForeground(_:)),
-                                               name: NSNotification.Name.UIApplicationDidBecomeActive,
-                                               object: nil)
+                selector: #selector(onNotificationEnterForeground(_:)),
+                name: NSNotification.Name.UIApplicationDidBecomeActive,
+                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onNotificationTerminate(_:)),
-                                               name: NSNotification.Name.UIApplicationWillTerminate,
-                                               object: nil)
+                selector: #selector(onNotificationTerminate(_:)),
+                name: NSNotification.Name.UIApplicationWillTerminate,
+                object: nil)
         
     }
     deinit {

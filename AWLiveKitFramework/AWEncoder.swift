@@ -207,7 +207,7 @@ public class AWVideoEncoder: NSObject {
         self.videoCompressionSession = nil
     }
     /// 编码
-    public func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer){
+    public func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer,callback : AWVideoEncoderCallback? = nil){
         let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
         guard let _pixelBuffer = pixelBuffer else {
             NSLog("No Pixel Buffer")
@@ -215,11 +215,11 @@ public class AWVideoEncoder: NSObject {
         }
         let presentationTime = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer)
         let duration = CMSampleBufferGetOutputDuration(sampleBuffer)
-        self.encodePixelBuffer(_pixelBuffer, presentationTime: presentationTime, duration: duration)
+        self.encodePixelBuffer(_pixelBuffer, presentationTime: presentationTime, duration: duration, callback: callback)
         
     }
     /// 编码
-    public func encodePixelBuffer(_ pixelBuffer:CVPixelBuffer, presentationTime: CMTime, duration : CMTime) {
+    public func encodePixelBuffer(_ pixelBuffer:CVPixelBuffer, presentationTime: CMTime, duration : CMTime, callback : AWVideoEncoderCallback? = nil) {
         guard let _compressionSeession = self.videoCompressionSession else {
             NSLog("No VideoCompressionSession")
             return
@@ -228,6 +228,9 @@ public class AWVideoEncoder: NSObject {
         /// Lock
         if CVPixelBufferLockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0))) != kCVReturnSuccess {
             NSLog("Lock Pixel Buffer Base Address Error")
+        }
+        if let _callback = callback {
+            self.onEncoded = _callback
         }
         
         //            print("Sample Time:\(presentationTime),\(duration)")
@@ -293,7 +296,7 @@ public class AWAudioEncoder {
         }
         NSLog("AudioEncoder Setup")
     }
-    public func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
+    public func encodeSampleBuffer(_ sampleBuffer:CMSampleBuffer, callback: AWAudioEncoderCallback? = nil) {
         let format = CMSampleBufferGetFormatDescription(sampleBuffer)
         let sourceFormat = CMAudioFormatDescriptionGetStreamBasicDescription(format!)?.pointee
         g_audioInputFormat = sourceFormat
@@ -303,6 +306,10 @@ public class AWAudioEncoder {
         guard self.audioConverter != nil else {
             NSLog("Audio Converter nil")
             return
+        }
+        
+        if let _callback = callback {
+            self.onEncoded = _callback
         }
         
         var blockBuffer : CMBlockBuffer? = nil
@@ -321,11 +328,11 @@ public class AWAudioEncoder {
         
         let frameSize : UInt32 = 1024
         let dataPtr = UnsafeMutableRawPointer.allocate(bytes: Int(frameSize),
-                                                       alignedTo: MemoryLayout<Int>.alignment)
+            alignedTo: MemoryLayout<Int>.alignment)
         let channels = g_audioInputFormat.mChannelsPerFrame
         let  audioBuffer = AudioBuffer(mNumberChannels: channels,
-                                       mDataByteSize: frameSize,
-                                       mData: dataPtr)
+            mDataByteSize: frameSize,
+            mData: dataPtr)
 //        dataPtr.deinitialize()
         var outBufferList = AudioBufferList(mNumberBuffers: 1, mBuffers: audioBuffer)
         var outputDataPacketSize : UInt32 = 1
