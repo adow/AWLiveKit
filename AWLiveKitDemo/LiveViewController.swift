@@ -12,7 +12,7 @@ import AWLiveKit
 
 class LiveViewController: UIViewController {
 
-    var live : AWLive?
+    var live : AWLiveC?
     @IBOutlet var preview : AWLivePreview!
     @IBOutlet var infoLabel : UILabel!
     @IBOutlet var startButton : UIButton!
@@ -54,7 +54,7 @@ class LiveViewController: UIViewController {
             else if orientation == .portraitUpsideDown {
                 videoOrientation = .portraitUpsideDown
             }
-            self.live = AWLive(url: self.push_url,
+            self.live = AWLiveC(url: self.push_url,
                                onPreview: self.preview,
                                withQuality: self.videoQuality,
                                atOrientation : videoOrientation)

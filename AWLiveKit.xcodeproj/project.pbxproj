@@ -47,9 +47,9 @@
 		684DE6901E5690EC000C6C92 /* rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6721E5690EC000C6C92 /* rtmp.c */; };
 		684DE6921E5690EC000C6C92 /* rtmp_sys.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6741E5690EC000C6C92 /* rtmp_sys.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		684DE6951E5693D2000C6C92 /* rtmp.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6731E5690EC000C6C92 /* rtmp.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		688BDA741F15F11B00F600CB /* aw_video_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 688BDA721F15F11B00F600CB /* aw_video_encoder.c */; };
 		688BDA751F15F11B00F600CB /* aw_video_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 688BDA721F15F11B00F600CB /* aw_video_encoder.c */; };
 		688BDA761F15F11B00F600CB /* aw_video_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 688BDA731F15F11B00F600CB /* aw_video_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		688BDA7D1F18695A00F600CB /* AWLiveC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688BDA7C1F18695A00F600CB /* AWLiveC.swift */; };
 		68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */; };
 		68AF1AC41E597DB600C01141 /* aw_audio_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -124,6 +124,7 @@
 		684DE6741E5690EC000C6C92 /* rtmp_sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp_sys.h; sourceTree = "<group>"; };
 		688BDA721F15F11B00F600CB /* aw_video_encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_video_encoder.c; sourceTree = "<group>"; };
 		688BDA731F15F11B00F600CB /* aw_video_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_video_encoder.h; sourceTree = "<group>"; };
+		688BDA7C1F18695A00F600CB /* AWLiveC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveC.swift; sourceTree = "<group>"; };
 		68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_audio_encoder.c; sourceTree = "<group>"; };
 		68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_audio_encoder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -194,6 +195,7 @@
 				684DE6571E5690EC000C6C92 /* AWCapture.swift */,
 				684DE6581E5690EC000C6C92 /* AWEncoder.swift */,
 				684DE6591E5690EC000C6C92 /* AWLive.swift */,
+				688BDA7C1F18695A00F600CB /* AWLiveC.swift */,
 				684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */,
 				684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */,
 				684DE65C1E5690EC000C6C92 /* AWLivePush.swift */,
@@ -374,7 +376,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				684DE6151E56901D000C6C92 /* LiveViewController.swift in Sources */,
-				688BDA741F15F11B00F600CB /* aw_video_encoder.c in Sources */,
 				684DE6171E56901D000C6C92 /* StartViewController.swift in Sources */,
 				684DE6101E56901D000C6C92 /* AppDelegate.swift in Sources */,
 				684DE6161E56901D000C6C92 /* StartAnimationView.swift in Sources */,
@@ -386,6 +387,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				684DE6781E5690EC000C6C92 /* AWEncoder.swift in Sources */,
+				688BDA7D1F18695A00F600CB /* AWLiveC.swift in Sources */,
 				684DE67A1E5690EC000C6C92 /* AWLiveExtension.swift in Sources */,
 				684DE67C1E5690EC000C6C92 /* AWLivePush.swift in Sources */,
 				684DE6851E5690EC000C6C92 /* aw_rtmp.c in Sources */,
