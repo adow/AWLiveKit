@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="S0V-ZS-9eU">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="S0V-ZS-9eU">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -134,6 +134,100 @@
             </objects>
             <point key="canvasLocation" x="32.799999999999997" y="38.23088455772114"/>
         </scene>
+        <!--LiveGPU Image View Controller-->
+        <scene sceneID="GXN-I9-fTe">
+            <objects>
+                <viewController id="jlJ-Sa-82q" customClass="LiveGPUImageViewController" customModule="AWLiveKitDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="yYx-Di-buB"/>
+                        <viewControllerLayoutGuide type="bottom" id="KVS-s7-pWs"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="31I-Qi-R7o">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fwv-bs-aLk" customClass="GPUImageView">
+                                <rect key="frame" x="-16" y="0.0" width="407" height="667"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WIl-la-Mwi">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <subviews>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="X3G-4B-qht">
+                                        <rect key="frame" x="202" y="622" width="165" height="29"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="165" id="AHu-G5-mCt"/>
+                                        </constraints>
+                                        <segments>
+                                            <segment title="0"/>
+                                            <segment title="1"/>
+                                            <segment title="2"/>
+                                            <segment title="3"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="onBeautySegmentWithSender:" destination="jlJ-Sa-82q" eventType="valueChanged" id="cvv-dL-FXd"/>
+                                        </connections>
+                                    </segmentedControl>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x6S-49-dYe">
+                                        <rect key="frame" x="9" y="622" width="77" height="30"/>
+                                        <state key="normal" title="切换摄像头"/>
+                                        <connections>
+                                            <action selector="onButtonCameraWithSender:" destination="jlJ-Sa-82q" eventType="touchUpInside" id="ZSi-s7-5PL"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mz9-bD-Rdq">
+                                        <rect key="frame" x="328" y="30" width="31" height="30"/>
+                                        <state key="normal" title="退出">
+                                            <color key="titleColor" red="0.95872321510000003" green="0.95872321510000003" blue="0.95872321510000003" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="onButtonCloseWithSender:" destination="jlJ-Sa-82q" eventType="touchUpInside" id="9rV-Pq-smA"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RaX-eD-jkb">
+                                        <rect key="frame" x="16" y="30" width="62" height="30"/>
+                                        <state key="normal" title="开始直播">
+                                            <color key="titleColor" red="0.95872321510000003" green="0.95872321510000003" blue="0.95872321510000003" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="onButtonStartWithSender:" destination="jlJ-Sa-82q" eventType="touchUpInside" id="mud-B7-6Es"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Mz9-bD-Rdq" firstAttribute="top" secondItem="WIl-la-Mwi" secondAttribute="top" constant="30" id="2HG-sk-gvJ"/>
+                                    <constraint firstItem="RaX-eD-jkb" firstAttribute="leading" secondItem="WIl-la-Mwi" secondAttribute="leading" constant="16" id="DhF-x3-65h"/>
+                                    <constraint firstItem="x6S-49-dYe" firstAttribute="leading" secondItem="WIl-la-Mwi" secondAttribute="leading" constant="9" id="I2l-lM-4n2"/>
+                                    <constraint firstAttribute="bottom" secondItem="x6S-49-dYe" secondAttribute="bottom" constant="15" id="JX2-kX-HxO"/>
+                                    <constraint firstAttribute="trailing" secondItem="X3G-4B-qht" secondAttribute="trailing" constant="8" id="KSw-xe-Avo"/>
+                                    <constraint firstItem="RaX-eD-jkb" firstAttribute="top" secondItem="WIl-la-Mwi" secondAttribute="top" constant="30" id="PoC-Uu-AvC"/>
+                                    <constraint firstAttribute="bottom" secondItem="X3G-4B-qht" secondAttribute="bottom" constant="17" id="R0g-lZ-n9b"/>
+                                    <constraint firstAttribute="trailing" secondItem="Mz9-bD-Rdq" secondAttribute="trailing" constant="16" id="kG0-xT-RM5"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Fwv-bs-aLk" firstAttribute="top" secondItem="31I-Qi-R7o" secondAttribute="top" id="FUs-wC-2s0"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="WIl-la-Mwi" secondAttribute="trailing" constant="-16" id="Ppq-Q3-OK2"/>
+                            <constraint firstItem="WIl-la-Mwi" firstAttribute="top" secondItem="31I-Qi-R7o" secondAttribute="topMargin" id="gYH-lo-TpG"/>
+                            <constraint firstItem="Fwv-bs-aLk" firstAttribute="leading" secondItem="31I-Qi-R7o" secondAttribute="leading" constant="-16" id="gYN-fD-sAX"/>
+                            <constraint firstItem="WIl-la-Mwi" firstAttribute="leading" secondItem="31I-Qi-R7o" secondAttribute="leadingMargin" constant="-16" id="hbt-oh-boz"/>
+                            <constraint firstItem="KVS-s7-pWs" firstAttribute="top" secondItem="Fwv-bs-aLk" secondAttribute="bottom" id="ij7-GK-2wC"/>
+                            <constraint firstAttribute="trailing" secondItem="Fwv-bs-aLk" secondAttribute="trailing" constant="-16" id="jbR-Da-QU9"/>
+                            <constraint firstItem="WIl-la-Mwi" firstAttribute="bottom" secondItem="31I-Qi-R7o" secondAttribute="bottomMargin" id="wsK-ny-mBA"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="closeButton" destination="Mz9-bD-Rdq" id="SCw-5m-qTn"/>
+                        <outlet property="preview" destination="Fwv-bs-aLk" id="XnZ-xe-4cZ"/>
+                        <outlet property="startButton" destination="RaX-eD-jkb" id="NkF-Fj-Rfv"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Whe-Da-QQx" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="32.799999999999997" y="795.6521739130435"/>
+        </scene>
         <!--Start View Controller-->
         <scene sceneID="Dbh-ZS-aWZ">
             <objects>
@@ -147,7 +241,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="推流地址" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d0V-xO-5n1">
-                                <rect key="frame" x="153" y="174" width="70" height="21"/>
+                                <rect key="frame" x="152.5" y="174" width="70" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
@@ -163,36 +257,45 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="画质" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y5U-8s-KmS">
-                                <rect key="frame" x="170" y="367" width="35" height="21"/>
+                                <rect key="frame" x="170" y="337" width="35" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QtM-Ni-S8V">
-                                <rect key="frame" x="27" y="393" width="320" height="216"/>
+                                <rect key="frame" x="27.5" y="363" width="320" height="216"/>
                                 <connections>
                                     <outlet property="dataSource" destination="S0V-ZS-9eU" id="2pQ-Ph-TGZ"/>
                                     <outlet property="delegate" destination="S0V-ZS-9eU" id="hKR-2L-DHc"/>
                                 </connections>
                             </pickerView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jPk-DX-J70">
-                                <rect key="frame" x="156.5" y="617" width="62" height="30"/>
+                                <rect key="frame" x="156.5" y="579" width="62" height="30"/>
                                 <state key="normal" title="进入直播"/>
                                 <connections>
                                     <action selector="onButtonStartWithSender:" destination="S0V-ZS-9eU" eventType="touchUpInside" id="1fN-k1-71p"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zXd-Du-73x">
+                                <rect key="frame" x="118" y="617" width="139" height="30"/>
+                                <state key="normal" title="进入直播 GPUImage"/>
+                                <connections>
+                                    <action selector="onButtonStartGPUImageWithSender:" destination="S0V-ZS-9eU" eventType="touchUpInside" id="Ge1-72-nOY"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="jPk-DX-J70" firstAttribute="centerX" secondItem="6Ar-tw-3LW" secondAttribute="centerX" id="6oq-jH-X7t"/>
-                            <constraint firstItem="Keg-ja-DBl" firstAttribute="top" secondItem="jPk-DX-J70" secondAttribute="bottom" constant="20" id="Er6-68-nUc"/>
+                            <constraint firstItem="zXd-Du-73x" firstAttribute="centerX" secondItem="6Ar-tw-3LW" secondAttribute="centerX" id="BE4-jH-aHd"/>
                             <constraint firstItem="y5U-8s-KmS" firstAttribute="centerX" secondItem="6Ar-tw-3LW" secondAttribute="centerX" id="Euf-eL-8qy"/>
                             <constraint firstItem="d0V-xO-5n1" firstAttribute="centerX" secondItem="6Ar-tw-3LW" secondAttribute="centerX" id="GHP-6H-0XX"/>
                             <constraint firstItem="e7b-G5-ahU" firstAttribute="trailing" secondItem="6Ar-tw-3LW" secondAttribute="trailingMargin" id="KVq-I6-cnT"/>
                             <constraint firstItem="e7b-G5-ahU" firstAttribute="top" secondItem="d0V-xO-5n1" secondAttribute="bottom" constant="17" id="Qzm-WT-5yO"/>
-                            <constraint firstItem="jPk-DX-J70" firstAttribute="top" secondItem="QtM-Ni-S8V" secondAttribute="bottom" constant="8" id="bNG-Sb-yg0"/>
+                            <constraint firstItem="jPk-DX-J70" firstAttribute="top" secondItem="QtM-Ni-S8V" secondAttribute="bottom" id="bNG-Sb-yg0"/>
                             <constraint firstItem="d0V-xO-5n1" firstAttribute="top" secondItem="OlI-5O-0cp" secondAttribute="bottom" constant="154" id="crF-eI-Qii"/>
+                            <constraint firstItem="zXd-Du-73x" firstAttribute="top" secondItem="jPk-DX-J70" secondAttribute="bottom" constant="8" id="jSj-RJ-5aP"/>
+                            <constraint firstItem="Keg-ja-DBl" firstAttribute="top" secondItem="zXd-Du-73x" secondAttribute="bottom" constant="20" id="ldj-mG-jGA"/>
                             <constraint firstItem="QtM-Ni-S8V" firstAttribute="top" secondItem="y5U-8s-KmS" secondAttribute="bottom" constant="5" id="p1d-eG-U0M"/>
                             <constraint firstItem="e7b-G5-ahU" firstAttribute="leading" secondItem="6Ar-tw-3LW" secondAttribute="leadingMargin" id="pCC-15-9sU"/>
                             <constraint firstItem="QtM-Ni-S8V" firstAttribute="centerX" secondItem="6Ar-tw-3LW" secondAttribute="centerX" id="zkd-F2-9oP"/>
@@ -202,6 +305,7 @@
                         <outlet property="qualityPicker" destination="QtM-Ni-S8V" id="YFR-lj-w9h"/>
                         <outlet property="urlTextField" destination="e7b-G5-ahU" id="ic5-2Q-Ja9"/>
                         <segue destination="BYZ-38-t0r" kind="presentation" identifier="segue_start_to_live" id="E8a-pJ-9Ot"/>
+                        <segue destination="jlJ-Sa-82q" kind="presentation" identifier="segue_start_to_gpuimagelive" id="FAD-uv-e50"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6LK-Ta-5Xv" userLabel="First Responder" sceneMemberID="firstResponder"/>

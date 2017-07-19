@@ -16,7 +16,7 @@ public typealias AWVideoEncoderCallback = (CMSampleBuffer) -> ()
 // MARK: Bitrate
 public enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
     case _450kbs = 0, _500kbs,_600kbs, _800kbs, _1000kbs, _1200kbs, _1500kbs, _2000kbs, _2500kbs, _3000kbs, _4000kbs
-    var bitrates : Int {
+    public var bitrates : Int {
         switch self {
         case ._450kbs:
             return 450 * 1024

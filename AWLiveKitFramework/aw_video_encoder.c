@@ -133,7 +133,7 @@ void aw_video_encoded_callback(void *data,
                                OSStatus status,
                                VTEncodeInfoFlags infoFlats,
                                CMSampleBufferRef sampleBuffer) {
-    if (_g_callback && _g_callback_context && sampleBuffer) {
+    if (_g_callback  && sampleBuffer) {
         (*_g_callback)(sampleBuffer, _g_callback_context);
     }
 }

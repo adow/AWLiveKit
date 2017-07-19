@@ -60,7 +60,6 @@ class StartViewController: UIViewController {
                 return
             }
             
-            
             let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
             //let landscape = (self.orientationSegment.selectedSegmentIndex == 0)
             let landscape = self.videoLandscape
@@ -68,6 +67,20 @@ class StartViewController: UIViewController {
                 destinationViewController.push_url = url
                 destinationViewController.orientation =  landscape ? .landscapeRight : .portrait
                 destinationViewController.videoQuality = videoQuality
+                
+            }
+        }
+        else if segue.identifier == "segue_start_to_gpuimagelive" {
+            guard let url = urlTextField.text, url != "" else {
+                return
+            }
+            
+            let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
+            let landscape = self.videoLandscape
+            if let destinationViewController = segue.destination as? LiveGPUImageViewController {
+//                destinationViewController.push_url = url
+                destinationViewController.orientation =  landscape ? .landscapeRight : .portrait
+//                destinationViewController.videoQuality = videoQuality
                 
             }
         }
@@ -84,6 +97,22 @@ class StartViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "竖屏", style: .default, handler: { (_) in
             self.videoLandscape = false
             self.performSegue(withIdentifier: "segue_start_to_live", sender: sender)
+        }))
+        self.present(alert, animated: true) {
+        }
+    }
+    @IBAction func onButtonStartGPUImage(sender:UIButton) {
+        guard self.isCaptureAuthorized else {
+            return
+        }
+        let alert = UIAlertController(title: "进入直播", message: "选择屏幕方向", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "横屏", style: .destructive, handler: { (_) in
+            self.videoLandscape = true
+            self.performSegue(withIdentifier: "segue_start_to_gpuimagelive", sender: sender)
+        }))
+        alert.addAction(UIAlertAction(title: "竖屏", style: .default, handler: { (_) in
+            self.videoLandscape = false
+            self.performSegue(withIdentifier: "segue_start_to_gpuimagelive", sender: sender)
         }))
         self.present(alert, animated: true) {
         }

@@ -16,6 +16,8 @@ FOUNDATION_EXPORT const unsigned char AWLiveKitFrameworkVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <AWLiveKitFramework/PublicHeader.h>
 
+#import <GPUImage/GPUImageFramework.h>
+#import "GPUImageBeautifyFilter.h"
 #include "rtmp_sys.h"
 #include "aw_rtmp.h"
 #include "aw_live_push.h"
