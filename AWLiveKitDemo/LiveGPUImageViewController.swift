@@ -12,65 +12,25 @@ import AWLiveKit
 
 class LiveGPUImageViewController: UIViewController {
 
-    var orientation : UIInterfaceOrientation! = .portrait
     @IBOutlet weak var preview : GPUImageView!
-    var capture : AWGPUImageCapture!
-    var push : AWLivePushC!
+    var live : AWLiveG?
+    var push_url : String! = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
+    var orientation : UIInterfaceOrientation! = .portrait
+    var videoQuality : AWLiveCaptureVideoQuality = ._720
     @IBOutlet var startButton : UIButton!
     @IBOutlet var closeButton : UIButton!
+    @IBOutlet var cameraButton : UIButton!
+    @IBOutlet var beautySegment : UISegmentedControl!
+    @IBOutlet var liveStatLabel : UILabel!
+    @IBOutlet var infoLabel : UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        /// push
-        push = AWLivePushC(url: "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84")
-        push.delegate = self
-        ///
-        let videoQuality : AWLiveCaptureVideoQuality = ._540i
-        let video_size = videoQuality.videoSizeForOrientation(AVCaptureVideoOrientation(rawValue: self.orientation.rawValue)!)
-        let ret = aw_video_encoder_init(Int32(video_size.width),
-                                        Int32(video_size.height),
-                                        Int32(videoQuality.recommandVideoBiterates.bitrates),
-                                        Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
-                                        videoQuality.recommandVideoBiterates.recommandedProfile.profile)
-        NSLog("ret:\(ret)")
-        // Do any additional setup after loading the view.
-        capture = AWGPUImageCapture(sessionPreset: videoQuality.sessionPreset,
-                                    orientation: orientation,
-                                    preview: self.preview)
-        capture.onAudioSampleBuffer = {
-            [weak self] (sampleBuffer) -> () in
-            guard let _self = self,let _push = _self.push, _push.isLive else {
-                return
-            }
-//            NSLog("audio sample buffer")
-            if let buffer_list = aw_audio_encode(sampleBuffer) {
-                NSLog("audio buffer list:\(buffer_list)")
-                _self.push.pushAudioBufferList(buffer_list.pointee)
-                aw_audio_release(buffer_list)
-            }
-            else {
-                NSLog("no audio encoded")
-            }
-            
-        }
-        capture.onVideoPixelBuffer = {
-            [weak self](pixelBuffer, presentation_time, duration) -> () in
-            guard let _self = self,let _push = _self.push, _push.isLive else {
-                return
-            }
-//            NSLog("video sample buffer")
-            aw_video_encode_pixelbuffer(pixelBuffer, presentation_time, duration, { (sample_buffer, context) in
-                if let _p = sample_buffer {
-//                    NSLog("video sample buffer encoded:\(_p)")
-                    NSLog("video sample buffer encoded")
-                    let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
-                    _weak_push.pushVideoSampleBuffer(_p)
-                }
-                else {
-                    NSLog("no video encoded")
-                }
-                
-            }, unsafeBitCast(_self.push, to: UnsafeMutableRawPointer.self))
-        }
+        self.showInfo(push_url, duration: 5.0)
+        self.startButton.isHidden = true
+        /// tap
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGesture(_:)))
+        self.view.addGestureRecognizer(tapGesture)
     }
     
     
@@ -80,12 +40,38 @@ class LiveGPUImageViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.capture?.start()
+        UIApplication.shared.isIdleTimerDisabled = true
+        if self.live == nil {
+            ///
+            var videoOrientation : AVCaptureVideoOrientation = .portrait
+            if orientation == .landscapeRight {
+                videoOrientation = .landscapeRight
+            }
+            else if orientation == .landscapeLeft {
+                videoOrientation = .landscapeLeft
+            }
+            else if orientation == .portrait {
+                videoOrientation = .portrait
+            }
+            else if orientation == .portraitUpsideDown {
+                videoOrientation = .portraitUpsideDown
+            }
+            self.live = AWLiveG(url: self.push_url,
+                                onPreview: self.preview,
+                                withQuality: self.videoQuality,
+                                atOrientation : videoOrientation)
+            guard self.live != nil else {
+                NSLog("AWLive failed")
+                return
+            }
+            self.live?.push?.delegate = self
+            self.live?.liveStat?.delegate = self
+            self.live?.capture.start()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.capture?.stop()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -124,29 +110,99 @@ class LiveGPUImageViewController: UIViewController {
     
 }
 extension LiveGPUImageViewController {
+    fileprivate func showInfo(_ info:String, duration : TimeInterval = 0.0) {
+        self.infoLabel.text = info
+        self.infoLabel.alpha = 1.0
+        if duration > 0.0 {
+            UIView.animate(withDuration: duration, animations: {
+                self.infoLabel.alpha = 0.0
+            })
+        }
+    }
+    @IBAction func onButtonLive(_ sender : UIButton!) {
+        
+    }
     @IBAction func onButtonClose(sender:UIButton) {
         self.dismiss(animated: true) {
             
         }
     }
     @IBAction func onButtonCamera(sender:UIButton) {
-        self.capture?.rotateCamera()
+        self.live?.capture.rotateCamera()
     }
     @IBAction func onButtonStart(sender:UIButton) {
-        self.push?.start()
+        guard let _isLive = self.live?.isLive else {
+            return
+        }
+        if !_isLive {
+            /// 不要重复创建
+            guard self.view.subviews.filter({ (v) -> Bool in
+                return v is StartAnimationView
+            }).count <= 0 else {
+                return
+            }
+            /// startAnimationView
+            let startAnimationView = StartAnimationView()
+            startAnimationView.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(startAnimationView)
+            let d_startAnimationView = ["sv":startAnimationView]
+            let startAnimationView_constraints_h =
+                NSLayoutConstraint.constraints(withVisualFormat: "H:|-(0.0)-[sv]-(0.0)-|",
+                                               options: [.alignAllCenterX,],
+                                               metrics: nil,
+                                               views: d_startAnimationView)
+            self.view.addConstraints(startAnimationView_constraints_h)
+            let startAnimationView_constraint_height =
+                NSLayoutConstraint(item: startAnimationView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 80.0)
+            let startAnimationView_constraint_centerY =
+                NSLayoutConstraint(item: startAnimationView, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+            self.view.addConstraint(startAnimationView_constraint_height)
+            self.view.addConstraint(startAnimationView_constraint_centerY)
+            startAnimationView.startAnimation(completionBlock: {
+                [weak self] in
+                self?.live?.startLive()
+                self?.showInfo("Start", duration: 5.0)
+            })
+        }
+        else {
+            self.live?.stopLive()
+            self.showInfo("Stop")
+        }
     }
     @IBAction func onBeautySegment(sender:UISegmentedControl) {
-        self.capture?.beauty = sender.selectedSegmentIndex
+        self.live?.capture.beauty = sender.selectedSegmentIndex
+    }
+    func onTapGesture(_ recognizer:UITapGestureRecognizer) {
+        self.toggleUI()
+    }
+    fileprivate func toggleUI() {
+        let ui : [UIView] = [self.cameraButton,self.beautySegment, self.liveStatLabel]
+        UIView.animate(withDuration: 0.5, delay: 0.5, options: [.curveEaseOut,.allowUserInteraction], animations: {
+            ui.forEach({ (v) in
+                if v.alpha == 1.0 {
+                    v.alpha = 0.0
+                }
+                else {
+                    v.alpha = 1.0
+                }
+            })
+        }, completion: { (completed) in
+            
+        })
+        
     }
 }
 
-extension LiveGPUImageViewController : AWLivePushDeletate {
+extension LiveGPUImageViewController : AWLivePushDeletate,AWLiveStatDelegate {
     func push(_ push: AWLivePushC, connectedStateChanged state: AWLiveConnectState) {
         self.startButton.isHidden = (state != .Connected)
     }
     func pushLiveChanged(_ push: AWLivePushC) {
         self.startButton.isSelected = push.isLive
         self.closeButton.isHidden = push.isLive
+    }
+    func updateLiveStat(stat: AWLiveStat) {
+        self.liveStatLabel.text = stat.outputDescription
     }
 }
 

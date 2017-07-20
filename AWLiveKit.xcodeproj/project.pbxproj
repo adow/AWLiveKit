@@ -60,6 +60,7 @@
 		688BDA7D1F18695A00F600CB /* AWLiveC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688BDA7C1F18695A00F600CB /* AWLiveC.swift */; };
 		68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */; };
 		68AF1AC41E597DB600C01141 /* aw_audio_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		68B7C8D01F204A19003967F8 /* AWLiveG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B7C8CF1F204A19003967F8 /* AWLiveG.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -151,6 +152,7 @@
 		688BDA7C1F18695A00F600CB /* AWLiveC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveC.swift; sourceTree = "<group>"; };
 		68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_audio_encoder.c; sourceTree = "<group>"; };
 		68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_audio_encoder.h; sourceTree = "<group>"; };
+		68B7C8CF1F204A19003967F8 /* AWLiveG.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveG.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,6 +249,7 @@
 				684DE65D1E5690EC000C6C92 /* AWLivePushC.swift */,
 				684DE6591E5690EC000C6C92 /* AWLive.swift */,
 				688BDA7C1F18695A00F600CB /* AWLiveC.swift */,
+				68B7C8CF1F204A19003967F8 /* AWLiveG.swift */,
 				684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */,
 				684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */,
 				684DE65F1E5690EC000C6C92 /* network */,
@@ -444,6 +447,7 @@
 				680380241F1DD1BF00038491 /* GPUImageBeautifyFilter.m in Sources */,
 				684DE67C1E5690EC000C6C92 /* AWLivePush.swift in Sources */,
 				684DE6851E5690EC000C6C92 /* aw_rtmp.c in Sources */,
+				68B7C8D01F204A19003967F8 /* AWLiveG.swift in Sources */,
 				688BDA751F15F11B00F600CB /* aw_video_encoder.c in Sources */,
 				684DE68B1E5690EC000C6C92 /* hashswf.c in Sources */,
 				684DE6771E5690EC000C6C92 /* AWCapture.swift in Sources */,

@@ -88,8 +88,10 @@ open class AWGPUImageCapture: NSObject {
             
             self.filter.addTarget(preview)
             self.filter.addTarget(self.videoOutput)
+            /// 视频不要再次输出到 MovieWriter, 使用 RawDataOutput 输出
 //            self.filter.addTarget(self.audioOutput)
            
+            /// 音频输出到 MovieWriter
             _camera.audioEncodingTarget = self.audioOutput
             /// 
 //            _camera.startCapture()

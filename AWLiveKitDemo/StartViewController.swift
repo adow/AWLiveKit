@@ -78,9 +78,9 @@ class StartViewController: UIViewController {
             let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
             let landscape = self.videoLandscape
             if let destinationViewController = segue.destination as? LiveGPUImageViewController {
-//                destinationViewController.push_url = url
+                destinationViewController.push_url = url
                 destinationViewController.orientation =  landscape ? .landscapeRight : .portrait
-//                destinationViewController.videoQuality = videoQuality
+                destinationViewController.videoQuality = videoQuality
                 
             }
         }
