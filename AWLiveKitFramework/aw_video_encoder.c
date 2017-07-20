@@ -84,6 +84,7 @@ void aw_video_encoder_close() {
     VTCompressionSessionCompleteFrames(_compressionSession, kCMTimeInvalid);
     VTCompressionSessionInvalidate(_compressionSession);
     _compressionSession = NULL;
+    printf("close aw_video_encoder\n");
 }
 AWVideoEncoderCallback _g_callback = NULL;
 void *_g_callback_context = NULL;
@@ -120,7 +121,8 @@ int aw_video_encode_pixelbuffer(CVPixelBufferRef pixel_buffer,
     _g_callback_context = callback_context;
     int status = VTCompressionSessionEncodeFrame(_compressionSession, pixel_buffer, presentation_time, duration, NULL, NULL, NULL);
     if (status) {
-        printf("Encode Frame Error\n");
+        printf("Encode Frame Error:%d\n",status);
+        CVPixelBufferUnlockBaseAddress(pixel_buffer, 0);
         return -3;
     }
     CVPixelBufferUnlockBaseAddress(pixel_buffer, 0);

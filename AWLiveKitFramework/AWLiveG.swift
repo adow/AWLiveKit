@@ -107,7 +107,7 @@ public class AWLiveG {
         /// 通知视频捕捉
         self.capture?.stop()
         NotificationCenter.default.removeObserver(self)
-        NSLog("AWLive release")
+        NSLog("AWLiveG release")
     }
 }
 extension AWLiveG {
@@ -168,7 +168,7 @@ extension AWLiveG {
     @objc fileprivate func onNotificationEnterForeground(_ notification:Notification) {
         if self.isInterruption {
             self.isInterruption = false
-            self.startLive()
+            //self.startLive()
         }
     }
     @objc fileprivate func onNotificationResign(_ notification:Notification) {

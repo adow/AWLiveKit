@@ -27,7 +27,13 @@ open class AWGPUImageCapture: NSObject {
     open var beauty : Int? {
         didSet {
             if let _beauty = beauty, let beauty_filter = self.filter as? GPUImageBeautifyFilter {
-                beauty_filter.setBeauty(Int32(_beauty))
+                if _beauty == 0 {
+                    self.closeFilter()
+                }
+                else {
+                    self.openFilter()
+                    beauty_filter.setBeauty(Int32(_beauty))
+                }
             }
         }
     }
@@ -50,12 +56,8 @@ open class AWGPUImageCapture: NSObject {
         if let _camera = self.camera {
             _camera.outputImageOrientation = orientation
            
-            /// filter
-            self.filter = GPUImageBeautifyFilter()
-            _camera.addTarget(self.filter)
             
-            /// preview output
-//            self.preview = GPUImageView()
+            
             /// video output
             var width : Int = 0
             var height : Int = 0
@@ -86,14 +88,22 @@ open class AWGPUImageCapture: NSObject {
             let movie_url = URL(fileURLWithPath: movie_file)
             self.audioOutput = AWGPUImageMovieWriter(movieURL: movie_url, size: CGSize(width: width, height: height))
             
-            self.filter.addTarget(preview)
-            self.filter.addTarget(self.videoOutput)
+            /// filter
+            self.filter = GPUImageBeautifyFilter()
+            
+            //self.filter.addTarget(preview)
+            //self.filter.addTarget(self.videoOutput)
+           
+            /// 默认不使用美颜滤镜
+            self.closeFilter()
+           
+            
             /// 视频不要再次输出到 MovieWriter, 使用 RawDataOutput 输出
 //            self.filter.addTarget(self.audioOutput)
            
             /// 音频输出到 MovieWriter
             _camera.audioEncodingTarget = self.audioOutput
-            /// 
+            
 //            _camera.startCapture()
         }
         else {
@@ -107,6 +117,24 @@ open class AWGPUImageCapture: NSObject {
     deinit {
         NSLog("AWGPUImageCapture release")
     }
+    
+    
+    public func openFilter() {
+        self.camera.removeAllTargets()
+        self.filter.removeAllTargets()
+        self.camera.addTarget(self.filter)
+        self.filter.addTarget(self.preview)
+        self.filter.addTarget(self.videoOutput)
+    }
+    public func closeFilter() {
+        self.camera.removeAllTargets()
+        self.filter.removeAllTargets()
+        self.camera.addTarget(self.preview)
+        self.camera.addTarget(self.videoOutput)
+    }
+}
+extension AWGPUImageCapture {
+    
 }
 extension AWGPUImageCapture {
     public func start() {
