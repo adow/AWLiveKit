@@ -31,14 +31,6 @@ public class AWLiveG {
         self.videoQuality = videoQuality
         self.preview = preview
        
-        /// 视频编码器
-        let video_size = videoQuality.videoSizeForOrientation(orientation)
-        let ret = aw_video_encoder_init(Int32(video_size.width),
-                Int32(video_size.height),
-                Int32(videoQuality.recommandVideoBiterates.bitrates),
-            Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
-                videoQuality.recommandVideoBiterates.recommandedProfile.profile)
-        NSLog("ret:\(ret)")
         /// push
         push = AWLivePushC(url: url)
         push.delegate = self
@@ -142,14 +134,36 @@ extension AWLiveG {
     }
 }
 extension AWLiveG {
+    /// 开始视频编码器
+    func startVideoEncoder() {
+        guard let orientation = AVCaptureVideoOrientation(rawValue: self.capture.camera.outputImageOrientation.rawValue) else {
+            return
+        }
+        /// 视频编码器
+        let video_size = videoQuality.videoSizeForOrientation(orientation)
+        let ret = aw_video_encoder_init(Int32(video_size.width),
+                                        Int32(video_size.height),
+                                        Int32(videoQuality.recommandVideoBiterates.bitrates),
+                                        Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
+                                        videoQuality.recommandVideoBiterates.recommandedProfile.profile)
+        NSLog("ret:\(ret)")
+    }
+    /// 关闭视频编码器
+    func stopVideoEncoder() {
+        aw_video_encoder_close()
+    }
     /// 开始直播，指定当前的旋转位置, 只有开始直播的时候才进行编码
     public func startLive() {
+        /// 开始运行视频编码器
+        self.startVideoEncoder()
         /// 开始推流
         self.push?.start()
         /// 开始状态数据检测
         self.liveStat?.start()
     }
     public func stopLive() {
+        /// 结束运行视频编码器
+        self.stopVideoEncoder()
         /// 结束推流
         self.push?.stop()
         /// 停止状态数据检测

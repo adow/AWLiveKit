@@ -23,6 +23,7 @@ public class AWLiveC {
     public var isInterruption : Bool = false
     /// 状态监控
     public var liveStat : AWLiveStat!
+    
     public init?(url:String,
                  onPreview preview : AWLivePreview,
                  withQuality videoQuality : AWLiveCaptureVideoQuality = AWLiveCaptureVideoQuality._720,
@@ -30,14 +31,7 @@ public class AWLiveC {
         self.videoQuality = videoQuality
         self.preview = preview
        
-        /// 视频编码器
-        let video_size = videoQuality.videoSizeForOrientation(orientation)
-        let ret = aw_video_encoder_init(Int32(video_size.width),
-                Int32(video_size.height),
-                Int32(videoQuality.recommandVideoBiterates.bitrates),
-            Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
-                videoQuality.recommandVideoBiterates.recommandedProfile.profile)
-        NSLog("ret:\(ret)")
+        
         /// push
         push = AWLivePushC(url: url)
         push.delegate = self
@@ -48,6 +42,9 @@ public class AWLiveC {
             NSLog("AVLiveCapture failed")
             return nil
         }
+        /// video encoder
+        //self.openVideoEncoder()
+        ///
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
             /// 只有在推流开始的时候才进行编码
@@ -56,8 +53,12 @@ public class AWLiveC {
             }
             aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
                 if let sp = sample_buffer_encoded {
+                    NSLog("video encoded")
                     let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
                     _weak_push.pushVideoSampleBuffer(sp)
+                }
+                else {
+                    NSLog("video not encoded")
                 }
                 
             }, unsafeBitCast(_push, to: UnsafeMutableRawPointer.self))
@@ -70,9 +71,13 @@ public class AWLiveC {
             }
             let buffer_list = aw_audio_encode(sampleBuffer)
             if let _buffer_list = buffer_list {
+                NSLog("audio encoded")
                 /// push
                 _push.pushAudioBufferList(_buffer_list.pointee)
                 aw_audio_release(_buffer_list)
+            }
+            else {
+                NSLog("audio not encoded")
             }
             
         }
@@ -195,14 +200,33 @@ extension AWLiveC {
     }
 }
 extension AWLiveC {
+    /// 开始视频编码器
+    func startVideoEncoder() {
+        /// 视频编码器
+        let video_size = videoQuality.videoSizeForOrientation(videoOrientation!)
+        let ret = aw_video_encoder_init(Int32(video_size.width),
+                                        Int32(video_size.height),
+                                        Int32(videoQuality.recommandVideoBiterates.bitrates),
+                                        Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
+                                        videoQuality.recommandVideoBiterates.recommandedProfile.profile)
+        NSLog("ret:\(ret)")
+    }
+    /// 关闭视频编码器
+    func stopVideoEncoder() {
+        aw_video_encoder_close()
+    }
     /// 开始直播，指定当前的旋转位置, 只有开始直播的时候才进行编码
     public func startLive() {
+        /// 开始运行视频编码器
+        self.startVideoEncoder()
         /// 开始推流
         self.push?.start()
         /// 开始状态数据检测
         self.liveStat?.start()
     }
     public func stopLive() {
+        /// 结束运行视频编码器
+        self.stopVideoEncoder()
         /// 结束推流
         self.push?.stop()
         /// 停止状态数据检测
