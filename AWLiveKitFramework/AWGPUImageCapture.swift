@@ -15,7 +15,7 @@ fileprivate let cache_dir = NSSearchPathForDirectoriesInDomains(FileManager.Sear
 fileprivate let document_dir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)[0]
 
 open class AWGPUImageCapture: NSObject {
-    var camera : GPUImageVideoCamera!
+    var camera : AWGPUImageVideoCamera!
     fileprivate var filter : GPUImageFilterGroup!
     var preview : GPUImageView!
     fileprivate var videoOutput : AWGPUImageRawDataOutput!
@@ -39,7 +39,8 @@ open class AWGPUImageCapture: NSObject {
     }
     open var onAudioSampleBuffer : AWGPUImageCaptureSampleBufferCallback? = nil {
         didSet {
-            self.audioOutput?.onAudioSampleBuffer = onAudioSampleBuffer
+            //self.audioOutput?.onAudioSampleBuffer = onAudioSampleBuffer
+            self.camera?.onAudioSampleBuffer = onAudioSampleBuffer
         }
     }
     open var onVideoPixelBuffer : AWGPUImageCapturePixelBufferCallback? = nil {
@@ -52,7 +53,7 @@ open class AWGPUImageCapture: NSObject {
                  preview : GPUImageView) {
         super.init()
         self.preview = preview
-        self.camera = GPUImageVideoCamera(sessionPreset: sessionPreset, cameraPosition: .front)
+        self.camera = AWGPUImageVideoCamera(sessionPreset: sessionPreset, cameraPosition: .front)
         if let _camera = self.camera {
             _camera.outputImageOrientation = orientation
           
@@ -80,11 +81,13 @@ open class AWGPUImageCapture: NSObject {
             }
             self.videoOutput = AWGPUImageRawDataOutput(imageSize: CGSize(width:width, height: height), resultsInBGRAFormat: true)
             /// audio output
+            /*
             let movie_file = (cache_dir as NSString).appendingPathComponent("movie.mov")
             NSLog("movie_file:\(movie_file)")
             try? FileManager.default.removeItem(atPath: movie_file)
             let movie_url = URL(fileURLWithPath: movie_file)
             self.audioOutput = AWGPUImageMovieWriter(movieURL: movie_url, size: CGSize(width: width, height: height))
+            */
             
             /// filter
             self.filter = GPUImageBeautifyFilter()
@@ -93,7 +96,9 @@ open class AWGPUImageCapture: NSObject {
             self.closeFilter()
            
             /// 音频输出到 MovieWriter
-            _camera.audioEncodingTarget = self.audioOutput
+            //_camera.audioEncodingTarget = self.audioOutput
+            
+            _camera.addAudioInputsAndOutputs()
             
         }
         else {
