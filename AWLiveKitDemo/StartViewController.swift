@@ -17,10 +17,21 @@ class StartViewController: UIViewController {
     var videoQualities : [AWLiveCaptureVideoQuality] = [._480,._540i, ._720,  ._1080, ._4k]
     var videoLandscape : Bool = true
     var isCaptureAuthorized : Bool = false
+    let kPushUrl = "adow.awlivedemo.pushurl"
+    var pushUrl : String? {
+        set {
+            UserDefaults.standard.set(newValue, forKey: kPushUrl)
+            UserDefaults.standard.synchronize()
+        }
+        get {
+            return UserDefaults.standard.string(forKey: kPushUrl)
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        self.urlTextField.text = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
+        //self.urlTextField.text = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
+        self.urlTextField.text = pushUrl ?? ""
         self.qualityPicker.selectRow(2, inComponent: 0, animated: false)
         AWLive.requestCapture { [weak self](succeed, message) in
             self?.isCaptureAuthorized = succeed
@@ -34,6 +45,8 @@ class StartViewController: UIViewController {
                 })
             }
         }
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGesture(sender:)))
+        self.view.addGestureRecognizer(tapGesture)
     }
 
     override func didReceiveMemoryWarning() {
@@ -50,6 +63,23 @@ class StartViewController: UIViewController {
     }
 
     // MARK: - Navigation
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == "segue_start_to_live" {
+            guard let url = urlTextField.text, url != "" else {
+                return false
+            }
+            return true
+        }
+        else if identifier == "segue_start_to_gpuimagelive" {
+            guard let url = urlTextField.text, url != "" else {
+                return false
+            }
+            return true
+        }
+        
+        return true
+    }
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -59,6 +89,7 @@ class StartViewController: UIViewController {
             guard let url = urlTextField.text, url != "" else {
                 return
             }
+            self.pushUrl = url
             
             let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
             //let landscape = (self.orientationSegment.selectedSegmentIndex == 0)
@@ -74,6 +105,7 @@ class StartViewController: UIViewController {
             guard let url = urlTextField.text, url != "" else {
                 return
             }
+            self.pushUrl = url
             
             let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
             let landscape = self.videoLandscape
@@ -87,6 +119,9 @@ class StartViewController: UIViewController {
     }
     @IBAction func onButtonStart(sender:UIButton) {
         guard self.isCaptureAuthorized else {
+            return
+        }
+        guard let url = urlTextField.text, url != "" else {
             return
         }
         let alert = UIAlertController(title: "进入直播", message: "选择屏幕方向", preferredStyle: .actionSheet)
@@ -105,6 +140,9 @@ class StartViewController: UIViewController {
         guard self.isCaptureAuthorized else {
             return
         }
+        guard let url = urlTextField.text, url != "" else {
+            return
+        }
         let alert = UIAlertController(title: "进入直播", message: "选择屏幕方向", preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "横屏", style: .destructive, handler: { (_) in
             self.videoLandscape = true
@@ -118,6 +156,9 @@ class StartViewController: UIViewController {
         }
     }
     
+    func onTapGesture(sender:UITapGestureRecognizer!) {
+        self.urlTextField.resignFirstResponder()
+    }
 
 }
 extension StartViewController : UIPickerViewDataSource, UIPickerViewDelegate {
