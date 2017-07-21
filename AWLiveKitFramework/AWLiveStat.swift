@@ -46,6 +46,12 @@ public class AWLiveStat {
     public var battery : Int?
     /// 当前麦克风
     public var microphone : String = ""
+    /// 视频编码器出错信息
+    public var videoEncoderError : String? = nil
+    /// 音频编码器出错信息
+    public var audioEncoderError : String? = nil
+    /// 推流出错信息
+    public var pushError : String? = nil
     /// 计时器更新后回调
     public weak var delegate : AWLiveStatDelegate? = nil
     public init() {
@@ -88,7 +94,18 @@ public class AWLiveStat {
     }
     /// 输出
     public var outputDescription : String {
-        return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkSignalStrgenth) 网络\n \(self.microphone)"
+        var error_msg = ""
+        if let _error = self.videoEncoderError {
+            error_msg += "\(_error)\n"
+        }
+        if let _error = self.audioEncoderError {
+            error_msg += "\(_error)\n"
+        }
+        if let _error = self.pushError {
+            error_msg += "\(_error)\n"
+        }
+        
+        return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkSignalStrgenth) 网络\n \(self.microphone)\n \(error_msg)\n"
     }
 }
 extension AWLiveStat {

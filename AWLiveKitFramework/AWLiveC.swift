@@ -51,7 +51,7 @@ public class AWLiveC {
             guard let _self = self, let _push = _self.push, _push.isLive else {
                 return
             }
-            aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
+            let ret = aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
                 if let sp = sample_buffer_encoded {
                     NSLog("video encoded")
                     let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
@@ -62,6 +62,11 @@ public class AWLiveC {
                 }
                 
             }, unsafeBitCast(_push, to: UnsafeMutableRawPointer.self))
+            
+            if ret < 0 {
+                self?.liveStat.videoEncoderError = "视频编码错误:\(ret)"
+            }
+            
         }
         capture.onAudioSampleBuffer = {
             [weak self](sampleBuffer) -> () in
@@ -75,9 +80,11 @@ public class AWLiveC {
                 /// push
                 _push.pushAudioBufferList(_buffer_list.pointee)
                 aw_audio_release(_buffer_list)
+                _self.liveStat?.audioEncoderError = nil
             }
             else {
                 NSLog("audio not encoded")
+                _self.liveStat?.audioEncoderError = "音频编码错误"
             }
             
         }

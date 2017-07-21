@@ -123,7 +123,7 @@ int aw_video_encode_pixelbuffer(CVPixelBufferRef pixel_buffer,
     if (status) {
         printf("Encode Frame Error:%d\n",status);
         CVPixelBufferUnlockBaseAddress(pixel_buffer, 0);
-        return -3;
+        return status;
     }
     CVPixelBufferUnlockBaseAddress(pixel_buffer, 0);
     return 0;

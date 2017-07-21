@@ -48,9 +48,11 @@ public class AWLiveG {
                 NSLog("audio buffer list:\(buffer_list)")
                 _self.push.pushAudioBufferList(buffer_list.pointee)
                 aw_audio_release(buffer_list)
+                _self.liveStat?.audioEncoderError = nil
             }
             else {
                 NSLog("no audio encoded")
+                _self.liveStat?.audioEncoderError = "音频编码错误"
             }
             
         }
@@ -60,7 +62,7 @@ public class AWLiveG {
                 return
             }
 //            NSLog("video sample buffer")
-            aw_video_encode_pixelbuffer(pixelBuffer, presentation_time, duration, { (sample_buffer, context) in
+            let ret = aw_video_encode_pixelbuffer(pixelBuffer, presentation_time, duration, { (sample_buffer, context) in
                 if let _p = sample_buffer {
 //                    NSLog("video sample buffer encoded:\(_p)")
                     NSLog("video sample buffer encoded")
@@ -72,6 +74,9 @@ public class AWLiveG {
                 }
                 
             }, unsafeBitCast(_self.push, to: UnsafeMutableRawPointer.self))
+            if ret < 0 {
+                self?.liveStat.videoEncoderError = "视频编码错误:\(ret)"
+            }
         }
         
         ///
