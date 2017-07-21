@@ -74,8 +74,8 @@
                                                     <action selector="onButtonMirror:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zBR-Dy-p14"/>
                                                 </connections>
                                             </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pff-xf-Gq1">
-                                                <rect key="frame" x="367" y="149" width="0.0" height="0.0"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="stat" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pff-xf-Gq1">
+                                                <rect key="frame" x="340.5" y="324.5" width="26.5" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                 <color key="textColor" white="0.90000000000000002" alpha="1" colorSpace="calibratedWhite"/>
                                                 <nil key="highlightedColor"/>
@@ -97,9 +97,9 @@
                                             <constraint firstItem="vR0-zD-EaZ" firstAttribute="centerY" secondItem="MLi-7U-7yb" secondAttribute="centerY" id="JZ7-Qq-h5T"/>
                                             <constraint firstItem="vaF-IK-jY8" firstAttribute="top" secondItem="VAJ-OE-gCN" secondAttribute="top" constant="30" id="Mc8-ZX-9nd"/>
                                             <constraint firstItem="vaF-IK-jY8" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="15" id="ONp-Iv-Ez9"/>
-                                            <constraint firstItem="pff-xf-Gq1" firstAttribute="top" secondItem="4tN-e5-Xwo" secondAttribute="bottom" constant="14" id="Rgl-oe-FKl"/>
                                             <constraint firstItem="4tN-e5-Xwo" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" id="WvN-5x-jjZ"/>
                                             <constraint firstItem="O6I-8P-BFP" firstAttribute="centerY" secondItem="vaF-IK-jY8" secondAttribute="centerY" id="eJS-7e-G3T"/>
+                                            <constraint firstItem="pff-xf-Gq1" firstAttribute="centerY" secondItem="VAJ-OE-gCN" secondAttribute="centerY" id="f0O-83-ZIc"/>
                                             <constraint firstAttribute="trailing" secondItem="4tN-e5-Xwo" secondAttribute="trailing" id="fyv-Hd-tIS"/>
                                             <constraint firstAttribute="trailing" secondItem="vR0-zD-EaZ" secondAttribute="trailing" constant="21" id="kZ4-eH-Bnc"/>
                                             <constraint firstAttribute="bottom" secondItem="MLi-7U-7yb" secondAttribute="bottom" constant="25" id="m39-sI-qz1"/>

@@ -39,12 +39,12 @@ open class AWGPUImageCapture: NSObject {
     }
     open var onAudioSampleBuffer : AWGPUImageCaptureSampleBufferCallback? = nil {
         didSet {
-            self.audioOutput.onAudioSampleBuffer = onAudioSampleBuffer
+            self.audioOutput?.onAudioSampleBuffer = onAudioSampleBuffer
         }
     }
     open var onVideoPixelBuffer : AWGPUImageCapturePixelBufferCallback? = nil {
         didSet {
-            self.videoOutput.onVideoPixelBuffer = onVideoPixelBuffer
+            self.videoOutput?.onVideoPixelBuffer = onVideoPixelBuffer
         }
     }
     public init?(sessionPreset:String = AVCaptureSessionPresetiFrame960x540,
@@ -55,9 +55,7 @@ open class AWGPUImageCapture: NSObject {
         self.camera = GPUImageVideoCamera(sessionPreset: sessionPreset, cameraPosition: .front)
         if let _camera = self.camera {
             _camera.outputImageOrientation = orientation
-           
-            
-            
+          
             /// video output
             var width : Int = 0
             var height : Int = 0
@@ -91,20 +89,12 @@ open class AWGPUImageCapture: NSObject {
             /// filter
             self.filter = GPUImageBeautifyFilter()
             
-            //self.filter.addTarget(preview)
-            //self.filter.addTarget(self.videoOutput)
-           
             /// 默认不使用美颜滤镜
             self.closeFilter()
-           
-            
-            /// 视频不要再次输出到 MovieWriter, 使用 RawDataOutput 输出
-//            self.filter.addTarget(self.audioOutput)
            
             /// 音频输出到 MovieWriter
             _camera.audioEncodingTarget = self.audioOutput
             
-//            _camera.startCapture()
         }
         else {
             return nil
@@ -120,17 +110,23 @@ open class AWGPUImageCapture: NSObject {
     
     
     public func openFilter() {
-        self.camera.removeAllTargets()
-        self.filter.removeAllTargets()
-        self.camera.addTarget(self.filter)
-        self.filter.addTarget(self.preview)
-        self.filter.addTarget(self.videoOutput)
+        self.camera?.removeAllTargets()
+        self.filter?.removeAllTargets()
+        if let _filter = self.filter {
+            self.camera?.addTarget(_filter)
+        }
+        self.filter?.addTarget(self.preview)
+        if let _video_output = self.videoOutput {
+            self.filter?.addTarget(_video_output)
+        }
     }
     public func closeFilter() {
-        self.camera.removeAllTargets()
-        self.filter.removeAllTargets()
-        self.camera.addTarget(self.preview)
-        self.camera.addTarget(self.videoOutput)
+        self.camera?.removeAllTargets()
+        self.filter?.removeAllTargets()
+        self.camera?.addTarget(self.preview)
+        if let _video_output = self.videoOutput {
+            self.camera?.addTarget(_video_output)
+        }
     }
 }
 extension AWGPUImageCapture {
@@ -138,12 +134,12 @@ extension AWGPUImageCapture {
 }
 extension AWGPUImageCapture {
     public func start() {
-        self.camera.startCapture()
-        self.audioOutput.startRecording()
+        self.camera?.startCapture()
+        self.audioOutput?.startRecording()
     }
     public func stop() {
-        self.camera.stopCapture()
-        self.audioOutput.finishRecording()
+        self.camera?.stopCapture()
+        self.audioOutput?.finishRecording()
     }
 }
 
