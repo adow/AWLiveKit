@@ -54,6 +54,7 @@ public class AWLiveC {
             let ret = aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
                 if let sp = sample_buffer_encoded {
                     NSLog("video encoded")
+                    //NSLog("video encoded:\(sp)")
                     let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
                     _weak_push.pushVideoSampleBuffer(sp)
                 }

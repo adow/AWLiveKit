@@ -119,6 +119,7 @@ int aw_video_encode_pixelbuffer(CVPixelBufferRef pixel_buffer,
     }
     _g_callback = callback;
     _g_callback_context = callback_context;
+    //printf("time:%lf,%lf\n",CMTimeGetSeconds(presentation_time),CMTimeGetSeconds(duration));
     int status = VTCompressionSessionEncodeFrame(_compressionSession, pixel_buffer, presentation_time, duration, NULL, NULL, NULL);
     if (status) {
         printf("Encode Frame Error:%d\n",status);

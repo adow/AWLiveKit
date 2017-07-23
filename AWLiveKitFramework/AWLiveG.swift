@@ -45,7 +45,8 @@ public class AWLiveG {
             }
             //            NSLog("audio sample buffer")
             if let buffer_list = aw_audio_encode(sampleBuffer) {
-                NSLog("audio buffer list:\(buffer_list)")
+                //NSLog("audio buffer list:\(buffer_list)")
+                NSLog("audio buffer list encoded")
                 _self.push.pushAudioBufferList(buffer_list.pointee)
                 aw_audio_release(buffer_list)
                 _self.liveStat?.audioEncoderError = nil
@@ -64,10 +65,11 @@ public class AWLiveG {
 //            NSLog("video sample buffer")
             let ret = aw_video_encode_pixelbuffer(pixelBuffer, presentation_time, duration, { (sample_buffer, context) in
                 if let _p = sample_buffer {
-//                    NSLog("video sample buffer encoded:\(_p)")
+                    //NSLog("video sample buffer encoded:\(_p)")
                     NSLog("video sample buffer encoded")
                     let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
                     _weak_push.pushVideoSampleBuffer(_p)
+                    
                 }
                 else {
                     NSLog("no video encoded")

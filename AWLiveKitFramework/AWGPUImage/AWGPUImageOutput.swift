@@ -38,7 +38,6 @@ class AWGPUImageRawDataOutput: GPUImageRawDataOutput {
         let size = self.maximumOutputSize()
         let width = size.width
         let height = size.height
-        /// TODO: width, height
         let ret = CVPixelBufferCreateWithBytes(kCFAllocatorDefault,
                                                Int(width), Int(height),
                                                kCVPixelFormatType_32BGRA,
@@ -53,5 +52,9 @@ class AWGPUImageRawDataOutput: GPUImageRawDataOutput {
             _f(_pixel_buffer,frameTime, kCMTimeInvalid)
         }
         
+    }
+    public var pixelBufferReleaseCallback : CVPixelBufferReleaseBytesCallback = {
+        (p1:UnsafeMutableRawPointer?, p2:UnsafeRawPointer?) -> () in
+        NSLog("PixelBuffer release")
     }
 }
