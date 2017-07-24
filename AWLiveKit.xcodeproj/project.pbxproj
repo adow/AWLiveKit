@@ -13,7 +13,6 @@
 		680380281F1DD24C00038491 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 680380271F1DD24C00038491 /* GPUImage.framework */; };
 		6803802A1F1DD29000038491 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 680380271F1DD24C00038491 /* GPUImage.framework */; };
 		6803802C1F1DD35C00038491 /* AWGPUImageCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6803802B1F1DD35C00038491 /* AWGPUImageCapture.swift */; };
-		6803802E1F1DEB0200038491 /* LiveGPUImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6803802D1F1DEB0200038491 /* LiveGPUImageViewController.swift */; };
 		680380301F1DEE8000038491 /* GPUImage.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680380271F1DD24C00038491 /* GPUImage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		684DE6101E56901D000C6C92 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE5C51E56901C000C6C92 /* AppDelegate.swift */; };
 		684DE6111E56901D000C6C92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 684DE5C61E56901C000C6C92 /* Assets.xcassets */; };
@@ -62,6 +61,7 @@
 		68AF1AC41E597DB600C01141 /* aw_audio_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		68B7C8D01F204A19003967F8 /* AWLiveG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B7C8CF1F204A19003967F8 /* AWLiveG.swift */; };
 		68B7C8D41F21EF92003967F8 /* AWGPUImageVideoCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B7C8D31F21EF92003967F8 /* AWGPUImageVideoCamera.swift */; };
+		68C0E0E41F258CAE00403067 /* AWLiveU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C0E0E31F258CAE00403067 /* AWLiveU.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,7 +104,6 @@
 		680380221F1DD1BF00038491 /* AWGPUImageOutput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageOutput.swift; sourceTree = "<group>"; };
 		680380271F1DD24C00038491 /* GPUImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GPUImage.framework; path = Carthage/Build/iOS/GPUImage.framework; sourceTree = "<group>"; };
 		6803802B1F1DD35C00038491 /* AWGPUImageCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageCapture.swift; sourceTree = "<group>"; };
-		6803802D1F1DEB0200038491 /* LiveGPUImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveGPUImageViewController.swift; sourceTree = "<group>"; };
 		68348FF81D58692E00C2A72E /* AWLiveKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWLiveKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		684DE5C51E56901C000C6C92 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		684DE5C61E56901C000C6C92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -155,6 +154,7 @@
 		68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_audio_encoder.h; sourceTree = "<group>"; };
 		68B7C8CF1F204A19003967F8 /* AWLiveG.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveG.swift; sourceTree = "<group>"; };
 		68B7C8D31F21EF92003967F8 /* AWGPUImageVideoCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageVideoCamera.swift; sourceTree = "<group>"; };
+		68C0E0E31F258CAE00403067 /* AWLiveU.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveU.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,7 +226,6 @@
 				684DE5CB1E56901C000C6C92 /* Bridging-header.h */,
 				684DE5CC1E56901C000C6C92 /* Info.plist */,
 				684DE5CD1E56901C000C6C92 /* LiveViewController.swift */,
-				6803802D1F1DEB0200038491 /* LiveGPUImageViewController.swift */,
 				684DE5CE1E56901C000C6C92 /* StartAnimationView.swift */,
 				684DE5CF1E56901C000C6C92 /* StartViewController.swift */,
 			);
@@ -253,6 +252,7 @@
 				684DE6591E5690EC000C6C92 /* AWLive.swift */,
 				688BDA7C1F18695A00F600CB /* AWLiveC.swift */,
 				68B7C8CF1F204A19003967F8 /* AWLiveG.swift */,
+				68C0E0E31F258CAE00403067 /* AWLiveU.swift */,
 				684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */,
 				684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */,
 				684DE65F1E5690EC000C6C92 /* network */,
@@ -432,7 +432,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				684DE6151E56901D000C6C92 /* LiveViewController.swift in Sources */,
-				6803802E1F1DEB0200038491 /* LiveGPUImageViewController.swift in Sources */,
 				684DE6171E56901D000C6C92 /* StartViewController.swift in Sources */,
 				684DE6101E56901D000C6C92 /* AppDelegate.swift in Sources */,
 				684DE6161E56901D000C6C92 /* StartAnimationView.swift in Sources */,
@@ -446,6 +445,7 @@
 				684DE6781E5690EC000C6C92 /* AWEncoder.swift in Sources */,
 				680380251F1DD1BF00038491 /* AWGPUImageOutput.swift in Sources */,
 				688BDA7D1F18695A00F600CB /* AWLiveC.swift in Sources */,
+				68C0E0E41F258CAE00403067 /* AWLiveU.swift in Sources */,
 				684DE67A1E5690EC000C6C92 /* AWLiveExtension.swift in Sources */,
 				680380241F1DD1BF00038491 /* GPUImageBeautifyFilter.m in Sources */,
 				684DE67C1E5690EC000C6C92 /* AWLivePush.swift in Sources */,

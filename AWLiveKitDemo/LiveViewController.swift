@@ -10,22 +10,52 @@ import UIKit
 import AVFoundation
 import AWLiveKit
 
-class LiveViewController: UIViewController {
+public enum LiveViewControllerType : Int {
+    case simple = 0, beauty = 1
+}
 
-    var live : AWLiveC?
-    @IBOutlet var preview : AWLivePreview!
+class LiveViewController: UIViewController {
+    var live : AWLiveBase?
+    //@IBOutlet var preview : AWLivePreview!
     @IBOutlet var infoLabel : UILabel!
     @IBOutlet var startButton : UIButton!
     @IBOutlet var liveStatLabel : UILabel!
     @IBOutlet var closeButton : UIButton!
-    @IBOutlet var cameraSegmentControl : UISegmentedControl!
-    @IBOutlet var mirrorButton : UIButton!
+    @IBOutlet var switchCameraButton : UIButton!
+    @IBOutlet var beautySegment : UISegmentedControl!
     var push_url : String! = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
     var orientation : UIInterfaceOrientation! = .portrait
     var videoQuality : AWLiveCaptureVideoQuality = ._720
+    var liveType : LiveViewControllerType = .simple
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        guard let av_orientation = AVCaptureVideoOrientation(rawValue:self.orientation.rawValue) else {
+            return
+        }
+        /// live
+        if self.liveType == .simple {
+            self.live = AWLiveSimple(url: self.push_url, withQuality: videoQuality, atOrientation: av_orientation)
+        }
+        else if self.liveType == .beauty {
+            self.live = AWLiveBeauty(url: self.push_url, withQuality: videoQuality, atOrientation: av_orientation)
+        }
+        guard let _live = self.live, let preview = _live.connectedPreview else {
+            NSLog("create live failed")
+            return
+        }
+        _live.push?.delegate = self
+        _live.liveStat?.delegate = self
+        /// preview
+        preview.backgroundColor = UIColor.darkGray
+        preview.translatesAutoresizingMaskIntoConstraints = false
+        self.view.insertSubview(preview, at: 0)
+        let d_preview = ["preview":preview]
+        let preview_constraintsH = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(0.0)-[preview]-(0.0)-|", options: .alignAllCenterX, metrics: nil, views: d_preview)
+        let preview_constraintsV = NSLayoutConstraint.constraints(withVisualFormat: "V:|-(0.0)-[preview]-(0.0)-|", options: .alignAllCenterY, metrics: nil, views: d_preview)
+        self.view.addConstraints(preview_constraintsH)
+        self.view.addConstraints(preview_constraintsV)
+        ///
         self.showInfo(push_url, duration: 5.0)
         self.startButton.isHidden = true
         /// tap
@@ -39,33 +69,8 @@ class LiveViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         UIApplication.shared.isIdleTimerDisabled = true
-        if self.live == nil {
-            ///
-            var videoOrientation : AVCaptureVideoOrientation = .portrait
-            if orientation == .landscapeRight {
-                videoOrientation = .landscapeRight
-            }
-            else if orientation == .landscapeLeft {
-                videoOrientation = .landscapeLeft
-            }
-            else if orientation == .portrait {
-                videoOrientation = .portrait
-            }
-            else if orientation == .portraitUpsideDown {
-                videoOrientation = .portraitUpsideDown
-            }
-            self.live = AWLiveC(url: self.push_url,
-                               onPreview: self.preview,
-                               withQuality: self.videoQuality,
-                               atOrientation : videoOrientation)
-            guard self.live != nil else {
-                NSLog("AWLive failed")
-                return
-            }
-            self.live?.push?.delegate = self
-            self.live?.liveStat?.delegate = self
-            self.cameraSegmentControl.isHidden = (self.live?.canUseFrontCamera != true)
-        }
+        self.live?.startCapture()
+        
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -75,7 +80,6 @@ class LiveViewController: UIViewController {
         self.live?.stopLive()
     }
     override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
-//        return UIInterfaceOrientationMask(rawValue: UInt(self.orientation.rawValue))
         if orientation == .landscapeRight {
             return .landscapeRight
         }
@@ -105,7 +109,6 @@ class LiveViewController: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.live?.rotateWithCurrentOrientation()
     }
     
     deinit {
@@ -163,29 +166,23 @@ extension LiveViewController {
             self.showInfo("Stop")
         }
     }
-    @IBAction func onCameraChanged(_ sender : UISegmentedControl!) {
-        if sender.selectedSegmentIndex == 0 {
-            self.live?.useFrontCamera = false
-        }
-        else if sender.selectedSegmentIndex == 1 {
-            self.live?.useFrontCamera = true
-        }
-        
+    @IBAction func onButtonSwitchCamera(_sender:UIButton) {
+        self.live?.switchCamera()
     }
-    @IBAction func onButtonMirror(_ sender : UIButton!) {
-        sender.isSelected = !sender.isSelected
-        self.live?.mirror = sender.isSelected
-    }
+    
     @IBAction func onButtonClose(_ sender : UIButton!) {
         self.dismiss(animated: true) { 
             
         }
     }
+    @IBAction func onBeautySegment(_ sender:UISegmentedControl!) {
+        self.live?.beauty = sender.selectedSegmentIndex
+    }
     func onTapGesture(_ recognizer:UITapGestureRecognizer) {
         self.toggleUI()
     }
     fileprivate func toggleUI() {
-        let ui : [UIView] = [self.cameraSegmentControl, self.mirrorButton, self.liveStatLabel]
+        let ui : [UIView] = [self.switchCameraButton,self.beautySegment, self.liveStatLabel]
         UIView.animate(withDuration: 0.5, delay: 0.5, options: [.curveEaseOut,.allowUserInteraction], animations: {
             ui.forEach({ (v) in
                 if v.alpha == 1.0 {

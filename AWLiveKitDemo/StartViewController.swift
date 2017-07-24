@@ -33,7 +33,7 @@ class StartViewController: UIViewController {
         //self.urlTextField.text = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
         self.urlTextField.text = pushUrl ?? ""
         self.qualityPicker.selectRow(2, inComponent: 0, animated: false)
-        AWLive.requestCapture { [weak self](succeed, message) in
+        AWLiveBase.requestCapture { [weak self](succeed, message) in
             self?.isCaptureAuthorized = succeed
             if !succeed {
                 let alert = UIAlertController(title: "无法获取权限", message: message, preferredStyle: .alert)
@@ -85,36 +85,29 @@ class StartViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        if segue.identifier == "segue_start_to_live" {
-            guard let url = urlTextField.text, url != "" else {
+        let _f = {
+            (liveType : LiveViewControllerType)->() in
+            guard let url = self.urlTextField.text, url != "" else {
                 return
             }
             self.pushUrl = url
             
-            let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
+            let videoQuality = self.videoQualities[self.qualityPicker.selectedRow(inComponent: 0)]
             //let landscape = (self.orientationSegment.selectedSegmentIndex == 0)
             let landscape = self.videoLandscape
             if let destinationViewController = segue.destination as? LiveViewController {
                 destinationViewController.push_url = url
                 destinationViewController.orientation =  landscape ? .landscapeRight : .portrait
                 destinationViewController.videoQuality = videoQuality
+                destinationViewController.liveType = liveType
                 
             }
         }
+        if segue.identifier == "segue_start_to_live" {
+            _f(.simple)
+        }
         else if segue.identifier == "segue_start_to_gpuimagelive" {
-            guard let url = urlTextField.text, url != "" else {
-                return
-            }
-            self.pushUrl = url
-            
-            let videoQuality = videoQualities[qualityPicker.selectedRow(inComponent: 0)]
-            let landscape = self.videoLandscape
-            if let destinationViewController = segue.destination as? LiveGPUImageViewController {
-                destinationViewController.push_url = url
-                destinationViewController.orientation =  landscape ? .landscapeRight : .portrait
-                destinationViewController.videoQuality = videoQuality
-                
-            }
+            _f(.beauty)
         }
     }
     @IBAction func onButtonStart(sender:UIButton) {
@@ -132,6 +125,9 @@ class StartViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "竖屏", style: .default, handler: { (_) in
             self.videoLandscape = false
             self.performSegue(withIdentifier: "segue_start_to_live", sender: sender)
+        }))
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: { (_) in
+            
         }))
         self.present(alert, animated: true) {
         }
@@ -151,6 +147,9 @@ class StartViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "竖屏", style: .default, handler: { (_) in
             self.videoLandscape = false
             self.performSegue(withIdentifier: "segue_start_to_gpuimagelive", sender: sender)
+        }))
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: { (_) in
+            
         }))
         self.present(alert, animated: true) {
         }
