@@ -244,15 +244,15 @@ public class AWLiveSimple : AWLiveBase {
             
         }
         /// 准备好了再开始捕捉
-        capture.onReady = {
-            [weak self] in
-            guard let _self = self else {
-                return
-            }
-            
-            _self.capture.connectPreView(_self.preview)
-            _self.capture.start()
-        }
+//        capture.onReady = {
+//            [weak self] in
+//            guard let _self = self else {
+//                return
+//            }
+//            
+//            _self.capture.connectPreView(_self.preview)
+//            _self.capture.start()
+//        }
     }
     deinit {
         self.capture?.stop()
@@ -282,6 +282,23 @@ public class AWLiveSimple : AWLiveBase {
     }
     override public func startCapture() {
         //self.capture?.start()
+        guard let _capture = self.capture,!_capture.captureSession.isRunning else {
+            return
+        }
+        if _capture.ready {
+            _capture.connectPreView(self.preview)
+            _capture.start()
+        }
+        else {
+            _capture.onReady = {
+                [weak self] in
+                guard let _self = self else {
+                    return
+                }
+                _capture.connectPreView(_self.preview)
+                _capture.start()
+            }
+        }
     }
 }
 // MARK: - AWLiveBeauty
