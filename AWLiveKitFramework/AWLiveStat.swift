@@ -30,6 +30,8 @@ public class AWLiveStat {
     public var networkSpeedKB_str = "-"
     /// 网络信号强度
     public var networkSignalStrgenth : String = "-"
+    /// 网络类型
+    public var networkType : String = ""
     /// 从开始到现在的时间
     public var secondsFromStart : Double {
         return abs(startTime.timeIntervalSinceNow)
@@ -42,6 +44,8 @@ public class AWLiveStat {
     }
     /// 上一次更新电池的时间
     var lastUpdateBatteryTime : Date = Date()
+    /// 上一次网络检查的时间
+    var lastUpdateNetworkTypeTime : Date = Date()
     /// 电池
     public var battery : Int?
     /// 当前麦克风
@@ -105,7 +109,7 @@ public class AWLiveStat {
             error_msg += "\(_error)\n"
         }
         
-        return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkSignalStrgenth) 网络\n \(self.microphone)\n \(error_msg)\n"
+        return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkType) \(self.networkSignalStrgenth) 网络\n \(self.microphone)\n \(error_msg)\n"
     }
 }
 extension AWLiveStat {
@@ -151,6 +155,30 @@ extension AWLiveStat {
         }
         /// signalStrength
         self.networkSignalStrgenth = NetworkHelper.signalStrength() ?? "-"
+//        /// networkType, 30 秒刷新一次
+//        if abs(self.lastUpdateNetworkTypeTime.timeIntervalSinceNow) >= 30 {
+//            self.lastUpdateNetworkTypeTime = Date()
+//            let network_info = CTTelephonyNetworkInfo()
+//            if let name = network_info.subscriberCellularProvider?.carrierName {
+//                self.networkType = name
+//            }
+//            if let access_str = network_info.currentRadioAccessTechnology {
+//                let _2g_list = [CTRadioAccessTechnologyEdge,CTRadioAccessTechnologyGPRS,CTRadioAccessTechnologyCDMA1x]
+//                let _3g_list = [CTRadioAccessTechnologyHSDPA,CTRadioAccessTechnologyWCDMA,CTRadioAccessTechnologyHSUPA,CTRadioAccessTechnologyCDMAEVDORev0,CTRadioAccessTechnologyeHRPD, CTRadioAccessTechnologyCDMAEVDORevA, CTRadioAccessTechnologyCDMAEVDORevB]
+//                let _4g_list = [CTRadioAccessTechnologyLTE,]
+//                if _2g_list.contains(access_str) {
+//                    self.networkType += " 2G"
+//                }
+//                else if _3g_list.contains(access_str) {
+//                    self.networkType += " 3G"
+//                    
+//                }
+//                else if _4g_list.contains(access_str) {
+//                    self.networkType += " 4G"
+//                }
+//            }
+//        }
+        
     }
     fileprivate func updateBattery() {
         guard abs(self.lastUpdateBatteryTime.timeIntervalSinceNow) >= 10 else {

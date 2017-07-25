@@ -155,6 +155,7 @@
 		68B7C8CF1F204A19003967F8 /* AWLiveG.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveG.swift; sourceTree = "<group>"; };
 		68B7C8D31F21EF92003967F8 /* AWGPUImageVideoCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageVideoCamera.swift; sourceTree = "<group>"; };
 		68C0E0E31F258CAE00403067 /* AWLiveU.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveU.swift; sourceTree = "<group>"; };
+		68C0E0E51F27125E00403067 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -192,6 +193,7 @@
 		680380261F1DD24B00038491 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				68C0E0E51F27125E00403067 /* CoreTelephony.framework */,
 				680380271F1DD24C00038491 /* GPUImage.framework */,
 			);
 			name = Frameworks;
