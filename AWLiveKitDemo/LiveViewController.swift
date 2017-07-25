@@ -128,7 +128,10 @@ extension LiveViewController {
         }
     }
     @IBAction func onButtonLive(_ sender : UIButton!) {
-        guard let _isLive = self.live?.isLive else {
+        guard let _live = self.live else {
+            return
+        }
+        guard _live.isConnected, let _isLive = _live.isLive else {
             return
         }
         if !_isLive {
@@ -199,6 +202,13 @@ extension LiveViewController {
     }
 }
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
+    func pushError(_ code: Int, withMessage message: String) {
+        self.live?.liveStat?.pushError = "\(code):\(message)"
+        self.showInfo("\(code):\(message)",duration: 5)
+    }
+    func resetPushError() {
+        self.live?.liveStat?.pushError = nil
+    }
     func push(_ push: AWLivePushC, connectedStateChanged state: AWLiveConnectState) {
         self.startButton.isHidden = (state != .Connected)
         self.showInfo("\(state)",duration: 5.0)
@@ -208,6 +218,7 @@ extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
         self.closeButton.isHidden = push.isLive
         self.showInfo("\(push.isLive ? "start" : "stop")", duration: 5.0)
     }
+    
     func updateLiveStat(stat: AWLiveStat) {
         self.liveStatLabel.text = stat.outputDescription
     }

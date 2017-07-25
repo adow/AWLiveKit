@@ -45,12 +45,12 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="57" id="T2V-iR-Jfk"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="23"/>
                                         <color key="textColor" red="0.95872321510000003" green="0.95872321510000003" blue="0.95872321510000003" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pff-xf-Gq1">
-                                        <rect key="frame" x="367" y="334" width="0.0" height="0.0"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="15" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pff-xf-Gq1">
+                                        <rect key="frame" x="8" y="334" width="359" height="0.0"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="textColor" white="0.90000000000000002" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
@@ -98,6 +98,7 @@
                                     <constraint firstAttribute="bottom" secondItem="qbx-8o-tZb" secondAttribute="bottom" constant="16" id="evB-L4-G8F"/>
                                     <constraint firstItem="pff-xf-Gq1" firstAttribute="centerY" secondItem="VAJ-OE-gCN" secondAttribute="centerY" id="f0O-83-ZIc"/>
                                     <constraint firstAttribute="trailing" secondItem="4tN-e5-Xwo" secondAttribute="trailing" id="fyv-Hd-tIS"/>
+                                    <constraint firstItem="pff-xf-Gq1" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="8" id="ktt-RL-veQ"/>
                                     <constraint firstItem="9p4-Lc-HtW" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="8" id="tik-oF-Ick"/>
                                     <constraint firstAttribute="trailing" secondItem="qbx-8o-tZb" secondAttribute="trailing" constant="8" id="x08-ZU-2Q5"/>
                                 </constraints>

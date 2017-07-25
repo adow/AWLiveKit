@@ -204,11 +204,18 @@ extension AWLive {
     }
 }
 extension AWLive : AWLivePushDeletate {
+    public func pushError(_ code: Int, withMessage message: String) {
+        
+    }
+
     public func push(_ push: AWLivePushC, connectedStateChanged state: AWLiveConnectState) {
         NSLog("push connect changed:\(state)")
     }
     public func pushLiveChanged(_ push: AWLivePushC) {
         NSLog("push live changed:\(push.isLive)")
+    }
+    public func resetPushError() {
+        
     }
 }
 extension AWLive {

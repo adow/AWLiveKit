@@ -32,7 +32,7 @@ class StartViewController: UIViewController {
         // Do any additional setup after loading the view.
         //self.urlTextField.text = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
         self.urlTextField.text = pushUrl ?? ""
-        self.qualityPicker.selectRow(2, inComponent: 0, animated: false)
+        self.qualityPicker.selectRow(1, inComponent: 0, animated: false)
         AWLiveBase.requestCapture { [weak self](succeed, message) in
             self?.isCaptureAuthorized = succeed
             if !succeed {

@@ -184,6 +184,12 @@ extension AWLiveG:AWLivePushDeletate {
     public func pushLiveChanged(_ push: AWLivePushC) {
         NSLog("push live changed:\(push.isLive)")
     }
+    public func pushError(_ code: Int, withMessage message: String) {
+        
+    }
+    public func resetPushError() {
+        
+    }
 }
 extension AWLiveG {
     @objc fileprivate func onNotificationEnterForeground(_ notification:Notification) {

@@ -27,6 +27,10 @@ public protocol AWLivePushDeletate : class{
     func push(_ push:AWLivePushC, connectedStateChanged state:AWLiveConnectState)
     /// 播出状态改变
     func pushLiveChanged(_ push:AWLivePushC)
+    /// 发生错误时通知外部
+    func pushError(_ code:Int, withMessage message:String)
+    /// 充值错误状态
+    func resetPushError()
 }
 public class AWLivePushC {
     var rtmp_queue : DispatchQueue = DispatchQueue(label: "adow.rtmp", attributes: [])
@@ -149,9 +153,15 @@ extension AWLivePushC {
                                        &self.sps_pps_sent)
             if (push_result != 0) {
                 self.counterPushFailed()
+                DispatchQueue.main.async {
+                    self.delegate?.pushError(Int(push_result), withMessage: "视频推流失败")
+                }
             }
             else {
                 self.resetPushFailed()
+                DispatchQueue.main.async {
+                    self.delegate?.resetPushError()
+                }
             }
         }
     }
@@ -170,9 +180,15 @@ extension AWLivePushC {
             let push_result = aw_push_audio_bufferlist(audioList, self.timeOffset)
             if (push_result != 0) {
                 self.counterPushFailed()
+                DispatchQueue.main.async {
+                    self.delegate?.pushError(Int(push_result), withMessage: "音频推流失败")
+                }
             }
             else {
                 self.resetPushFailed()
+                DispatchQueue.main.async {
+                    self.delegate?.resetPushError()
+                }
             }
         }
     }

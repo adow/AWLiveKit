@@ -97,7 +97,20 @@ public class AWLiveBase {
     
 }
 extension AWLiveBase {
+    /// 是否已经完成连接
+    public var isConnected : Bool {
+        if let _push = self.push {
+            return _push.connectState == .Connected
+        }
+        else {
+            return false
+        }
+    }
     public func startLive() {
+        /// 检查连接
+        guard self.isConnected else {
+            return
+        }
         /// 开始运行视频编码器
         self.startVideoEncoder()
         /// 开始推流
@@ -136,6 +149,12 @@ extension AWLiveBase:AWLivePushDeletate {
     }
     public func pushLiveChanged(_ push: AWLivePushC) {
         NSLog("push live changed:\(push.isLive)")
+    }
+    public func pushError(_ code: Int, withMessage message: String) {
+        
+    }
+    public func resetPushError() {
+        
     }
 }
 extension AWLiveBase {
@@ -182,17 +201,22 @@ public class AWLiveSimple : AWLiveBase {
                 if let sp = sample_buffer_encoded {
                     NSLog("video encoded")
                     //NSLog("video encoded:\(sp)")
-                    let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
-                    _weak_push.pushVideoSampleBuffer(sp)
+                    let _weak_self = unsafeBitCast(context, to: AWLiveBase.self)
+                    //let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
+                    let _weak_push = _weak_self.push
+                    _weak_push?.pushVideoSampleBuffer(sp)
                 }
                 else {
                     NSLog("video not encoded")
                 }
                 
-            }, unsafeBitCast(_push, to: UnsafeMutableRawPointer.self))
+            }, unsafeBitCast(_self, to: UnsafeMutableRawPointer.self))
             
             if ret < 0 {
-                self?.liveStat.videoEncoderError = "视频编码错误:\(ret)"
+                self?.liveStat?.videoEncoderError = "视频编码错误:\(ret)"
+            }
+            else {
+                self?.liveStat?.videoEncoderError = nil
             }
             
         }
@@ -313,7 +337,10 @@ public class AWLiveBeauty : AWLiveBase {
                 
             }, unsafeBitCast(_self.push, to: UnsafeMutableRawPointer.self))
             if ret < 0 {
-                self?.liveStat.videoEncoderError = "视频编码错误:\(ret)"
+                self?.liveStat?.videoEncoderError = "视频编码错误:\(ret)"
+            }
+            else {
+                self?.liveStat?.videoEncoderError = nil
             }
         }
         capture.start()
