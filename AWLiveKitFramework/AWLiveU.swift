@@ -194,7 +194,7 @@ public class AWLiveSimple : AWLiveBase {
         capture.onVideoSampleBuffer = {
             [weak self](sampleBuffer) -> () in
             /// 只有在推流开始的时候才进行编码
-            guard let _self = self, let _push = _self.push, _push.isLive else {
+            guard let _self = self else {
                 return
             }
             let ret = aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
@@ -202,9 +202,10 @@ public class AWLiveSimple : AWLiveBase {
                     NSLog("video encoded")
                     //NSLog("video encoded:\(sp)")
                     let _weak_self = unsafeBitCast(context, to: AWLiveBase.self)
-                    //let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
                     let _weak_push = _weak_self.push
-                    _weak_push?.pushVideoSampleBuffer(sp)
+                    if let _live = _weak_push?.isLive, _live {
+                        _weak_push?.pushVideoSampleBuffer(sp)
+                    }
                 }
                 else {
                     NSLog("video not encoded")
@@ -223,14 +224,16 @@ public class AWLiveSimple : AWLiveBase {
         capture.onAudioSampleBuffer = {
             [weak self](sampleBuffer) -> () in
             /// 只有在推流开始的时候才进行编码
-            guard let _self = self, let _push = _self.push, _push.isLive else {
+            guard let _self = self else {
                 return
             }
             let buffer_list = aw_audio_encode(sampleBuffer)
             if let _buffer_list = buffer_list {
                 NSLog("audio encoded")
                 /// push
-                _push.pushAudioBufferList(_buffer_list.pointee)
+                if let _live = _self.push?.isLive, _live {
+                    _self.push?.pushAudioBufferList(_buffer_list.pointee)
+                }
                 aw_audio_release(_buffer_list)
                 _self.liveStat?.audioEncoderError = nil
             }
@@ -300,14 +303,16 @@ public class AWLiveBeauty : AWLiveBase {
         }
         capture.onAudioSampleBuffer = {
             [weak self] (sampleBuffer) -> () in
-            guard let _self = self,let _push = _self.push, _push.isLive else {
+            guard let _self = self else {
                 return
             }
             //            NSLog("audio sample buffer")
             if let buffer_list = aw_audio_encode(sampleBuffer) {
                 //NSLog("audio buffer list:\(buffer_list)")
                 NSLog("audio buffer list encoded")
-                _self.push.pushAudioBufferList(buffer_list.pointee)
+                if let _live = _self.push?.isLive, _live {
+                    _self.push.pushAudioBufferList(buffer_list.pointee)
+                }
                 aw_audio_release(buffer_list)
                 _self.liveStat?.audioEncoderError = nil
             }
@@ -319,7 +324,7 @@ public class AWLiveBeauty : AWLiveBase {
         }
         capture.onVideoPixelBuffer = {
             [weak self](pixelBuffer, presentation_time, duration) -> () in
-            guard let _self = self,let _push = _self.push, _push.isLive else {
+            guard let _self = self else {
                 return
             }
 //            NSLog("video sample buffer")
@@ -328,7 +333,9 @@ public class AWLiveBeauty : AWLiveBase {
                     //NSLog("video sample buffer encoded:\(_p)")
                     NSLog("video sample buffer encoded")
                     let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
-                    _weak_push.pushVideoSampleBuffer(_p)
+                    if _weak_push.isLive {
+                        _weak_push.pushVideoSampleBuffer(_p)
+                    }
                     
                 }
                 else {
@@ -343,7 +350,7 @@ public class AWLiveBeauty : AWLiveBase {
                 self?.liveStat?.videoEncoderError = nil
             }
         }
-        capture.start()
+        //capture.start()
     }
     deinit {
         self.capture?.stop()

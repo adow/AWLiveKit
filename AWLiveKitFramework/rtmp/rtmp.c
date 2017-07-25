@@ -952,7 +952,9 @@ RTMP_Connect0(RTMP *r, struct sockaddr * service)
     }
     
     setsockopt(r->m_sb.sb_socket, IPPROTO_TCP, TCP_NODELAY, (char *) &on, sizeof(on));
-    
+    /// no signal
+    int no_signal = 1;
+    setsockopt(r->m_sb.sb_socket, SOL_SOCKET, SO_NOSIGPIPE, &no_signal, sizeof(no_signal));
     return TRUE;
 }
 

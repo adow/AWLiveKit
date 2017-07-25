@@ -123,6 +123,7 @@ public class AWLivePushC {
 }
 extension AWLivePushC {
     fileprivate func counterPushFailed() {
+        /// 超过30次发送错误，就断开连接
         self.pushFailedCounter += 1
         NSLog("push failed:\(self.pushFailedCounter)")
         if (self.pushFailedCounter >= 30) {
@@ -141,10 +142,12 @@ extension AWLivePushC {
             /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
                 self.reconnect()
+                self.delegate?.pushError(-2, withMessage: "正在重新连接")
                 return
             }
             /// 开始直播了才推流
             guard self.isLive else {
+                self.delegate?.pushError(-1, withMessage: "未开始推流")
                 return
             }
             
@@ -170,10 +173,12 @@ extension AWLivePushC {
             /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
                 self.reconnect()
+                self.delegate?.pushError(-2, withMessage: "正在重新连接")
                 return
             }
             /// 开始直播了才推流
             guard self.isLive else {
+                self.delegate?.pushError(-1, withMessage: "未开始推流")
                 return
             }
             

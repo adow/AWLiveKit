@@ -204,7 +204,7 @@ extension LiveViewController {
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
     func pushError(_ code: Int, withMessage message: String) {
         self.live?.liveStat?.pushError = "\(code):\(message)"
-        self.showInfo("\(code):\(message)",duration: 5)
+//        self.showInfo("\(code):\(message)",duration: 5)
     }
     func resetPushError() {
         self.live?.liveStat?.pushError = nil
