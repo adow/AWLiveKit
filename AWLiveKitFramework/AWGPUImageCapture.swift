@@ -145,6 +145,9 @@ extension AWGPUImageCapture {
     public func stop() {
         self.camera?.stopCapture()
         self.audioOutput?.finishRecording()
+        self.camera?.removeAllTargets()
+        self.camera?.removeInputsAndOutputs()
+        self.filter?.removeAllTargets()
     }
 }
 

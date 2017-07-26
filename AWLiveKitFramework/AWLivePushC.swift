@@ -110,6 +110,7 @@ public class AWLivePushC {
     @objc func onReconnectTimer(sender:Timer!) {
         sender.invalidate()
         self.reconnectTimer = nil
+        self.disconnect()
         self.connectURL(self.rtmpUrl)
     }
     /// 开始推流

@@ -46,6 +46,8 @@ int aw_rtmp_connection(const char *url) {
     {
         printf("Set URL Failed");
         RTMP_Free(aw_m_pRtmp);
+        free(aw_m_pFileBuf);
+        free(aw_m_pFileBuf_tmp);
         return false;
     }
     aw_m_pRtmp->Link.timeout = 5;
@@ -56,6 +58,8 @@ int aw_rtmp_connection(const char *url) {
     {
         printf("Connect RTMP Failed\n");
         RTMP_Free(aw_m_pRtmp);
+        free(aw_m_pFileBuf);
+        free(aw_m_pFileBuf_tmp);
         return false;
     }
     
@@ -65,6 +69,8 @@ int aw_rtmp_connection(const char *url) {
         printf("Connect Stream Failed\n");
         RTMP_Close(aw_m_pRtmp);
         RTMP_Free(aw_m_pRtmp);
+        free(aw_m_pFileBuf);
+        free(aw_m_pFileBuf_tmp);
         return false;
     }
     return true;

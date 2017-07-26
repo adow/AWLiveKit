@@ -55,6 +55,8 @@ public class AWLiveBase {
         self.stopLive()
         /// 关闭视频编码器
         aw_video_encoder_close()
+        /// 关闭连接
+        self.push?.disconnect()
         NotificationCenter.default.removeObserver(self)
         NSLog("AWLiveBase release")
     }
