@@ -58,6 +58,10 @@ class LiveViewController: UIViewController {
         ///
         self.showInfo(push_url, duration: 5.0)
         self.startButton.isHidden = true
+        ///
+        if self.liveType == .simple {
+            self.beautySegment.isHidden = true
+        }
         /// tap
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGesture(_:)))
         self.view.addGestureRecognizer(tapGesture)
