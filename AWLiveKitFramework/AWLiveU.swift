@@ -113,20 +113,16 @@ extension AWLiveBase {
         guard self.isConnected else {
             return
         }
-        /// 开始运行视频编码器
-//        self.startVideoEncoder()
         /// 开始推流
         self.push?.start()
         /// 开始状态数据检测
-//        self.liveStat?.start()   
+        self.liveStat?.start()   
     }
     public func stopLive() {
-        /// 结束运行视频编码器
-//        self.stopVideoEncoder()
         /// 结束推流
         self.push?.stop()
         /// 停止状态数据检测
-//        self.liveStat?.stop()
+        self.liveStat?.stop()
     }
     
 }

@@ -12,7 +12,8 @@
 
 @interface GPUImageBeautifyFilter : GPUImageFilterGroup {
     GPUImageBilateralFilter *bilateralFilter;
-    GPUImageCannyEdgeDetectionFilter *cannyEdgeFilter;
+//    GPUImageCannyEdgeDetectionFilter *cannyEdgeFilter;
+    GPUImageSobelEdgeDetectionFilter *cannyEdgeFilter;
     GPUImageCombinationFilter *combinationFilter;
     GPUImageHSBFilter *hsbFilter;
     CGFloat _brightness;

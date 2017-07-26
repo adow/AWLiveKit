@@ -141,7 +141,8 @@ NSString *const kGPUImageBeautifyFragmentShaderString = SHADER_STRING
     [self addFilter:bilateralFilter];
     
     // Second pass: edge detection
-    cannyEdgeFilter = [[GPUImageCannyEdgeDetectionFilter alloc] init];
+//    cannyEdgeFilter = [[GPUImageCannyEdgeDetectionFilter alloc] init];
+    cannyEdgeFilter = [[GPUImageSobelEdgeDetectionFilter alloc] init];
     [self addFilter:cannyEdgeFilter];
     
     // Third pass: combination bilateral, edge detection and origin
