@@ -53,7 +53,7 @@ open class AWGPUImageCapture: NSObject {
                  preview : GPUImageView) {
         super.init()
         self.preview = preview
-        self.camera = AWGPUImageVideoCamera(sessionPreset: sessionPreset, cameraPosition: .front)
+        self.camera = AWGPUImageVideoCamera(sessionPreset: sessionPreset, cameraPosition: .back)
         if let _camera = self.camera {
             _camera.outputImageOrientation = orientation
           

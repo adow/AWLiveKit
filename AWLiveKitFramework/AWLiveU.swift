@@ -70,7 +70,7 @@ public class AWLiveBase {
     }
     public var beauty : Int = 0
     public func startCapture() {
-        
+        self.startVideoEncoder()
     }
     /// 获取摄像头权限
     public static func requestCapture(callback:@escaping ((Bool,String?)->())) {
@@ -114,19 +114,19 @@ extension AWLiveBase {
             return
         }
         /// 开始运行视频编码器
-        self.startVideoEncoder()
+//        self.startVideoEncoder()
         /// 开始推流
         self.push?.start()
         /// 开始状态数据检测
-        self.liveStat?.start()   
+//        self.liveStat?.start()   
     }
     public func stopLive() {
         /// 结束运行视频编码器
-        self.stopVideoEncoder()
+//        self.stopVideoEncoder()
         /// 结束推流
         self.push?.stop()
         /// 停止状态数据检测
-        self.liveStat?.stop()
+//        self.liveStat?.stop()
     }
     
 }
@@ -283,6 +283,7 @@ public class AWLiveSimple : AWLiveBase {
         }
     }
     override public func startCapture() {
+        super.startCapture()
         //self.capture?.start()
         guard let _capture = self.capture,!_capture.captureSession.isRunning else {
             return
@@ -390,6 +391,7 @@ public class AWLiveBeauty : AWLiveBase {
         }
     }
     public override func startCapture() {
+        super.startCapture()
         self.capture?.start()
     }
 }
