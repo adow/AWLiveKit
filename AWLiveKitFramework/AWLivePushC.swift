@@ -1,6 +1,8 @@
 //
 //  AWLivePushC.swift
 //  AWLiveKit
+//  
+//  调用的 aw_live_push, C 实现, Swift 封装
 //
 //  Created by 秦 道平 on 2016/12/29.
 //  Copyright © 2016年 秦 道平. All rights reserved.

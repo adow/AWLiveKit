@@ -1,6 +1,9 @@
 //
 //  AWLiveG.swift
 //  AWLiveKit
+//  DEPRECATED
+// 
+//  使用 Swift+C+GPUImage 实现
 //
 //  Created by 秦 道平 on 2017/7/20.
 //  Copyright © 2017年 秦 道平. All rights reserved.

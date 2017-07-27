@@ -2,6 +2,9 @@
 //  AWLiveC.swift
 //  AWLiveKit
 //
+//  DEPRECATED
+//  使用 Swift + C 实现
+//  
 //  Created by 秦 道平 on 2017/7/14.
 //  Copyright © 2017年 秦 道平. All rights reserved.
 //

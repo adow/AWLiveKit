@@ -1,6 +1,9 @@
 //
 //  AWLive.swift
 //  AWLiveKit
+//  
+//  DEPRECATED
+//  使用纯 Swift 实现
 //
 //  Created by 秦 道平 on 2017/1/3.
 //  Copyright © 2017年 秦 道平. All rights reserved.

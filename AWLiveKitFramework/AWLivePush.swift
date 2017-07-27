@@ -1,6 +1,10 @@
 //
 //  AWLivePush.swift
 //  AWLiveKit
+// 
+//  DEPRECATED
+//  
+//  使用 Swift 实现, 因为 AWLivePushC 已经改了很多，不要使用这个，只做参考
 //
 //  Created by 秦 道平 on 16/8/9.
 //  Copyright © 2016年 秦 道平. All rights reserved.

@@ -9,8 +9,19 @@
 import UIKit
 import AWLiveKit
 
+/// App 版本号
+func app_info(forClass aClass:AnyClass? = nil) -> (app_name:String, app_id: String, version:String,build:String) {
+    let info = aClass == nil ? Bundle.main.infoDictionary : Bundle(for: aClass!).infoDictionary
+    let version = (info?["CFBundleShortVersionString"] as? String) ?? ""
+    let build = (info?["CFBundleVersion"] as? String) ?? ""
+    let app_name = (info?["CFBundleName"] as? String) ?? ""
+    let app_id = (info?["CFBundleIdentifier"] as? String) ?? ""
+    return (app_name:app_name,app_id:app_id, version:version, build:build)
+}
+
 class StartViewController: UIViewController {
 
+    @IBOutlet weak var versionLabel : UILabel!
     @IBOutlet weak var urlTextField : UITextField!
     @IBOutlet weak var qualityPicker : UIPickerView!
     @IBOutlet weak var orientationSegment : UISegmentedControl!
@@ -30,6 +41,9 @@ class StartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        let (_,_,app_version,app_build) = app_info()
+        let (_,_,live_version, live_build) = app_info(forClass: AWLiveBase.self)
+        self.versionLabel.text = "app:\(app_version)(build \(app_build))\nsdk:\(live_version)(build \(live_build))"
         //self.urlTextField.text = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
         self.urlTextField.text = pushUrl ?? "rtmp://m.push.wifiwx.com:1935/live?adow=adow/wifiwx-84"
         self.qualityPicker.selectRow(1, inComponent: 0, animated: false)
