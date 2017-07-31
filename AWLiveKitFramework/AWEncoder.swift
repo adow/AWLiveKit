@@ -46,11 +46,11 @@ public enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
     public var recommandedFPS : AWVideoEncoderFPS {
         switch self {
         case ._450kbs:
-            return AWVideoEncoderFPS._20
+            return AWVideoEncoderFPS._15
         case ._500kbs:
-            return AWVideoEncoderFPS._25
+            return AWVideoEncoderFPS._20
         default:
-            return AWVideoEncoderFPS._30
+            return AWVideoEncoderFPS._25
         }
     }
     /// 相关的 profile
@@ -93,17 +93,17 @@ public enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
 }
 // MARK: fps
 public enum AWVideoEncoderFPS : Int , CustomStringConvertible{
-    case _20 = 20, _25 = 25, _30 = 30, _60 = 60
+    case _15 = 15,_20 = 20, _25 = 25, _30 = 30
     public var fps : Int {
         switch self {
+        case ._15:
+            return 15
         case ._20:
             return 20
         case ._25:
             return 25
         case ._30:
             return 30
-        case ._60:
-            return 60
         }
     }
     public var description: String {

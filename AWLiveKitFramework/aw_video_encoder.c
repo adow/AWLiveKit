@@ -58,12 +58,30 @@ int aw_video_encoder_init(int width, int height,
         return -1;
     }
     
+    int gop_size = 2;
+    CFNumberRef gop_size_value = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &gop_size);
+    VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_MaxKeyFrameInterval, gop_size_value);
+    float frame_duration = gop_size / fps;
+    CFNumberRef frame_duration_value = CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &frame_duration);
+    VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, frame_duration_value);
+    
+    int limit_1 = bitrate * 1.5/ 8;
+    int limit_2 = 1.0;
+    CFNumberRef limit_1_value = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &limit_1);
+    CFNumberRef limit_2_value = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &limit_2);
+    CFMutableArrayRef limit_value = CFArrayCreateMutable(kCFAllocatorDefault, 2, NULL);
+    CFArraySetValueAtIndex(limit_value, 0, limit_1_value);
+    CFArraySetValueAtIndex(limit_value, 1, limit_2_value);
+    VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_DataRateLimits, limit_value);
+    
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_RealTime, kCFBooleanTrue);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_AllowFrameReordering, kCFBooleanFalse);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_ProfileLevel, profile);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_AllowTemporalCompression, kCFBooleanTrue);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_AverageBitRate, bitrate_number);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_MaxKeyFrameInterval, fps_number);
+    VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_H264EntropyMode, kVTH264EntropyMode_CABAC);
+    
     status = VTCompressionSessionPrepareToEncodeFrames(_compressionSession);
     CFRelease(format_value);
     CFRelease(width_value);
@@ -71,6 +89,8 @@ int aw_video_encoder_init(int width, int height,
     CFRelease(fps_number);
     CFRelease(bitrate_number);
     CFRelease(attributes);
+    CFRelease(gop_size_value);
+    CFRelease(frame_duration_value);
     if (status != noErr) {
         printf("Prepare to Encode Frames Error:%d\n",status);
         return -2;

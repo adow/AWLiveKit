@@ -15,7 +15,7 @@ fileprivate let cache_dir = NSSearchPathForDirectoriesInDomains(FileManager.Sear
 fileprivate let document_dir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)[0]
 
 open class AWGPUImageCapture: NSObject {
-    var camera : AWGPUImageVideoCamera!
+    open var camera : AWGPUImageVideoCamera!
     fileprivate var filter : GPUImageFilterGroup!
     var preview : GPUImageView!
     fileprivate var videoOutput : AWGPUImageRawDataOutput!

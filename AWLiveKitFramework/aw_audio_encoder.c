@@ -22,13 +22,12 @@ int aw_audio_encoder_setup() {
     output_format.mSampleRate =
         _input_format.mSampleRate;
     output_format.mFormatID = kAudioFormatMPEG4AAC;
+    output_format.mFormatFlags = kMPEG4Object_AAC_Main;
+    output_format.mChannelsPerFrame = _input_format.mChannelsPerFrame;
     output_format.mBytesPerPacket = 0;
-    output_format.mChannelsPerFrame =
-        _input_format.mChannelsPerFrame;
     output_format.mBytesPerFrame = 0;
     output_format.mBitsPerChannel = 0;
     output_format.mFramesPerPacket = 1024;
-    output_format.mFormatFlags = kMPEG4Object_AAC_Main;
     output_format.mReserved = 0;
     /// audio class
     AudioClassDescription class_1 = {
@@ -41,23 +40,33 @@ int aw_audio_encoder_setup() {
         kAudioFormatMPEG4AAC,
         kAppleSoftwareAudioCodecManufacturer,
     };
-    
-    AudioClassDescription class_list[2] = {
-        class_2,
+    AudioClassDescription class_list[] = {
         class_1,
+        class_2,
     };
     /// audio converter
     int ret = AudioConverterNewSpecific(
                 &_input_format,
                 &output_format,
-                1,
+                2,
                 class_list,
                 &_audioConverter);
     if (ret == noErr) {
         printf("setup audio encoder ok\n");
+        /// BitRate
+//        UInt32 outputBitrate = 96000;
+//        UInt32 outputBitrate = 128000;
+//        UInt32 propSize = sizeof(outputBitrate);
+//        ret = AudioConverterSetProperty(_audioConverter, kAudioConverterEncodeBitRate, propSize, &outputBitrate);
+//        if(ret != noErr) {
+//            printf("setup audio encode bitrate error\n");
+//        }
         return 0;
     }
-    return 2;
+    else {
+        printf("setup audio encoder error:%d\n",ret);
+        return 2;
+    }
 }
 AudioBufferList _g_input_buffer_list;
 OSStatus aw_audio_data_proc(

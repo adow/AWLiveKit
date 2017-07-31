@@ -310,6 +310,7 @@ public class AWLiveBeauty : AWLiveBase {
         if capture == nil {
             NSLog("AWGPUImageCapture failed")
         }
+        capture.camera.frameRate = Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps)
         capture.onAudioSampleBuffer = {
             [weak self] (sampleBuffer) -> () in
             guard let _self = self else {
