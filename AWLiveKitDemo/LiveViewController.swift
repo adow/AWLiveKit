@@ -57,7 +57,7 @@ class LiveViewController: UIViewController {
         self.view.addConstraints(preview_constraintsV)
         ///
         self.showInfo(push_url, duration: 5.0)
-        self.startButton.isHidden = true
+//        self.startButton.isHidden = true
         ///
         if self.liveType == .simple {
             self.beautySegment.isHidden = true
@@ -135,7 +135,7 @@ extension LiveViewController {
         guard let _live = self.live else {
             return
         }
-        guard _live.isConnected, let _isLive = _live.isLive else {
+        guard let _isLive = _live.isLive else {
             return
         }
         if !_isLive {
@@ -214,7 +214,7 @@ extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
         self.live?.liveStat?.pushError = nil
     }
     func push(_ push: AWLivePushC, connectedStateChanged state: AWLiveConnectState) {
-        self.startButton.isHidden = (state != .Connected)
+//        self.startButton.isHidden = (state != .Connected)
         self.showInfo("\(state)",duration: 5.0)
     }
     func pushLiveChanged(_ push: AWLivePushC) {

@@ -62,21 +62,22 @@ public class AWLivePushC {
     }
     public init(url:String) {
         self.rtmpUrl = url
-        self.connectURL(url)
+//        self.connectURL(url)
     }
-    fileprivate func connectURL(_ url:String) {
+    public func connectURL(completionBlock completion:(()->())? = nil) {
         rtmp_queue.async {
             guard self.connectState == .NotConnect else {
                 return
             }
             self.connectState = .Connecting
-            let result = aw_rtmp_connection(url);
+            let result = aw_rtmp_connection(self.rtmpUrl);
             if result == 1 {
                 NSLog("Live Push Connected")
                 aw_rtmp_send_audio_header()
                 NSLog("Audio Header Sent")
                 self.start_time = Date()
                 self.connectState = .Connected
+                completion?()
             }
             else {
                 NSLog("RTMP Connect Failed")
@@ -92,8 +93,13 @@ public class AWLivePushC {
         guard self.connectState == .Connected else {
             return
         }
-        aw_rtmp_close()
-        self.connectState = .NotConnect
+        /// 延时一秒关闭连接，因为 rtmp_queue 中还有内容没有发送，他的运行会导致出错，rtmp_queue 也没有取消功能
+//        self.rtmp_queue.suspend()
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1.0 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [weak self]() -> Void in
+            aw_rtmp_close()
+            self?.connectState = .NotConnect
+        }
+        
     }
     fileprivate func reconnect() {
         guard self.reconnectTimer == nil else {
@@ -113,7 +119,7 @@ public class AWLivePushC {
         sender.invalidate()
         self.reconnectTimer = nil
         self.disconnect()
-        self.connectURL(self.rtmpUrl)
+        self.connectURL()
     }
     /// 开始推流
     public func start() {

@@ -15,6 +15,7 @@ public class AWLiveBase {
     public var push : AWLivePushC!
     public var videoQuality : AWLiveCaptureVideoQuality!
     public var orientation : AVCaptureVideoOrientation!
+    public var url : String!
     /// 请求权限后的返回结果
     public var requestCaptureCallback : ((Bool,String?)->())? = nil
     public var isLive : Bool? {
@@ -30,6 +31,7 @@ public class AWLiveBase {
         
         self.videoQuality = videoQuality
         self.orientation = orientation
+        self.url = url
         /// push
         push = AWLivePushC(url: url)
         push.delegate = self
@@ -112,10 +114,18 @@ extension AWLiveBase {
         }
     }
     public func startLive() {
-        /// 检查连接
+        /// 还未连接，连接好之后再开始推流
         guard self.isConnected else {
+            self.push?.connectURL(completionBlock: { 
+                [weak self] in
+                /// 开始推流
+                self?.push?.start()
+                /// 开始状态数据检测
+                self?.liveStat?.start()
+            })
             return
         }
+        /// 已经连接的话，直接开始推流
         /// 开始推流
         self.push?.start()
         /// 开始状态数据检测
@@ -124,6 +134,8 @@ extension AWLiveBase {
     public func stopLive() {
         /// 结束推流
         self.push?.stop()
+        /// 断开连接
+        self.push?.disconnect()
         /// 停止状态数据检测
         self.liveStat?.stop()
     }
