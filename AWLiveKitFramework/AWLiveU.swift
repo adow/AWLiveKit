@@ -35,7 +35,7 @@ public class AWLiveBase {
         /// push
         push = AWLivePushC(url: url)
         push.delegate = self
-        push.connectURL()
+//        push.connectURL()
         
         ///
         self.liveStat = AWLiveStat()

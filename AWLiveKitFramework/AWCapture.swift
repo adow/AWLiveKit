@@ -163,7 +163,7 @@ public class AWLiveCapture : NSObject{
                     if one_camera.supportsAVCaptureSessionPreset(sessionPreset) {
                         self.backCameraDevice = one_camera
                         let ranges = self.backCameraDevice.activeFormat.videoSupportedFrameRateRanges
-                        debugPrint("ranges:\(String(describing: ranges))")
+//                        debugPrint("ranges:\(String(describing: ranges))")
                         self.videoDevice = one_camera /// current video device is back camera
                     }
                     else {

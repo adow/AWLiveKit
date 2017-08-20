@@ -139,12 +139,6 @@ extension LiveViewController {
             return
         }
         if !_isLive {
-            /// 不要重复创建
-            guard self.view.subviews.filter({ (v) -> Bool in
-                return v is StartAnimationView
-            }).count <= 0 else {
-                return
-            }
             /// startAnimationView
             let startAnimationView = StartAnimationView()
             startAnimationView.translatesAutoresizingMaskIntoConstraints = false
@@ -166,6 +160,7 @@ extension LiveViewController {
                 [weak self] in
                 self?.live?.startLive()
                 self?.showInfo("Start", duration: 5.0)
+                startAnimationView.removeFromSuperview()
             })
         }
         else {
