@@ -58,7 +58,7 @@ int aw_video_encoder_init(int width, int height,
         return -1;
     }
     
-    int gop_size = 2;
+    int gop_size = 1;
     CFNumberRef gop_size_value = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &gop_size);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_MaxKeyFrameInterval, gop_size_value);
     float frame_duration = gop_size / fps;
@@ -75,7 +75,7 @@ int aw_video_encoder_init(int width, int height,
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_DataRateLimits, limit_value);
     
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_RealTime, kCFBooleanTrue);
-    VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_AllowFrameReordering, kCFBooleanFalse);
+    VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_AllowFrameReordering, kCFBooleanTrue);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_ProfileLevel, profile);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_AllowTemporalCompression, kCFBooleanTrue);
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_AverageBitRate, bitrate_number);
@@ -139,7 +139,7 @@ int aw_video_encode_pixelbuffer(CVPixelBufferRef pixel_buffer,
     }
     _g_callback = callback;
     _g_callback_context = callback_context;
-    //printf("time:%lf,%lf\n",CMTimeGetSeconds(presentation_time),CMTimeGetSeconds(duration));
+//    printf("video encoding timestamp:%lf, duration:%lf\n",CMTimeGetSeconds(presentation_time),CMTimeGetSeconds(duration));
     int status = VTCompressionSessionEncodeFrame(_compressionSession, pixel_buffer, presentation_time, duration, NULL, NULL, NULL);
     if (status) {
         printf("Encode Frame Error:%d\n",status);
@@ -157,6 +157,7 @@ void aw_video_encoded_callback(void *data,
                                VTEncodeInfoFlags infoFlats,
                                CMSampleBufferRef sampleBuffer) {
     if (_g_callback  && sampleBuffer) {
+        
         (*_g_callback)(sampleBuffer, _g_callback_context);
     }
 }

@@ -14,6 +14,8 @@
 #include <string.h>
 #include "rtmp.h"
 
+void flv_file_open(const char *filename);
+void flv_file_close();
 int aw_rtmp_connection(const char *url);
 void aw_rtmp_close();
 int aw_rtmp_send_sps_pps(unsigned char *sps, int sps_length,

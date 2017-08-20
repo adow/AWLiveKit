@@ -35,6 +35,7 @@ public class AWLiveBase {
         /// push
         push = AWLivePushC(url: url)
         push.delegate = self
+        push.connectURL()
         
         ///
         self.liveStat = AWLiveStat()
@@ -150,6 +151,10 @@ extension  AWLiveBase {
                 Int32(videoQuality.recommandVideoBiterates.bitrates),
                 Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
                 videoQuality.recommandVideoBiterates.recommandedProfile.profile)
+//        let ret = aw_video_encoder_init(640, 480,
+//                              1000 * 1024,
+//                              20,
+//                              kVTProfileLevel_H264_Main_AutoLevel)
         NSLog("ret:\(ret)")
     }
     func stopVideoEncoder() {
@@ -210,14 +215,20 @@ public class AWLiveSimple : AWLiveBase {
             guard let _self = self else {
                 return
             }
+//            let timeStamp = sampleBuffer.presentationTimeStamp
+//            let duration = sampleBuffer.duration
+//            NSLog("video encoding: timeStamp \(CMTimeGetSeconds(timeStamp)),duration \(CMTimeGetSeconds(duration))")
             let ret = aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
                 if let sp = sample_buffer_encoded {
                     //NSLog("video encoded")
                     //NSLog("video encoded:\(sp)")
+                    let timeStamp = sp.presentationTimeStamp
+//                    let duration = sp.duration
+//                    NSLog("video encoded:\(CMTimeGetSeconds(timeStamp)),\(CMTimeGetSeconds(duration))")
                     let _weak_self = unsafeBitCast(context, to: AWLiveBase.self)
                     let _weak_push = _weak_self.push
                     if let _live = _weak_push?.isLive, _live {
-                        _weak_push?.pushVideoSampleBuffer(sp)
+                        _weak_push?.pushVideoSampleBuffer(sp,abs_timeStamp: CMTimeGetSeconds(timeStamp))
                     }
                 }
                 else {
@@ -240,14 +251,22 @@ public class AWLiveSimple : AWLiveBase {
             guard let _self = self else {
                 return
             }
+            let timeStamp = sampleBuffer.presentationTimeStamp
+//            let duration = sampleBuffer.duration
+//            NSLog("audio encoding: timeStamp \(CMTimeGetSeconds(timeStamp)),duration \(CMTimeGetSeconds(duration))")
+            /// 
             let buffer_list = aw_audio_encode(sampleBuffer)
             if let _buffer_list = buffer_list {
                 //NSLog("audio encoded")
                 /// push
                 if let _live = _self.push?.isLive, _live {
-                    _self.push?.pushAudioBufferList(_buffer_list.pointee)
+                    /// 进入异步推流队列，一定要在推送完之后在释放他，否则会出现杂音，ssr 解码音频的警告， hls 不同步等现象
+                    _self.push?.pushAudioBufferList(_buffer_list, abs_timeStamp:CMTimeGetSeconds(timeStamp))
                 }
-                aw_audio_release(_buffer_list)
+                else {
+                    /// 如果没有推流就直接释放
+                    aw_audio_release(_buffer_list)
+                }
                 _self.liveStat?.audioEncoderError = nil
             }
             else {
@@ -329,13 +348,16 @@ public class AWLiveBeauty : AWLiveBase {
                 return
             }
             //            NSLog("audio sample buffer")
+            let timeStamp = sampleBuffer.presentationTimeStamp
             if let buffer_list = aw_audio_encode(sampleBuffer) {
                 //NSLog("audio buffer list:\(buffer_list)")
                 //NSLog("audio buffer list encoded")
                 if let _live = _self.push?.isLive, _live {
-                    _self.push.pushAudioBufferList(buffer_list.pointee)
+                    _self.push.pushAudioBufferList(buffer_list, abs_timeStamp: CMTimeGetSeconds(timeStamp))
                 }
-                aw_audio_release(buffer_list)
+                else {
+                    aw_audio_release(buffer_list)
+                }
                 _self.liveStat?.audioEncoderError = nil
             }
             else {
@@ -354,9 +376,10 @@ public class AWLiveBeauty : AWLiveBase {
                 if let _p = sample_buffer {
                     //NSLog("video sample buffer encoded:\(_p)")
                     //NSLog("video sample buffer encoded")
+                    let timeStamp = _p.presentationTimeStamp
                     let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
                     if _weak_push.isLive {
-                        _weak_push.pushVideoSampleBuffer(_p)
+                        _weak_push.pushVideoSampleBuffer(_p, abs_timeStamp: CMTimeGetSeconds(timeStamp))
                     }
                     
                 }

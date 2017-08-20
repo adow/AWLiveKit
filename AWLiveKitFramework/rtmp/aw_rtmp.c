@@ -31,7 +31,45 @@ void aw_debug_print(const unsigned char *str, int length) {
 	}
 	printf("\n");
 }
-
+/// save flv file
+FILE *f_flv = NULL;
+void int_to_bytes(int n, unsigned char buf[], int start) {
+    buf[start] = n >> 24;
+    buf[start + 1] = n >> 16;
+    buf[start + 2] = n >> 8;
+    buf[start + 3] = n;
+}
+void flv_file_open(const char *filename) {
+    f_flv = fopen(filename, "w");
+}
+void flv_file_close() {
+    if (f_flv) {
+        fclose(f_flv);
+    }
+}
+int flv_file_save_packet(RTMPPacket *packet) {
+    if (!f_flv) {
+        return -1;
+    }
+    uint8_t data[] = {0x09,
+        0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00 };
+    if(packet->m_packetType == RTMP_PACKET_TYPE_VIDEO){
+        data[0] = 0x09;
+    } else if(packet->m_packetType == RTMP_PACKET_TYPE_AUDIO){
+        data[0] = 0x08;
+    }
+    int len = 0;
+    int_to_bytes(packet->m_nBodySize,  &data[1], 3);  // 3字节 包内容长度
+    int_to_bytes(packet->m_nTimeStamp, &data[4], 3);  // 3字节 时间戳，没用第4字节，太长的文件会溢出
+    len += fwrite(data, 1, 11, f_flv);               // 写入包头11字节
+    len += fwrite(packet->m_body, 1, packet->m_nBodySize, f_flv); // 写入数据包体
+    int_to_bytes(len, &data[0], 4);                   // 写入的总字节长度
+    fwrite(data, 1, 4, f_flv);
+    return len;
+}
+/// rtmp
 /// 链接
 int aw_rtmp_connection(const char *url) {
     aw_nalhead_pos=0;
@@ -151,6 +189,7 @@ int aw_rtmp_send_sps_pps(unsigned char *sps, int sps_length,
     printf("sps,pps: ");
     int nRet = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
     aw_debug_print(body, i);
+    flv_file_save_packet(packet);/// save packet
     free(packet);    //释放内存
     if (!nRet) {
         printf("Send sps, pps failed\n");
@@ -165,8 +204,12 @@ int aw_rtmp_send_h264_video(unsigned char *data,
         printf("not connected\n");
         return false;
     }
-    if(data == NULL && size<11){
+    if(data == NULL){
         return false;
+    }
+    if (size <= 31) {
+        printf("skip video size:%d\n",size);
+        return true;
     }
     RTMPPacket * packet;
     packet = (RTMPPacket *)malloc(AW_RTMP_HEAD_SIZE+size+9);
@@ -204,9 +247,10 @@ int aw_rtmp_send_h264_video(unsigned char *data,
     packet->m_nTimeStamp = nTimeStamp;
     
     /*调用发送接口*/
-//    printf("video timeStamp:%d, keyFrame:%d,size:%d:\n",nTimeStamp, bIsKeyFrame, size);
+    printf("video timeStamp:%d, keyFrame:%d,size:%d:\n",nTimeStamp, bIsKeyFrame, size);
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
 //    aw_debug_print(body,i + size);
+    flv_file_save_packet(packet);/// save packet
     free(packet);
     if (!result) {
         printf("Send video failed\n");
@@ -229,7 +273,7 @@ int aw_rtmp_send_audio_header() {
     unsigned char *body = (unsigned char *)packet->m_body;
     body[0] = 0xAF;
     body[1] = 0x00;
-    body[2] = 0x12;
+    body[2] = 0x12; /// 44100, stereo
     body[3] = 0x10;
     packet->m_hasAbsTimestamp = 0;
     packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
@@ -244,6 +288,7 @@ int aw_rtmp_send_audio_header() {
     printf("audio header: ");
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
     aw_debug_print(body,4);
+    flv_file_save_packet(packet);/// save packet
     free(packet);
     if (!result) {
         printf("Send audio head failed\n");
@@ -273,15 +318,16 @@ int aw_rtmp_send_audio(unsigned char *data,
     packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
     packet->m_nInfoField2 = aw_m_pRtmp ->m_stream_id;
     packet->m_nChannel = 0x04;
-    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
-//    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
+//    packet->m_headerType = RTMP_PACKET_SIZE_MEDIUM;
+    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
     packet->m_nTimeStamp = nTimeStamp;
     packet->m_nBodySize = body_size;
     
     /*调用发送接口*/
-//    printf("audio %d: ",nTimeStamp);
+    printf("audio timestamp:%d, size:%d\n",nTimeStamp, body_size);
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
-//    aw_debug_print(body,2 + size);
+//    aw_debug_print(body,body_size);
+    flv_file_save_packet(packet);/// save packet
     free(packet);
     if (!result) {
         printf("Send audio failed\n");

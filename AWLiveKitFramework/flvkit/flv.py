@@ -146,7 +146,8 @@ def print_flv_file_tag(filename,limits = 0):
 
 
 #print_flv_file_hex('/Users/reynoldqin/Downloads/1.flv')
-print_flv_file_tag('/Users/reynoldqin/Downloads/1.flv',0)
+#print_flv_file_tag('/Users/reynoldqin/Downloads/1.flv',0)
+print_flv_file_tag('/Users/reynoldqin/Desktop/record.flv',0)
 #print(get_bit2(0xaf,0,4))
 #print(get_bit(0x17,0,4))
 #print(get_bit(0x17,4,4))

@@ -166,7 +166,7 @@ int aw_push_video_samplebuffer(CMSampleBufferRef sample_buffer,
         /// is idr frame
         uint8_t first_bit = *(data_pointer_u + buffer_offset + avvc_header_length);
         int frame_type = first_bit & 0x1f;
-//        printf("frame_type:%d,%s\n",frame_type,aw_get_frametypename(frame_type));
+//        printf("frame_type:%d,%s, size:%u\n",frame_type,aw_get_frametypename(frame_type),nal_unit_length);
         int idr_frame = (frame_type == 5 ? 1 : 0);
         /// send data
         int push_result = aw_rtmp_send_h264_video(data_pointer_u + buffer_offset + avvc_header_length,
@@ -181,8 +181,14 @@ int aw_push_video_samplebuffer(CMSampleBufferRef sample_buffer,
     }
     return 0;
 }
+int is_audio_header_sent = 0;
 int aw_push_audio_bufferlist(AudioBufferList buffer_list,
                              double time_offset) {
+    /// 第一次发送一个音频头
+    if (!is_audio_header_sent) {
+        aw_rtmp_send_audio_header();
+        is_audio_header_sent = 1;
+    }
     AudioBuffer buffer = buffer_list.mBuffers[0];
     uint32_t audio_data_length = buffer.mDataByteSize;
     unsigned char *data = buffer.mData;
@@ -192,3 +198,12 @@ int aw_push_audio_bufferlist(AudioBufferList buffer_list,
     }
     return 0;
 }
+
+void aw_push_flv_file_open(const char *filename) {
+    flv_file_open(filename);
+}
+
+void aw_push_flv_file_close() {
+    flv_file_close();
+}
+

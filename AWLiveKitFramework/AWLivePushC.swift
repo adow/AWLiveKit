@@ -60,9 +60,26 @@ public class AWLivePushC {
             }
         }
     }
+    var videoTimeStamp : Double = 0.0;
+    var audioTimeStamp : Double = 0.0;
     public init(url:String) {
         self.rtmpUrl = url
 //        self.connectURL(url)
+    }
+    fileprivate func prepareFlvFile() {
+        let flv_filename = cache_dir.appending("/record.flv")
+        let flv_filename_url = URL(fileURLWithPath: flv_filename)
+        if FileManager.default.fileExists(atPath: flv_filename_url.path) {
+            do {
+                try FileManager.default.removeItem(atPath: flv_filename_url.path)
+                NSLog("remove record:\(flv_filename_url.path)")
+            }
+            catch {
+                NSLog("remove record failed")
+            }
+        }
+        aw_push_flv_file_open(flv_filename_url.path)
+        NSLog("open recoard file:\(flv_filename_url.path)")
     }
     public func connectURL(completionBlock completion:(()->())? = nil) {
         rtmp_queue.async {
@@ -73,8 +90,8 @@ public class AWLivePushC {
             let result = aw_rtmp_connection(self.rtmpUrl);
             if result == 1 {
                 NSLog("Live Push Connected")
-                aw_rtmp_send_audio_header()
-                NSLog("Audio Header Sent")
+//                aw_rtmp_send_audio_header()
+//                NSLog("Audio Header Sent")
                 self.start_time = Date()
                 self.connectState = .Connected
                 completion?()
@@ -146,8 +163,13 @@ extension AWLivePushC {
     public var timeOffset : Double {
         return abs(self.start_time?.timeIntervalSinceNow ?? 0.0) * 1000;
     }
-    public func pushVideoSampleBuffer(_ sampleBuffer : CMSampleBuffer) {
+    public func pushVideoSampleBuffer(_ sampleBuffer : CMSampleBuffer, abs_timeStamp : Double) {
         rtmp_queue.async {
+//            self.videoTimeStamp += 1.0 / 30 * 1000;
+            if self.videoTimeStamp == 0.0 {
+                self.videoTimeStamp = abs_timeStamp
+            }
+            let timeStamp = (abs_timeStamp - self.videoTimeStamp) * 1000.0
             /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
                 self.reconnect()
@@ -161,7 +183,9 @@ extension AWLivePushC {
             }
             
             let push_result = aw_push_video_samplebuffer(sampleBuffer,
-                                       self.timeOffset,
+//                                       self.timeOffset,
+//                                        self.videoTimeStamp,
+                                        timeStamp,
                                        &self.sps_pps_sent)
             if (push_result != 0) {
                 self.counterPushFailed()
@@ -177,8 +201,14 @@ extension AWLivePushC {
             }
         }
     }
-    public func pushAudioBufferList(_ audioList : AudioBufferList) {
+    public func pushAudioBufferList(_ audioList : UnsafeMutablePointer<AudioBufferList>, abs_timeStamp : Double) {
         rtmp_queue.async {
+//            self.audioTimeStamp += 1000 * 1024 / 44100;
+//            self.audioTimeStamp += 23.220
+            if self.audioTimeStamp == 0.0 {
+                self.audioTimeStamp = abs_timeStamp
+            }
+            let timeStamp = (abs_timeStamp - self.audioTimeStamp) * 1000.0
             /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
                 self.reconnect()
@@ -191,7 +221,12 @@ extension AWLivePushC {
                 return
             }
             
-            let push_result = aw_push_audio_bufferlist(audioList, self.timeOffset)
+            let push_result = aw_push_audio_bufferlist(audioList.pointee,
+//                                                       self.timeOffset
+//                                                        self.audioTimeStamp
+                                                        timeStamp
+                                                        )
+            aw_audio_release(audioList)
             if (push_result != 0) {
                 self.counterPushFailed()
                 DispatchQueue.main.async {

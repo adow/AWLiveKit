@@ -134,6 +134,7 @@ public class AWLiveCapture : NSObject{
     fileprivate var sessionQueue : DispatchQueue = DispatchQueue(label: "adow.live.session", attributes: [])
     fileprivate var videoQueue : DispatchQueue = DispatchQueue(label: "adow.live.video-queue", attributes: [])
     fileprivate var audioQueue : DispatchQueue = DispatchQueue(label: "adow.live.audio-queue", attributes: [])
+    fileprivate var fileQueue : DispatchQueue = DispatchQueue(label: "adow.live.output-2-queue", attributes: [])
     /// 获取视频采样内容后的回调
     public var onVideoSampleBuffer : AWLiveCaptureSampleBufferCallback? = nil
     /// 获取音频采样内容后的回调
@@ -141,6 +142,11 @@ public class AWLiveCapture : NSObject{
     /// 准备好后发出回调
     public var onReady : AWLiveCaptureReadyCallback? = nil
     public var ready : Bool = false
+    /// 文件输出
+    fileprivate var fileOutput_1 : AVCaptureMovieFileOutput!
+    fileprivate var fileOutput_2 : AVAssetWriter!
+    fileprivate var fileOutput_2_video : AVAssetWriterInput!
+    fileprivate var fileOutput_2_audio : AVAssetWriterInput!
     public init? (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .portrait) {
         super.init()
 //        let start_time = NSDate()
@@ -156,6 +162,8 @@ public class AWLiveCapture : NSObject{
                 if one_camera.position == .back {
                     if one_camera.supportsAVCaptureSessionPreset(sessionPreset) {
                         self.backCameraDevice = one_camera
+                        let ranges = self.backCameraDevice.activeFormat.videoSupportedFrameRateRanges
+                        debugPrint("ranges:\(String(describing: ranges))")
                         self.videoDevice = one_camera /// current video device is back camera
                     }
                     else {
@@ -210,9 +218,18 @@ public class AWLiveCapture : NSObject{
                 NSLog("Can not add Video Output")
                 return
             }
-            self.videoOrientation = orientation
     //        self.videoOrientation = .Portrait
             /// audioOutput
+//            let audioSession = AVAudioSession.sharedInstance()
+//            do {
+//                try audioSession.setPreferredSampleRate(44100)
+//                try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord,
+//                                         with: [.defaultToSpeaker,.mixWithOthers])
+//                try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
+//            }
+//            catch {
+//                NSLog("set audio session failed")
+//            }
             self.audioOutput = AVCaptureAudioDataOutput()
             self.audioOutput.setSampleBufferDelegate(self, queue: self.audioQueue)
             if self.captureSession.canAddOutput(self.audioOutput) {
@@ -222,7 +239,62 @@ public class AWLiveCapture : NSObject{
                 NSLog("Can not add Audio Output")
                 return
             }
-            
+            /// fileOutput_1
+//            self.fileOutput_1 = AVCaptureMovieFileOutput()
+//            if self.captureSession.canAddOutput(self.fileOutput_1) {
+//                self.captureSession.addOutput(self.fileOutput_1)
+//            }
+//            else {
+//                NSLog("Can not add fileOutput_1")
+//            }
+            /// fileOutput_2
+//            let output_2 = cache_dir.appending("/\(NSDate().timeIntervalSince1970).mov")
+//            let output_2 = cache_dir.appending("/output_2.mov")
+//            let output_2_url = URL(fileURLWithPath: output_2)
+//            do {
+//                NSLog("output_2:\(output_2_url)")
+//                if FileManager.default.fileExists(atPath: output_2_url.path) {
+////                    try FileManager.default.removeItem(at: output_2_url)
+//                    try FileManager.default.removeItem(atPath: output_2_url.path)
+//                    NSLog("remove output_2:\(output_2_url.path))")
+//                }
+//                self.fileOutput_2 = try AVAssetWriter(url: output_2_url, fileType: AVFileTypeQuickTimeMovie)
+////                self.fileOutput_2.movieFragmentInterval = CMTimeMake(1, 1000)
+//            }
+//            catch let error {
+//                NSLog("create fileOutput_2 error:\(error)")
+//                return
+//            }
+//            /// video
+//            if var fileOutput_2_video_setting = self.videoOutput?.recommendedVideoSettingsForAssetWriter(withOutputFileType: AVFileTypeQuickTimeMovie) as? [String:Any]{
+//                fileOutput_2_video_setting[AVVideoCodecKey] = AVVideoCodecH264
+//                NSLog("video settings:\(fileOutput_2_video_setting)")
+//                self.fileOutput_2_video =
+//                    AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: fileOutput_2_video_setting)
+//                self.fileOutput_2_video.expectsMediaDataInRealTime = true
+//                if self.fileOutput_2.canAdd(self.fileOutput_2_video) {
+//                    self.fileOutput_2.add(self.fileOutput_2_video)
+//                }
+//                else {
+//                    NSLog("output_2 add video input failed")
+//                }
+//            }
+//            /// audio
+//            if let fileOutput_2_audio_setting = self.audioOutput?.recommendedAudioSettingsForAssetWriter(withOutputFileType: AVFileTypeQuickTimeMovie) as? [String:Any] {
+//                NSLog("audio settings:\(fileOutput_2_audio_setting)")
+//                self.fileOutput_2_audio = AVAssetWriterInput(mediaType: AVMediaTypeAudio, outputSettings: fileOutput_2_audio_setting)
+//                self.fileOutput_2_audio.expectsMediaDataInRealTime = true
+//                if self.fileOutput_2.canAdd(self.fileOutput_2_audio) {
+//                    self.fileOutput_2.add(self.fileOutput_2_audio)
+//                }
+//                else {
+//                    NSLog("output_2 add audio input failed")
+//                }
+//                
+//            }
+            ///
+            self.videoOrientation = orientation
+            /// ready
             self.ready = true
         }
         
@@ -251,8 +323,14 @@ public class AWLiveCapture : NSObject{
             guard let _orientation = newValue else {
                 return
             }
-            let video_connection = videoOutput?.connection(withMediaType: AVMediaTypeVideo)
-            video_connection?.videoOrientation = _orientation
+            /// 内容输出
+            if let video_connection = self.videoOutput?.connection(withMediaType: AVMediaTypeVideo) {
+                video_connection.videoOrientation = _orientation
+            }
+            /// 文件输出
+            if let file_connection = self.fileOutput_1?.connection(withMediaType: AVMediaTypeVideo) {
+                file_connection.videoOrientation = _orientation;
+            }
         }
         get {
             let video_connection = videoOutput?.connection(withMediaType: AVMediaTypeVideo)
@@ -319,12 +397,26 @@ extension AWLiveCapture {
             return
         }
         self.captureSession.startRunning()
+        /// output_1
+        let output_1 = cache_dir.appending("/output_1.mov")
+        let output_1_url = URL(fileURLWithPath: output_1)
+        self.fileOutput_1?.startRecording(toOutputFileURL: output_1_url, recordingDelegate: self)
+        /// output_2
+//        self.fileOutput_2?.startWriting()
     }
     public func stop() {
         guard self.captureSession.isRunning else {
             return
         }
         self.captureSession.stopRunning()
+        /// output_1
+        self.fileOutput_1?.stopRecording()
+        /// output_2
+        self.fileOutput_2_video?.markAsFinished()
+        self.fileOutput_2_audio?.markAsFinished()
+        self.fileOutput_2?.finishWriting {
+            NSLog("finish output_2")
+        }
     }
     /// 测试可以使用哪些 session_preset
     func testSessionPreset() {
@@ -358,9 +450,64 @@ extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCapture
     public func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
         if captureOutput == self.videoOutput {
             self.onVideoSampleBuffer?(sampleBuffer)
+            
         }
         else if captureOutput == self.audioOutput {
             self.onAudioSampleBuffer?(sampleBuffer)
+        }
+        /// output_2
+        guard let writer = self.fileOutput_2, let video_input = self.fileOutput_2_video, let audio_input = self.fileOutput_2_audio else {
+            return
+        }
+        if writer.status == .unknown{
+            if writer.startWriting() {
+                let time = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+    //            let time = kCMTimeZero
+                writer.startSession(atSourceTime: time)
+                NSLog("writer started:\(time)")
+            }
+            else {
+                writer.finishWriting {
+                    
+                }
+                NSLog("writer start failed:\(writer.error?.localizedDescription ?? "")")
+            }
+        }
+        else if writer.status == .writing {
+            if captureOutput == self.audioOutput {
+                fileQueue.async {
+                    if audio_input.isReadyForMoreMediaData {
+                        if audio_input.append(sampleBuffer) {
+                            NSLog("write audio ok")
+                        }
+                        else {
+                            NSLog("write audio failed")
+                        }
+                    }
+                    else {
+                        NSLog("audio writer not ready")
+                    }
+                }
+            }
+            else if captureOutput == self.videoOutput {
+                fileQueue.async {
+                    if video_input.isReadyForMoreMediaData {
+                        if video_input.append(sampleBuffer) {
+                            NSLog("write video ok")
+                        }
+                        else {
+                            NSLog("write video failed")
+                        }
+                    }
+                    else {
+                        NSLog("video writer not ready")
+                    }
+                }    
+            }
+            
+        }
+        else {
+            NSLog("writer status:\(writer.status.rawValue),\(writer.error?.localizedDescription  ?? "")")
         }
     }
     public func captureOutput(_ captureOutput: AVCaptureOutput!, didDrop sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
@@ -370,6 +517,15 @@ extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCapture
         else if captureOutput == audioOutput {
             print("Drop Audio SampleBuffer")
         }
+    }
+}
+extension AWLiveCapture : AVCaptureFileOutputRecordingDelegate {
+    public func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
+        NSLog("start save outputFile_1:\(fileURL)")
+    }
+    public func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+        NSLog("stop outputFile_1:\(outputFileURL)")
+        self.captureSession.removeOutput(captureOutput)
     }
 }
 
