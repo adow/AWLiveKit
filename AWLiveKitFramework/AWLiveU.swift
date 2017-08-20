@@ -151,10 +151,6 @@ extension  AWLiveBase {
                 Int32(videoQuality.recommandVideoBiterates.bitrates),
                 Int32(videoQuality.recommandVideoBiterates.recommandedFPS.fps),
                 videoQuality.recommandVideoBiterates.recommandedProfile.profile)
-//        let ret = aw_video_encoder_init(640, 480,
-//                              1000 * 1024,
-//                              20,
-//                              kVTProfileLevel_H264_Main_AutoLevel)
         NSLog("ret:\(ret)")
     }
     func stopVideoEncoder() {
@@ -220,7 +216,6 @@ public class AWLiveSimple : AWLiveBase {
 //            NSLog("video encoding: timeStamp \(CMTimeGetSeconds(timeStamp)),duration \(CMTimeGetSeconds(duration))")
             let ret = aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
                 if let sp = sample_buffer_encoded {
-                    //NSLog("video encoded")
                     //NSLog("video encoded:\(sp)")
                     let timeStamp = sp.presentationTimeStamp
 //                    let duration = sp.duration
@@ -351,7 +346,6 @@ public class AWLiveBeauty : AWLiveBase {
             let timeStamp = sampleBuffer.presentationTimeStamp
             if let buffer_list = aw_audio_encode(sampleBuffer) {
                 //NSLog("audio buffer list:\(buffer_list)")
-                //NSLog("audio buffer list encoded")
                 if let _live = _self.push?.isLive, _live {
                     _self.push.pushAudioBufferList(buffer_list, abs_timeStamp: CMTimeGetSeconds(timeStamp))
                 }
@@ -375,7 +369,6 @@ public class AWLiveBeauty : AWLiveBase {
             let ret = aw_video_encode_pixelbuffer(pixelBuffer, presentation_time, duration, { (sample_buffer, context) in
                 if let _p = sample_buffer {
                     //NSLog("video sample buffer encoded:\(_p)")
-                    //NSLog("video sample buffer encoded")
                     let timeStamp = _p.presentationTimeStamp
                     let _weak_push = unsafeBitCast(context, to: AWLivePushC.self)
                     if _weak_push.isLive {

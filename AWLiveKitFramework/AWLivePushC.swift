@@ -165,7 +165,6 @@ extension AWLivePushC {
     }
     public func pushVideoSampleBuffer(_ sampleBuffer : CMSampleBuffer, abs_timeStamp : Double) {
         rtmp_queue.async {
-//            self.videoTimeStamp += 1.0 / 30 * 1000;
             if self.videoTimeStamp == 0.0 {
                 self.videoTimeStamp = abs_timeStamp
             }
@@ -183,8 +182,6 @@ extension AWLivePushC {
             }
             
             let push_result = aw_push_video_samplebuffer(sampleBuffer,
-//                                       self.timeOffset,
-//                                        self.videoTimeStamp,
                                         timeStamp,
                                        &self.sps_pps_sent)
             if (push_result != 0) {
@@ -203,8 +200,6 @@ extension AWLivePushC {
     }
     public func pushAudioBufferList(_ audioList : UnsafeMutablePointer<AudioBufferList>, abs_timeStamp : Double) {
         rtmp_queue.async {
-//            self.audioTimeStamp += 1000 * 1024 / 44100;
-//            self.audioTimeStamp += 23.220
             if self.audioTimeStamp == 0.0 {
                 self.audioTimeStamp = abs_timeStamp
             }
@@ -222,8 +217,6 @@ extension AWLivePushC {
             }
             
             let push_result = aw_push_audio_bufferlist(audioList.pointee,
-//                                                       self.timeOffset
-//                                                        self.audioTimeStamp
                                                         timeStamp
                                                         )
             aw_audio_release(audioList)

@@ -219,17 +219,6 @@ public class AWLiveCapture : NSObject{
                 return
             }
     //        self.videoOrientation = .Portrait
-            /// audioOutput
-//            let audioSession = AVAudioSession.sharedInstance()
-//            do {
-//                try audioSession.setPreferredSampleRate(44100)
-//                try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord,
-//                                         with: [.defaultToSpeaker,.mixWithOthers])
-//                try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
-//            }
-//            catch {
-//                NSLog("set audio session failed")
-//            }
             self.audioOutput = AVCaptureAudioDataOutput()
             self.audioOutput.setSampleBufferDelegate(self, queue: self.audioQueue)
             if self.captureSession.canAddOutput(self.audioOutput) {
@@ -239,6 +228,7 @@ public class AWLiveCapture : NSObject{
                 NSLog("Can not add Audio Output")
                 return
             }
+            /// 测试采集输出到文件
             /// fileOutput_1
 //            self.fileOutput_1 = AVCaptureMovieFileOutput()
 //            if self.captureSession.canAddOutput(self.fileOutput_1) {

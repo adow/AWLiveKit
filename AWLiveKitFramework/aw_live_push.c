@@ -12,7 +12,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <VideoToolBox/VideoToolBox.h>
 
-
 CFDictionaryRef aw_samplebuffer_attachment(CMSampleBufferRef sample_buffer) {
     CFArrayRef attachments = CMSampleBufferGetSampleAttachmentsArray(sample_buffer, true);
     if (attachments == NULL) {
