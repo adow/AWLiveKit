@@ -57,7 +57,8 @@ public enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
     public var recommandedProfile : AWVideoEncoderProfile {
         switch self {
         case ._450kbs, ._500kbs:
-            return AWVideoEncoderProfile.baseline
+//            return AWVideoEncoderProfile.baseline
+            return AWVideoEncoderProfile.high
         case ._600kbs, ._800kbs, ._1000kbs:
             return AWVideoEncoderProfile.main
         case ._1200kbs, ._1500kbs, ._2000kbs, ._2500kbs, ._3000kbs, ._4000kbs:

@@ -49,6 +49,7 @@ class LiveViewController: UIViewController {
         /// preview
         preview.backgroundColor = UIColor.darkGray
         preview.translatesAutoresizingMaskIntoConstraints = false
+        preview.contentMode = .scaleAspectFill
         self.view.insertSubview(preview, at: 0)
         let d_preview = ["preview":preview]
         let preview_constraintsH = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(0.0)-[preview]-(0.0)-|", options: .alignAllCenterX, metrics: nil, views: d_preview)
