@@ -83,6 +83,9 @@ int aw_video_encoder_init(int width, int height,
     VTSessionSetProperty(_compressionSession, kVTCompressionPropertyKey_H264EntropyMode, kVTH264EntropyMode_CABAC);
     
     status = VTCompressionSessionPrepareToEncodeFrames(_compressionSession);
+    CFRelease(limit_1_value);
+    CFRelease(limit_2_value);
+    CFRelease(limit_value);
     CFRelease(format_value);
     CFRelease(width_value);
     CFRelease(height_value);
