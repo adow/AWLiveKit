@@ -84,23 +84,23 @@ class LiveViewController: UIViewController {
         super.viewDidDisappear(animated)
         self.live?.stopLive()
     }
-    override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
-        if orientation == .landscapeRight {
-            return .landscapeRight
-        }
-        else if orientation == .landscapeLeft {
-            return .landscapeLeft
-        }
-        else if orientation == .portrait {
-            return .portrait
-        }
-        else if orientation == .portraitUpsideDown {
-            return .portraitUpsideDown
-        }
-        else {
-            return .portrait
-        }
-    }
+//    override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
+//        if orientation == .landscapeRight {
+//            return .landscapeRight
+//        }
+//        else if orientation == .landscapeLeft {
+//            return .landscapeLeft
+//        }
+//        else if orientation == .portrait {
+//            return .portrait
+//        }
+//        else if orientation == .portraitUpsideDown {
+//            return .portraitUpsideDown
+//        }
+//        else {
+//            return .portrait
+//        }
+//    }
     override var shouldAutorotate : Bool {
         return false
     }
