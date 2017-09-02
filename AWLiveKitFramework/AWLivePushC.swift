@@ -18,9 +18,9 @@ public enum AWLiveConnectState : Int ,CustomStringConvertible{
     
     public var description: String {
         let d : [AWLiveConnectState:String] =
-            [.NotConnect:"NotConnect",
-             .Connecting : "Connecting",
-             .Connected : "Connected"]
+            [.NotConnect:"未连接",
+             .Connecting : "正在连接",
+             .Connected : "已连接"]
         return d[self] ?? "Unknown"
     }
 }

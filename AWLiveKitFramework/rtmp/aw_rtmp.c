@@ -208,7 +208,7 @@ int aw_rtmp_send_h264_video(unsigned char *data,
         return false;
     }
     if (size <= 31) {
-        printf("skip video size:%d\n",size);
+//        printf("skip video size:%d\n",size);
         return true;
     }
     RTMPPacket * packet;
@@ -247,7 +247,7 @@ int aw_rtmp_send_h264_video(unsigned char *data,
     packet->m_nTimeStamp = nTimeStamp;
     
     /*调用发送接口*/
-    printf("video timeStamp:%d, keyFrame:%d,size:%d:\n",nTimeStamp, bIsKeyFrame, size);
+//    printf("video timeStamp:%d, keyFrame:%d,size:%d:\n",nTimeStamp, bIsKeyFrame, size);
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
 //    aw_debug_print(body,i + size);
     flv_file_save_packet(packet);/// save packet
@@ -324,7 +324,7 @@ int aw_rtmp_send_audio(unsigned char *data,
     packet->m_nBodySize = body_size;
     
     /*调用发送接口*/
-    printf("audio timestamp:%d, size:%d\n",nTimeStamp, body_size);
+//    printf("audio timestamp:%d, size:%d\n",nTimeStamp, body_size);
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
 //    aw_debug_print(body,body_size);
     flv_file_save_packet(packet);/// save packet
