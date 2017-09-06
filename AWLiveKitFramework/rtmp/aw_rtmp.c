@@ -16,12 +16,12 @@
 #define AW_GOT_A_NAL_INCLUDE_A_BUFFER BUFFER_SIZE+2
 #define AW_NO_MORE_BUFFER_TO_READ BUFFER_SIZE+3
 
-unsigned int  aw_m_nFileBufSize;
-unsigned int  aw_nalhead_pos;
+//unsigned int  aw_m_nFileBufSize;
+//unsigned int  aw_nalhead_pos;
 RTMP* aw_m_pRtmp;
-unsigned char *aw_m_pFileBuf;
-unsigned char *aw_m_pFileBuf_tmp;
-unsigned char *aw_m_pFileBuf_tmp_old;	//used for realloc
+//unsigned char *aw_m_pFileBuf;
+//unsigned char *aw_m_pFileBuf_tmp;
+//unsigned char *aw_m_pFileBuf_tmp_old;	//used for realloc
 
 void aw_debug_print(const unsigned char *str, int length) {
 	const unsigned char *str_start = str;
@@ -31,85 +31,58 @@ void aw_debug_print(const unsigned char *str, int length) {
 	}
 	printf("\n");
 }
-/// save flv file
-FILE *f_flv = NULL;
-void int_to_bytes(int n, unsigned char buf[], int start) {
-    buf[start] = n >> 24;
-    buf[start + 1] = n >> 16;
-    buf[start + 2] = n >> 8;
-    buf[start + 3] = n;
-}
-void flv_file_open(const char *filename) {
-    f_flv = fopen(filename, "w");
-}
-void flv_file_close() {
-    if (f_flv) {
-        fclose(f_flv);
-    }
-}
-int flv_file_save_packet(RTMPPacket *packet) {
-    if (!f_flv) {
-        return -1;
-    }
-    uint8_t data[] = {0x09,
-        0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00 };
-    if(packet->m_packetType == RTMP_PACKET_TYPE_VIDEO){
-        data[0] = 0x09;
-    } else if(packet->m_packetType == RTMP_PACKET_TYPE_AUDIO){
-        data[0] = 0x08;
-    }
-    int len = 0;
-    int_to_bytes(packet->m_nBodySize,  &data[1], 3);  // 3字节 包内容长度
-    int_to_bytes(packet->m_nTimeStamp, &data[4], 3);  // 3字节 时间戳，没用第4字节，太长的文件会溢出
-    len += fwrite(data, 1, 11, f_flv);               // 写入包头11字节
-    len += fwrite(packet->m_body, 1, packet->m_nBodySize, f_flv); // 写入数据包体
-    int_to_bytes(len, &data[0], 4);                   // 写入的总字节长度
-    fwrite(data, 1, 4, f_flv);
-    return len;
-}
 /// rtmp
 /// 链接
 int aw_rtmp_connection(const char *url) {
-    aw_nalhead_pos=0;
-    aw_m_nFileBufSize=AW_BUFFER_SIZE;
-    aw_m_pFileBuf = (unsigned char*)malloc(AW_BUFFER_SIZE);
-    aw_m_pFileBuf_tmp = (unsigned char*)malloc(AW_BUFFER_SIZE);
+//    aw_nalhead_pos=0;
+//    aw_m_nFileBufSize=AW_BUFFER_SIZE;
+//    aw_m_pFileBuf = (unsigned char*)malloc(AW_BUFFER_SIZE);
+//    aw_m_pFileBuf_tmp = (unsigned char*)malloc(AW_BUFFER_SIZE);
     
     aw_m_pRtmp = RTMP_Alloc();
     RTMP_Init(aw_m_pRtmp);
     /*设置URL*/
     if (RTMP_SetupURL(aw_m_pRtmp,(char*)url) == FALSE)
     {
-        printf("Set URL Failed");
+        printf("Set URL Failed:%s",url);
+        RTMP_Close(aw_m_pRtmp);
         RTMP_Free(aw_m_pRtmp);
-        free(aw_m_pFileBuf);
-        free(aw_m_pFileBuf_tmp);
-        return false;
+//        free(aw_m_pFileBuf);
+//        free(aw_m_pFileBuf_tmp);
+        aw_m_pRtmp = NULL;
+//        aw_m_pFileBuf = NULL;
+//        aw_m_pFileBuf_tmp = NULL;
+        return -1;
     }
-    aw_m_pRtmp->Link.timeout = 5;
+//    aw_m_pRtmp->Link.timeout = 15;
+//    aw_m_pRtmp->m_msgCounter = 1;
     /*设置可写,即发布流,这个函数必须在连接前使用,否则无效*/
     RTMP_EnableWrite(aw_m_pRtmp);
     /*连接服务器*/
     if (RTMP_Connect(aw_m_pRtmp, NULL) == FALSE)
     {
         printf("Connect RTMP Failed\n");
+        RTMP_Close(aw_m_pRtmp);
         RTMP_Free(aw_m_pRtmp);
-        free(aw_m_pFileBuf);
-        free(aw_m_pFileBuf_tmp);
-        return false;
+//        free(aw_m_pFileBuf);
+//        free(aw_m_pFileBuf_tmp);
+        aw_m_pRtmp = NULL;
+//        aw_m_pFileBuf = NULL;
+//        aw_m_pFileBuf_tmp = NULL;
+        return -2;
     }
-    
     /*连接流*/
     if (RTMP_ConnectStream(aw_m_pRtmp,0) == FALSE)
     {
         printf("Connect Stream Failed\n");
         RTMP_Close(aw_m_pRtmp);
         RTMP_Free(aw_m_pRtmp);
-        free(aw_m_pFileBuf);
-        free(aw_m_pFileBuf_tmp);
-        return false;
+//        free(aw_m_pFileBuf);
+//        free(aw_m_pFileBuf_tmp);
+        aw_m_pRtmp = NULL;
+//        aw_m_pFileBuf = NULL;
+//        aw_m_pFileBuf_tmp = NULL;
+        return -3;
     }
     return true;
 }
@@ -121,16 +94,16 @@ void aw_rtmp_close() {
         RTMP_Free(aw_m_pRtmp);
         aw_m_pRtmp = NULL;
     }
-    if (aw_m_pFileBuf != NULL)
-    {
-        free(aw_m_pFileBuf);
-        aw_m_pFileBuf = NULL;
-    }
-    if (aw_m_pFileBuf_tmp != NULL)
-    {  
-        free(aw_m_pFileBuf_tmp);
-        aw_m_pFileBuf_tmp = NULL;
-    }
+//    if (aw_m_pFileBuf != NULL)
+//    {
+//        free(aw_m_pFileBuf);
+//        aw_m_pFileBuf = NULL;
+//    }
+//    if (aw_m_pFileBuf_tmp != NULL)
+//    {  
+//        free(aw_m_pFileBuf_tmp);
+//        aw_m_pFileBuf_tmp = NULL;
+//    }
 }
 
 /// 发送 sps, pps
@@ -189,7 +162,6 @@ int aw_rtmp_send_sps_pps(unsigned char *sps, int sps_length,
     printf("sps,pps: ");
     int nRet = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
     aw_debug_print(body, i);
-    flv_file_save_packet(packet);/// save packet
     free(packet);    //释放内存
     if (!nRet) {
         printf("Send sps, pps failed\n");
@@ -250,7 +222,7 @@ int aw_rtmp_send_h264_video(unsigned char *data,
     printf("video timeStamp:%d, keyFrame:%d,size:%d:\n",nTimeStamp, bIsKeyFrame, size);
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
 //    aw_debug_print(body,i + size);
-    flv_file_save_packet(packet);/// save packet
+//    flv_file_save_packet(packet);/// save packet
     free(packet);
     if (!result) {
         printf("Send video failed\n");
@@ -288,7 +260,7 @@ int aw_rtmp_send_audio_header() {
     printf("audio header: ");
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
     aw_debug_print(body,4);
-    flv_file_save_packet(packet);/// save packet
+//    flv_file_save_packet(packet);/// save packet
     free(packet);
     if (!result) {
         printf("Send audio head failed\n");
@@ -327,7 +299,7 @@ int aw_rtmp_send_audio(unsigned char *data,
     printf("audio timestamp:%d, size:%d\n",nTimeStamp, body_size);
     int result = RTMP_SendPacket(aw_m_pRtmp,packet,TRUE);
 //    aw_debug_print(body,body_size);
-    flv_file_save_packet(packet);/// save packet
+//    flv_file_save_packet(packet);/// save packet
     free(packet);
     if (!result) {
         printf("Send audio failed\n");

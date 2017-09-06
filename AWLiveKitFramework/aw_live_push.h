@@ -17,6 +17,6 @@ int aw_push_video_samplebuffer(CMSampleBufferRef sample_buffer,
                                int *is_spspps_sent);
 int aw_push_audio_bufferlist(AudioBufferList buffer_list,
                              double time_offset);
-void aw_push_flv_file_open(const char *filename);
-void aw_push_flv_file_close();
+//void aw_push_flv_file_open(const char *filename);
+//void aw_push_flv_file_close();
 #endif /* aw_live_push_h */

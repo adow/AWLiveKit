@@ -110,6 +110,9 @@ open class AWGPUImageCapture: NSObject {
     }
     
     deinit {
+        self.camera?.removeAllTargets()
+        self.camera?.removeInputsAndOutputs()
+        self.filter?.removeAllTargets()
         NSLog("AWGPUImageCapture release")
     }
     
@@ -145,9 +148,7 @@ extension AWGPUImageCapture {
     public func stop() {
         self.camera?.stopCapture()
         self.audioOutput?.finishRecording()
-        self.camera?.removeAllTargets()
-        self.camera?.removeInputsAndOutputs()
-        self.filter?.removeAllTargets()
+        
     }
 }
 
