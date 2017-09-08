@@ -10,6 +10,15 @@ import Foundation
 import UIKit
 import AVFoundation
 
+/// App 版本号
+fileprivate func app_info(forClass aClass:AnyClass? = nil) -> (app_name:String, app_id: String, version:String,build:String) {
+    let info = aClass == nil ? Bundle.main.infoDictionary : Bundle(for: aClass!).infoDictionary
+    let version = (info?["CFBundleShortVersionString"] as? String) ?? ""
+    let build = (info?["CFBundleVersion"] as? String) ?? ""
+    let app_name = (info?["CFBundleName"] as? String) ?? ""
+    let app_id = (info?["CFBundleIdentifier"] as? String) ?? ""
+    return (app_name:app_name,app_id:app_id, version:version, build:build)
+}
 // MARK: - AWLiveBase
 public class AWLiveBase {
     public var push : AWLivePushC!
@@ -28,7 +37,9 @@ public class AWLiveBase {
     public required init?(url:String,
                  withQuality videoQuality : AWLiveCaptureVideoQuality = ._720,
                  atOrientation orientation: AVCaptureVideoOrientation = .portrait) {
-        
+        let (_,_,live_version, live_build) = app_info(forClass: AWLiveBase.self)
+        NSLog("AWLiveKit:\(live_version)/\(live_build)")
+        ///
         self.videoQuality = videoQuality
         self.orientation = orientation
         self.url = url
