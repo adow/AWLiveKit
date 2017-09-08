@@ -78,7 +78,7 @@ public class AWLivePushC {
                 NSLog("remove record failed")
             }
         }
-        aw_push_flv_file_open(flv_filename_url.path)
+//        aw_push_flv_file_open(flv_filename_url.path)
         NSLog("open recoard file:\(flv_filename_url.path)")
     }
     public func connectURL(completionBlock completion:(()->())? = nil) {
@@ -97,11 +97,14 @@ public class AWLivePushC {
                 completion?()
             }
             else {
-                NSLog("RTMP Connect Failed")
+                NSLog("RTMP Connect Failed:\(result)")
                 self.connectState = .NotConnect
-                /// 3秒后重新连接
-                self.reconnect()
-                
+                aw_rtmp_close()
+                /// 3秒后重新连接, 这里不调用 reconnect
+//                self.reconnect()
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
+                    self.connectURL(completionBlock: completion)
+                }
             }
         }
     }
@@ -118,25 +121,13 @@ public class AWLivePushC {
         }
         
     }
+    /// 在推流错误时，主动断开，重新连接
     fileprivate func reconnect() {
-        guard self.reconnectTimer == nil else {
-            return
-        }
-        NSLog("Reconnect in 3seconds")
-        DispatchQueue.main.async {
-            self.reconnectTimer = Timer.scheduledTimer(timeInterval: 3.0,
-                                                       target: self,
-                                                       selector: #selector(AWLivePushC.onReconnectTimer(sender:)),
-                                                       userInfo: nil,
-                                                       repeats: false)    
-        }
-        
-    }
-    @objc func onReconnectTimer(sender:Timer!) {
-        sender.invalidate()
-        self.reconnectTimer = nil
         self.disconnect()
-        self.connectURL()
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(3.0 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
+            self.connectURL()
+            
+        }
     }
     /// 开始推流
     public func start() {

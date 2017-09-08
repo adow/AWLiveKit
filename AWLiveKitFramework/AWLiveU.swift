@@ -35,7 +35,7 @@ public class AWLiveBase {
         /// push
         push = AWLivePushC(url: url)
         push.delegate = self
-//        push.connectURL()
+        push.connectURL()
         
         ///
         self.liveStat = AWLiveStat()
@@ -56,10 +56,10 @@ public class AWLiveBase {
     deinit {
         /// 关闭直播
         self.stopLive()
-        /// 关闭视频编码器
-        aw_video_encoder_close()
         /// 关闭连接
         self.push?.disconnect()
+        /// 关闭采集和编码
+        self.stopCapture()
         NotificationCenter.default.removeObserver(self)
         NSLog("AWLiveBase release")
     }
@@ -74,6 +74,9 @@ public class AWLiveBase {
     public var beauty : Int = 0
     public func startCapture() {
         self.startVideoEncoder()
+    }
+    public func stopCapture() {
+        self.stopVideoEncoder()
     }
     /// 获取摄像头权限
     public static func requestCapture(callback:@escaping ((Bool,String?)->())) {
@@ -173,18 +176,23 @@ extension AWLiveBase:AWLivePushDeletate {
 }
 extension AWLiveBase {
     @objc fileprivate func onNotificationEnterForeground(_ notification:Notification) {
+        self.startCapture()
         if self.isInterruption {
             self.isInterruption = false
-            //self.startLive()
+            self.startLive()
         }
     }
     @objc fileprivate func onNotificationResign(_ notification:Notification) {
+        self.stopCapture()
+        /// 如果正在直播，那标记未打断，回到界面的时候，将直接开始直播
         if let _isLive = self.isLive , _isLive{
             self.stopLive()
             self.isInterruption = true
         }
     }
     @objc fileprivate func onNotificationTerminate(_ notification:Notification) {
+        self.stopCapture()
+        self.stopLive()
     }
 }
 
@@ -318,6 +326,10 @@ public class AWLiveSimple : AWLiveBase {
             }
         }
     }
+    override public func stopCapture() {
+        super.stopCapture()
+        self.capture?.stop()
+    }
 }
 // MARK: - AWLiveBeauty
 public class AWLiveBeauty : AWLiveBase {
@@ -411,6 +423,10 @@ public class AWLiveBeauty : AWLiveBase {
     public override func startCapture() {
         super.startCapture()
         self.capture?.start()
+    }
+    override public func stopCapture() {
+        super.stopCapture()
+        self.capture?.stop()
     }
     
 }

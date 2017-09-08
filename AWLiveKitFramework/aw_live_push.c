@@ -198,11 +198,11 @@ int aw_push_audio_bufferlist(AudioBufferList buffer_list,
     return 0;
 }
 
-void aw_push_flv_file_open(const char *filename) {
-    flv_file_open(filename);
-}
+//void aw_push_flv_file_open(const char *filename) {
+//    flv_file_open(filename);
+//}
 
-void aw_push_flv_file_close() {
-    flv_file_close();
-}
+//void aw_push_flv_file_close() {
+//    flv_file_close();
+//}
 
