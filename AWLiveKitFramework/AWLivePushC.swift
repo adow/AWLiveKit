@@ -102,7 +102,7 @@ public class AWLivePushC {
                 aw_rtmp_close()
                 /// 3秒后重新连接, 这里不调用 reconnect
 //                self.reconnect()
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(3.0 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
                     self.connectURL(completionBlock: completion)
                 }
             }
@@ -121,26 +121,6 @@ public class AWLivePushC {
         }
         
     }
-//    fileprivate func reconnect() {
-//        guard self.reconnectTimer == nil else {
-//            return
-//        }
-//        NSLog("Reconnect in 3seconds")
-//        DispatchQueue.main.async {
-//            self.reconnectTimer = Timer.scheduledTimer(timeInterval: 3.0,
-//                                                       target: self,
-//                                                       selector: #selector(AWLivePushC.onReconnectTimer(sender:)),
-//                                                       userInfo: nil,
-//                                                       repeats: false)    
-//        }
-//        
-//    }
-//    @objc func onReconnectTimer(sender:Timer!) {
-//        sender.invalidate()
-//        self.reconnectTimer = nil
-//        self.disconnect()
-//        self.connectURL()
-//    }
     /// 在推流错误时，主动断开，重新连接
     fileprivate func reconnect() {
         self.disconnect()
