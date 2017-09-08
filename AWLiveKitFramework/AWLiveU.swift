@@ -37,8 +37,7 @@ public class AWLiveBase {
     public required init?(url:String,
                  withQuality videoQuality : AWLiveCaptureVideoQuality = ._720,
                  atOrientation orientation: AVCaptureVideoOrientation = .portrait) {
-        let (_,_,live_version, live_build) = app_info(forClass: AWLiveBase.self)
-        NSLog("AWLiveKit:\(live_version)/\(live_build)")
+        NSLog("AWLiveKit:\(AWLiveBase.version)")
         ///
         self.videoQuality = videoQuality
         self.orientation = orientation
@@ -113,8 +112,9 @@ public class AWLiveBase {
             }
         }
     }
-    public class var version :Double {
-        return 0.1
+    public class var version :String {
+        let (_,_,live_version, live_build) = app_info(forClass: AWLiveBase.self)
+        return "\(live_version)/\(live_build)"
     }
     
 }
