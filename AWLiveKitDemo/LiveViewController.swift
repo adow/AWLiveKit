@@ -41,7 +41,7 @@ class LiveViewController: UIViewController {
             self.live = AWLiveBeauty(url: self.push_url, withQuality: videoQuality, atOrientation: av_orientation)
         }
         guard let _live = self.live, let preview = _live.connectedPreview else {
-            NSLog("create live failed")
+            debugPrint("create live failed")
             return
         }
         _live.push?.delegate = self
@@ -101,7 +101,7 @@ class LiveViewController: UIViewController {
     }
     
     deinit {
-        NSLog("LiveViewController release")
+        debugPrint("LiveViewController release")
     }
     
 }

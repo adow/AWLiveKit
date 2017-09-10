@@ -90,16 +90,16 @@ public class AWLivePush: NSObject {
         rtmpQueue.async {
             let result = aw_rtmp_connection(url)
             if result == 1 {
-                NSLog("rtmp connected")
+                debugPrint("rtmp connected")
                 aw_rtmp_send_audio_header()
-                NSLog("Send audio header")
+                debugPrint("Send audio header")
                 self.ready = true /// 完成以上两步才可以后面操作
             }
             else {
-                NSLog("rtmp connect failed")
+                debugPrint("rtmp connect failed")
             }    
         }
-//        NSLog("Rtmp Connect duration:\(abs(start_time.timeIntervalSinceNow))")
+//        debugPrint("Rtmp Connect duration:\(abs(start_time.timeIntervalSinceNow))")
     }
     
 
@@ -115,25 +115,25 @@ extension AWLivePush {
     /// 推送视频内容
     fileprivate func _go_pushVideoSampleBuffer(_ sampleBuffer:CMSampleBuffer) {
         guard self.ready else {
-//            NSLog("RTMP is not ready")
+//            debugPrint("RTMP is not ready")
             return
         }
         guard sampleBuffer.isDataReady else {
-            NSLog("Video Data is not ready")
+            debugPrint("Video Data is not ready")
             return
         }
         guard let keyFrame = sampleBuffer.isKeyFrame else {
-            NSLog("Video Key Frame is empty")
+            debugPrint("Video Key Frame is empty")
             return
         }
         guard let dataBuffer = sampleBuffer.dataBuffer else {
-            NSLog("Video Data Buffer is empty")
+            debugPrint("Video Data Buffer is empty")
             return
         }
         /// sps, pps
         if keyFrame && !self.sps_pps_sended {
             guard let sps_data = sampleBuffer.sps_data, let pps_data = sampleBuffer.pps_data else {
-                NSLog("Video sps or pps is nil")
+                debugPrint("Video sps or pps is nil")
                 return
             }
             self.sps_pps_sended = true
@@ -146,7 +146,7 @@ extension AWLivePush {
         var totalLength :size_t = 0
         var dataPointer : UnsafeMutablePointer<Int8>? = nil
         guard CMBlockBufferGetDataPointer(dataBuffer, 0, nil, &totalLength, &dataPointer) == noErr else {
-            NSLog("Could not get dataPointer")
+            debugPrint("Could not get dataPointer")
             return
         }
         dataPointer!.withMemoryRebound(to:UnsafeMutablePointer<UInt8>.self,capacity: totalLength) {
@@ -193,7 +193,7 @@ extension AWLivePush {
     /// 推送音频内容
     fileprivate func _goto_pushAudioBufferList(_ bufferList:AudioBufferList) {
         guard self.ready else {
-//            NSLog("RTMP is not ready")
+//            debugPrint("RTMP is not ready")
             return
         }
         let audio_data_length = bufferList.mBuffers.mDataByteSize

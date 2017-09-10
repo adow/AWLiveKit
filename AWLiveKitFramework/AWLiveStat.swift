@@ -189,17 +189,17 @@ extension AWLiveStat {
         device.isBatteryMonitoringEnabled = true
         self.battery = Int(device.batteryLevel * 100.0)
         device.isBatteryMonitoringEnabled = false
-        NSLog("battery:\(self.battery ?? 0)")
+        debugPrint("battery:\(self.battery ?? 0)")
     }
     @objc func onNotificationRouteChange(_ notification:Notification) {
         let inputs = AVAudioSession.sharedInstance().currentRoute.inputs
         for one_input in inputs {
-            NSLog("input:\(one_input.portName),\(one_input.portType)")
+            debugPrint("input:\(one_input.portName),\(one_input.portType)")
             self.microphone = "\(one_input.portName)\n\(one_input.portType)"
         }
         let outputs = AVAudioSession.sharedInstance().currentRoute.outputs
         for one_output in outputs {
-            NSLog("output:\(one_output.portName),\(one_output.portType)")
+            debugPrint("output:\(one_output.portName),\(one_output.portType)")
         }
     }
     

@@ -72,14 +72,14 @@ public class AWLivePushC {
         if FileManager.default.fileExists(atPath: flv_filename_url.path) {
             do {
                 try FileManager.default.removeItem(atPath: flv_filename_url.path)
-                NSLog("remove record:\(flv_filename_url.path)")
+                debugPrint("remove record:\(flv_filename_url.path)")
             }
             catch {
-                NSLog("remove record failed")
+                debugPrint("remove record failed")
             }
         }
 //        aw_push_flv_file_open(flv_filename_url.path)
-        NSLog("open recoard file:\(flv_filename_url.path)")
+        debugPrint("open recoard file:\(flv_filename_url.path)")
     }
     public func connectURL(completionBlock completion:(()->())? = nil) {
         rtmp_queue.async {
@@ -89,15 +89,15 @@ public class AWLivePushC {
             self.connectState = .Connecting
             let result = aw_rtmp_connection(self.rtmpUrl);
             if result == 1 {
-                NSLog("Live Push Connected")
+                debugPrint("Live Push Connected")
 //                aw_rtmp_send_audio_header()
-//                NSLog("Audio Header Sent")
+//                debugPrint("Audio Header Sent")
                 self.start_time = Date()
                 self.connectState = .Connected
                 completion?()
             }
             else {
-                NSLog("RTMP Connect Failed:\(result)")
+                debugPrint("RTMP Connect Failed:\(result)")
                 self.connectState = .NotConnect
                 aw_rtmp_close()
                 /// 3秒后重新连接, 这里不调用 reconnect
@@ -142,7 +142,7 @@ extension AWLivePushC {
     fileprivate func counterPushFailed() {
         /// 超过30次发送错误，就断开连接
         self.pushFailedCounter += 1
-        NSLog("push failed:\(self.pushFailedCounter)")
+        debugPrint("push failed:\(self.pushFailedCounter)")
         if (self.pushFailedCounter >= 30) {
             self.disconnect()
         }

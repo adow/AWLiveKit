@@ -201,7 +201,7 @@ public class AWLiveCapture : NSObject{
                 
             }
             catch let error as NSError {
-                NSLog("Input Device Error:%@", error)
+                debugPrint("Input Device Error:%@", error)
                 return
             }
             /// videoOutput
@@ -215,7 +215,7 @@ public class AWLiveCapture : NSObject{
                 self.captureSession.addOutput(self.videoOutput)
             }
             else {
-                NSLog("Can not add Video Output")
+                debugPrint("Can not add Video Output")
                 return
             }
     //        self.videoOrientation = .Portrait
@@ -225,7 +225,7 @@ public class AWLiveCapture : NSObject{
                 self.captureSession.addOutput(self.audioOutput)
             }
             else {
-                NSLog("Can not add Audio Output")
+                debugPrint("Can not add Audio Output")
                 return
             }
             /// 测试采集输出到文件
@@ -348,7 +348,7 @@ public class AWLiveCapture : NSObject{
                 return
             }
             guard let _frontCamera = self.frontCameraDevice else {
-                NSLog("front camera is not supported")
+                debugPrint("front camera is not supported")
                 return
             }
             do {
@@ -369,7 +369,7 @@ public class AWLiveCapture : NSObject{
             
             }
             catch let error as NSError {
-                NSLog("Input Device Error:%@", error)
+                debugPrint("Input Device Error:%@", error)
                 self.captureSession.commitConfiguration()
             }
         }
@@ -383,7 +383,7 @@ public class AWLiveCapture : NSObject{
 extension AWLiveCapture {
     public func start() {
         guard self.ready else {
-            NSLog("Capture is not ready")
+            debugPrint("Capture is not ready")
             return
         }
         self.captureSession.startRunning()
@@ -405,7 +405,7 @@ extension AWLiveCapture {
         self.fileOutput_2_video?.markAsFinished()
         self.fileOutput_2_audio?.markAsFinished()
         self.fileOutput_2?.finishWriting {
-            NSLog("finish output_2")
+            debugPrint("finish output_2")
         }
     }
     /// 测试可以使用哪些 session_preset
@@ -454,13 +454,13 @@ extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCapture
                 let time = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
     //            let time = kCMTimeZero
                 writer.startSession(atSourceTime: time)
-                NSLog("writer started:\(time)")
+                debugPrint("writer started:\(time)")
             }
             else {
                 writer.finishWriting {
                     
                 }
-                NSLog("writer start failed:\(writer.error?.localizedDescription ?? "")")
+                debugPrint("writer start failed:\(writer.error?.localizedDescription ?? "")")
             }
         }
         else if writer.status == .writing {
@@ -468,14 +468,14 @@ extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCapture
                 fileQueue.async {
                     if audio_input.isReadyForMoreMediaData {
                         if audio_input.append(sampleBuffer) {
-                            NSLog("write audio ok")
+                            debugPrint("write audio ok")
                         }
                         else {
-                            NSLog("write audio failed")
+                            debugPrint("write audio failed")
                         }
                     }
                     else {
-                        NSLog("audio writer not ready")
+                        debugPrint("audio writer not ready")
                     }
                 }
             }
@@ -483,14 +483,14 @@ extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCapture
                 fileQueue.async {
                     if video_input.isReadyForMoreMediaData {
                         if video_input.append(sampleBuffer) {
-                            NSLog("write video ok")
+                            debugPrint("write video ok")
                         }
                         else {
-                            NSLog("write video failed")
+                            debugPrint("write video failed")
                         }
                     }
                     else {
-                        NSLog("video writer not ready")
+                        debugPrint("video writer not ready")
                     }
                 }    
             }

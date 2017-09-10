@@ -57,7 +57,7 @@ class StartAnimationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     deinit {
-        NSLog("StartAnimationView release")
+        debugPrint("StartAnimationView release")
     }
     /// 绘制每一个
     fileprivate func makeTitleViews() {
@@ -117,7 +117,7 @@ class StartAnimationView: UIView {
     fileprivate func next() {
         self.animationIndex += 1
         guard self.animationIndex <= self.titles.count else {
-            NSLog("GO")
+            debugPrint("GO")
             self.onGo()
             self.removeFromSuperview()
             return

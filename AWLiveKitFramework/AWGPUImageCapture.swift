@@ -61,7 +61,7 @@ open class AWGPUImageCapture: NSObject {
             var width : Int = 0
             var height : Int = 0
             if let output = self.camera.captureSession.outputs.last as? AVCaptureVideoDataOutput{
-                NSLog("output:\(output.videoSettings)")
+                debugPrint("output:\(output.videoSettings)")
                 if let settings = output.videoSettings {
                     let w = (settings["Width"] as? Int) ?? 0
                     let h = (settings["Height"] as? Int) ?? 0
@@ -75,7 +75,7 @@ open class AWGPUImageCapture: NSObject {
                     }
                 }
             }
-            NSLog("width:\(width),height:\(height)")
+            debugPrint("width:\(width),height:\(height)")
             if width < 0 || height < 0 {
                 return nil
             }
@@ -83,7 +83,7 @@ open class AWGPUImageCapture: NSObject {
             /// audio output
             /*
             let movie_file = (cache_dir as NSString).appendingPathComponent("movie.mov")
-            NSLog("movie_file:\(movie_file)")
+            debugPrint("movie_file:\(movie_file)")
             try? FileManager.default.removeItem(atPath: movie_file)
             let movie_url = URL(fileURLWithPath: movie_file)
             self.audioOutput = AWGPUImageMovieWriter(movieURL: movie_url, size: CGSize(width: width, height: height))
@@ -113,7 +113,7 @@ open class AWGPUImageCapture: NSObject {
         self.camera?.removeAllTargets()
         self.camera?.removeInputsAndOutputs()
         self.filter?.removeAllTargets()
-        NSLog("AWGPUImageCapture release")
+        debugPrint("AWGPUImageCapture release")
     }
     
     
