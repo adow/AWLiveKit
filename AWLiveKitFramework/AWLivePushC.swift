@@ -87,7 +87,7 @@ public class AWLivePushC {
                 return
             }
             self.connectState = .Connecting
-            let result = aw_rtmp_connection(self.rtmpUrl);
+            let result = aw_rtmp_connection(self.rtmpUrl!);
             if result == 1 {
                 debugPrint("Live Push Connected")
 //                aw_rtmp_send_audio_header()
