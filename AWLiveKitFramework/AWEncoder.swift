@@ -49,6 +49,8 @@ public enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
             return AWVideoEncoderFPS._15
         case ._500kbs:
             return AWVideoEncoderFPS._20
+        case ._600kbs,._800kbs:
+            return AWVideoEncoderFPS._25
         default:
             return AWVideoEncoderFPS._30
         }

@@ -61,7 +61,7 @@ open class AWGPUImageCapture: NSObject {
             var width : Int = 0
             var height : Int = 0
             if let output = self.camera.captureSession.outputs.last as? AVCaptureVideoDataOutput{
-                debugPrint("output:\(output.videoSettings)")
+//                debugPrint("output:\(output.videoSettings)")
                 if let settings = output.videoSettings {
                     let w = (settings["Width"] as? Int) ?? 0
                     let h = (settings["Height"] as? Int) ?? 0

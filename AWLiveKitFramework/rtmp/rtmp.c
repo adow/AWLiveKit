@@ -1109,7 +1109,6 @@ RTMP_ConnectStream(RTMP *r, int seekTime)
         r->Link.seekTime = seekTime;
     
     r->m_mediaChannel = 0;
-    printf("playing:%d, socket:%d\n",r->m_bPlaying, r->m_sb.sb_socket);
     
     while (!r->m_bPlaying && RTMP_IsConnected(r) && RTMP_ReadPacket(r, &packet))
     {
@@ -3557,7 +3556,7 @@ RTMP_ReadPacket(RTMP *r, RTMPPacket *packet)
     int didAlloc = FALSE;
     int extendedTimestamp;
     
-    RTMP_Log(RTMP_LOGERROR, "%s: fd=%d", __FUNCTION__, r->m_sb.sb_socket);
+    RTMP_Log(RTMP_LOGDEBUG2, "%s: fd=%d", __FUNCTION__, r->m_sb.sb_socket);
     
     if (ReadN(r, (char *)hbuf, 1) == 0)
     {
