@@ -165,7 +165,7 @@ extension LiveViewController {
     @IBAction func onBeautySegment(_ sender:UISegmentedControl!) {
         self.live?.beauty = sender.selectedSegmentIndex
     }
-    func onTapGesture(_ recognizer:UITapGestureRecognizer) {
+    @objc func onTapGesture(_ recognizer:UITapGestureRecognizer) {
         self.toggleUI()
     }
     fileprivate func toggleUI() {

@@ -16,21 +16,21 @@ public enum AWLiveCaptureVideoQuality :Int,CustomStringConvertible, CustomDebugS
     public var sessionPreset : String {
         switch self {
         case ._480:
-            return AVCaptureSessionPreset640x480
+            return AVCaptureSession.Preset.vga640x480.rawValue
         case ._540i:
-            return AVCaptureSessionPresetiFrame960x540
+            return AVCaptureSession.Preset.iFrame960x540.rawValue
         case ._720:
-            return AVCaptureSessionPreset1280x720
+            return AVCaptureSession.Preset.hd1280x720.rawValue
         case ._720i:
-            return AVCaptureSessionPresetiFrame1280x720
+            return AVCaptureSession.Preset.iFrame1280x720.rawValue
         case ._1080:
-            return AVCaptureSessionPreset1920x1080
+            return AVCaptureSession.Preset.hd1920x1080.rawValue
         case ._4k:
             if #available(iOS 9.0, *) {
-                return AVCaptureSessionPreset3840x2160
+                return AVCaptureSession.Preset.hd4K3840x2160.rawValue
             } else {
                 // 如果不支持的话还是使用 1920 * 1080
-                return AVCaptureSessionPreset1920x1080
+                return AVCaptureSession.Preset.hd1920x1080.rawValue
             }
         }
     }
@@ -147,39 +147,39 @@ public class AWLiveCapture : NSObject{
     fileprivate var fileOutput_2 : AVAssetWriter!
     fileprivate var fileOutput_2_video : AVAssetWriterInput!
     fileprivate var fileOutput_2_audio : AVAssetWriterInput!
-    public init? (sessionPreset:String = AVCaptureSessionPresetiFrame960x540, orientation : AVCaptureVideoOrientation = .portrait) {
+    public init? (sessionPreset:String = AVCaptureSession.Preset.iFrame960x540.rawValue, orientation : AVCaptureVideoOrientation = .portrait) {
         super.init()
 //        let start_time = NSDate()
         /// session
         captureSession = AVCaptureSession()
-        guard captureSession.canSetSessionPreset(sessionPreset) else {
+        guard captureSession.canSetSessionPreset(AVCaptureSession.Preset(rawValue: sessionPreset)) else {
             return nil
         }
-        captureSession.sessionPreset = sessionPreset ///AVCaptureSessionPresetiFrame960x540
+        captureSession.sessionPreset = AVCaptureSession.Preset(rawValue: sessionPreset) ///AVCaptureSessionPresetiFrame960x540
         /// cameras
-        if let cameras = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as? [AVCaptureDevice] {
-            for one_camera in cameras {
-                if one_camera.position == .back {
-                    if one_camera.supportsAVCaptureSessionPreset(sessionPreset) {
-                        self.backCameraDevice = one_camera
-                        let ranges = self.backCameraDevice.activeFormat.videoSupportedFrameRateRanges
+        let cameras = AVCaptureDevice.devices(for: AVMediaType.video)
+        for one_camera in cameras {
+            if one_camera.position == .back {
+                if one_camera.supportsSessionPreset(AVCaptureSession.Preset(rawValue: sessionPreset)) {
+                    self.backCameraDevice = one_camera
+                    let ranges = self.backCameraDevice.activeFormat.videoSupportedFrameRateRanges
 //                        debugPrint("ranges:\(String(describing: ranges))")
-                        self.videoDevice = one_camera /// current video device is back camera
-                    }
-                    else {
-                        /// TODO: Failed init because back camera
-                        return nil
-                    }
+                    self.videoDevice = one_camera /// current video device is back camera
                 }
-                else if one_camera.position == .front {
-                    if one_camera.supportsAVCaptureSessionPreset(sessionPreset) {
-                        self.frontCameraDevice = one_camera
-                    }
+                else {
+                    /// TODO: Failed init because back camera
+                    return nil
+                }
+            }
+            else if one_camera.position == .front {
+                if one_camera.supportsSessionPreset(AVCaptureSession.Preset(rawValue: sessionPreset)) {
+                    self.frontCameraDevice = one_camera
                 }
             }
         }
+        
         /// audio
-        self.audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+        self.audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
         /// input and output
         sessionQueue.async {
             self.captureSession.beginConfiguration()
@@ -296,7 +296,7 @@ public class AWLiveCapture : NSObject{
         let view = AWLivePreview()
         view.session = self.captureSession
         if let layer = view.layer as? AVCaptureVideoPreviewLayer, let orientation = self.videoOrientation {
-            layer.connection.videoOrientation = orientation
+            layer.connection?.videoOrientation = orientation
         }
         return view
     }
@@ -304,7 +304,7 @@ public class AWLiveCapture : NSObject{
     public func connectPreView(_ preview : AWLivePreview) {
         preview.session = self.captureSession
         if let layer = preview.layer as? AVCaptureVideoPreviewLayer, let orientation = self.videoOrientation {
-            layer.connection.videoOrientation = orientation
+            layer.connection?.videoOrientation = orientation
         }
     }
     /// 设置横屏竖屏
@@ -314,16 +314,16 @@ public class AWLiveCapture : NSObject{
                 return
             }
             /// 内容输出
-            if let video_connection = self.videoOutput?.connection(withMediaType: AVMediaTypeVideo) {
+            if let video_connection = self.videoOutput?.connection(with: AVMediaType.video) {
                 video_connection.videoOrientation = _orientation
             }
             /// 文件输出
-            if let file_connection = self.fileOutput_1?.connection(withMediaType: AVMediaTypeVideo) {
+            if let file_connection = self.fileOutput_1?.connection(with: AVMediaType.video) {
                 file_connection.videoOrientation = _orientation;
             }
         }
         get {
-            let video_connection = videoOutput?.connection(withMediaType: AVMediaTypeVideo)
+            let video_connection = videoOutput?.connection(with: AVMediaType.video)
             return video_connection?.videoOrientation
         }
     }
@@ -333,11 +333,11 @@ public class AWLiveCapture : NSObject{
             guard let _mirror = newValue else {
                 return
             }
-            let video_connection = videoOutput.connection(withMediaType: AVMediaTypeVideo)
+            let video_connection = videoOutput.connection(with: AVMediaType.video)
             video_connection?.isVideoMirrored = _mirror
         }
         get {
-            let video_connection = videoOutput.connection(withMediaType: AVMediaTypeVideo)
+            let video_connection = videoOutput.connection(with: AVMediaType.video)
             return video_connection?.isVideoMirrored
         }
     }
@@ -390,7 +390,7 @@ extension AWLiveCapture {
         /// output_1
         let output_1 = cache_dir.appending("/output_1.mov")
         let output_1_url = URL(fileURLWithPath: output_1)
-        self.fileOutput_1?.startRecording(toOutputFileURL: output_1_url, recordingDelegate: self)
+        self.fileOutput_1?.startRecording(to: output_1_url, recordingDelegate: self)
         /// output_2
 //        self.fileOutput_2?.startWriting()
     }
@@ -410,26 +410,34 @@ extension AWLiveCapture {
     }
     /// 测试可以使用哪些 session_preset
     func testSessionPreset() {
-        var session_preset_list : [String:String] = [ "AVCaptureSessionPresetPhoto":AVCaptureSessionPresetPhoto,
-                                                 "AVCaptureSessionPresetHigh": AVCaptureSessionPresetHigh,
-                                                 "AVCaptureSessionPresetMedium":AVCaptureSessionPresetMedium,
-                                                 "AVCaptureSessionPresetLow":AVCaptureSessionPresetLow,
-                                                 "AVCaptureSessionPreset352x288":AVCaptureSessionPreset352x288,
-                                                 "AVCaptureSessionPreset640x480":AVCaptureSessionPreset640x480,
-                                                 "AVCaptureSessionPreset1280x720":AVCaptureSessionPreset1280x720,
-                                                 "AVCaptureSessionPreset1920x1080":AVCaptureSessionPreset1920x1080,
-                                                 "AVCaptureSessionPresetiFrame960x540":AVCaptureSessionPresetiFrame960x540,
-                                                 "AVCaptureSessionPresetiFrame1280x720":AVCaptureSessionPresetiFrame1280x720,
-                                                 "AVCaptureSessionPresetInputPriority":AVCaptureSessionPresetInputPriority,
+        var session_preset_list : [String:String] = [ "AVCaptureSessionPresetPhoto":AVCaptureSession.Preset.photo.rawValue,
+                 "AVCaptureSessionPresetHigh": AVCaptureSession.Preset.high.rawValue,
+                 "AVCaptureSessionPresetMedium":
+                    AVCaptureSession.Preset.medium.rawValue,
+                 "AVCaptureSessionPresetLow":AVCaptureSession.Preset.low.rawValue,
+                 "AVCaptureSessionPreset352x288":
+                    AVCaptureSession.Preset.cif352x288.rawValue,
+                 "AVCaptureSessionPreset640x480":
+                    AVCaptureSession.Preset.vga640x480.rawValue,
+                 "AVCaptureSessionPreset1280x720":
+                    AVCaptureSession.Preset.hd1280x720.rawValue,
+                 "AVCaptureSessionPreset1920x1080"
+                    :AVCaptureSession.Preset.hd1920x1080.rawValue,
+                 "AVCaptureSessionPresetiFrame960x540"
+                    :AVCaptureSession.Preset.iFrame960x540.rawValue,
+                 "AVCaptureSessionPresetiFrame1280x720"
+                    :AVCaptureSession.Preset.iFrame1280x720.rawValue,
+                 "AVCaptureSessionPresetInputPriority":
+                    AVCaptureSession.Preset.inputPriority.rawValue,
             
         ]
         if #available(iOS 9.0, *) {
-            session_preset_list["AVCaptureSessionPreset3840x2160"] = AVCaptureSessionPreset3840x2160
+            session_preset_list["AVCaptureSessionPreset3840x2160"] = AVCaptureSession.Preset.hd4K3840x2160.rawValue
         } else {
             // Fallback on earlier versions
         }
         session_preset_list.forEach { (k,v) in
-            let result = self.captureSession.canSetSessionPreset(v)
+            let result = self.captureSession.canSetSessionPreset(AVCaptureSession.Preset(rawValue: v))
             debugPrint("\(k):\(result)")
         }
         
@@ -437,7 +445,7 @@ extension AWLiveCapture {
 }
 // MARK: Video and Audio SampleBuffer
 extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate {
-    public func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
+    public func captureOutput(_ captureOutput: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if captureOutput == self.videoOutput {
             self.onVideoSampleBuffer?(sampleBuffer)
             
@@ -500,7 +508,7 @@ extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCapture
             NSLog("writer status:\(writer.status.rawValue),\(writer.error?.localizedDescription  ?? "")")
         }
     }
-    public func captureOutput(_ captureOutput: AVCaptureOutput!, didDrop sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
+    public func captureOutput(_ captureOutput: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if captureOutput == videoOutput {
             print("Drop Video SampleBuffer")
         }
@@ -510,10 +518,10 @@ extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCapture
     }
 }
 extension AWLiveCapture : AVCaptureFileOutputRecordingDelegate {
-    public func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
+    public func fileOutput(_ captureOutput: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
         NSLog("start save outputFile_1:\(fileURL)")
     }
-    public func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+    public func fileOutput(_ captureOutput: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         NSLog("stop outputFile_1:\(outputFileURL)")
         self.captureSession.removeOutput(captureOutput)
     }

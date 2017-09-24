@@ -147,26 +147,28 @@ extension String {
 }
 extension AVCaptureDevice {
     public func testSessionPreset() {
-        var session_preset_list : [String:String] = [ "AVCaptureSessionPresetPhoto":AVCaptureSessionPresetPhoto,
-                                                      "AVCaptureSessionPresetHigh": AVCaptureSessionPresetHigh,
-                                                      "AVCaptureSessionPresetMedium":AVCaptureSessionPresetMedium,
-                                                      "AVCaptureSessionPresetLow":AVCaptureSessionPresetLow,
-                                                      "AVCaptureSessionPreset352x288":AVCaptureSessionPreset352x288,
-                                                      "AVCaptureSessionPreset640x480":AVCaptureSessionPreset640x480,
-                                                      "AVCaptureSessionPreset1280x720":AVCaptureSessionPreset1280x720,
-                                                      "AVCaptureSessionPreset1920x1080":AVCaptureSessionPreset1920x1080,
-                                                      "AVCaptureSessionPresetiFrame960x540":AVCaptureSessionPresetiFrame960x540,
-                                                      "AVCaptureSessionPresetiFrame1280x720":AVCaptureSessionPresetiFrame1280x720,
-                                                      "AVCaptureSessionPresetInputPriority":AVCaptureSessionPresetInputPriority,
+        var session_preset_list : [String:String] = [ "AVCaptureSessionPresetPhoto":AVCaptureSession.Preset.photo.rawValue,
+              "AVCaptureSessionPresetHigh": AVCaptureSession.Preset.high.rawValue,
+              "AVCaptureSessionPresetMedium":AVCaptureSession.Preset.medium.rawValue,
+              "AVCaptureSessionPresetLow":AVCaptureSession.Preset.low.rawValue,
+              "AVCaptureSessionPreset352x288":
+                    AVCaptureSession.Preset.cif352x288.rawValue,
+              "AVCaptureSessionPreset640x480":
+                AVCaptureSession.Preset.vga640x480.rawValue,
+                                                      "AVCaptureSessionPreset1280x720":AVCaptureSession.Preset.hd1280x720.rawValue,
+                                                      "AVCaptureSessionPreset1920x1080":AVCaptureSession.Preset.hd1920x1080.rawValue,
+                                                      "AVCaptureSessionPresetiFrame960x540":AVCaptureSession.Preset.iFrame960x540.rawValue,
+                                                      "AVCaptureSessionPresetiFrame1280x720":AVCaptureSession.Preset.iFrame1280x720.rawValue,
+                                                      "AVCaptureSessionPresetInputPriority":AVCaptureSession.Preset.inputPriority.rawValue,
                                                       
                                                       ]
         if #available(iOS 9.0, *) {
-            session_preset_list["AVCaptureSessionPreset3840x2160"] = AVCaptureSessionPreset3840x2160
+            session_preset_list["AVCaptureSessionPreset3840x2160"] = AVCaptureSession.Preset.hd4K3840x2160.rawValue
         } else {
             // Fallback on earlier versions
         }
         session_preset_list.forEach { (k,v) in
-            let result = self.supportsAVCaptureSessionPreset(v)
+            let result = self.supportsSessionPreset(AVCaptureSession.Preset(rawValue: v))
             debugPrint("\(k):\(result)")
         }
     }

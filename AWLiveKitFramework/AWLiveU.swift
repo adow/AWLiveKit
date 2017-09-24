@@ -90,9 +90,9 @@ public class AWLiveBase {
     }
     /// 获取摄像头权限
     public static func requestCapture(callback:@escaping ((Bool,String?)->())) {
-        AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { (succeed_video) in
+        AVCaptureDevice.requestAccess(for: AVMediaType.video) { (succeed_video) in
             if succeed_video {
-                AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeAudio, completionHandler: { (succeed_audio) in
+                AVCaptureDevice.requestAccess(for: AVMediaType.audio, completionHandler: { (succeed_audio) in
                     if succeed_audio {
                         DispatchQueue.main.async(execute: {
                             callback(true,nil)

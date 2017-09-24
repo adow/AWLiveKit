@@ -169,7 +169,7 @@ class StartViewController: UIViewController {
         }
     }
     
-    func onTapGesture(sender:UITapGestureRecognizer!) {
+    @objc func onTapGesture(sender:UITapGestureRecognizer!) {
         self.urlTextField.resignFirstResponder()
     }
 

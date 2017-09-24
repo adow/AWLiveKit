@@ -21,7 +21,7 @@ open class AWGPUImageCapture: NSObject {
     fileprivate var videoOutput : AWGPUImageRawDataOutput!
     fileprivate var audioOutput : AWGPUImageMovieWriter!
     
-    open var cameraPosition : AVCaptureDevicePosition? {
+    open var cameraPosition : AVCaptureDevice.Position? {
         return self.camera?.cameraPosition()
     }
     open var beauty : Int? {
@@ -48,7 +48,7 @@ open class AWGPUImageCapture: NSObject {
             self.videoOutput?.onVideoPixelBuffer = onVideoPixelBuffer
         }
     }
-    public init?(sessionPreset:String = AVCaptureSessionPresetiFrame960x540,
+    public init?(sessionPreset:String = AVCaptureSession.Preset.iFrame960x540.rawValue,
                  orientation : UIInterfaceOrientation = .portrait,
                  preview : GPUImageView) {
         super.init()
