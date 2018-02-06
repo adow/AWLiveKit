@@ -45,7 +45,8 @@ public class AWLiveBase {
         /// push
         push = AWLivePushC(url: url)
         push.delegate = self
-        push.connectURL()
+        /// 不要自动连接，开始的时候再连接
+//        push.connectURL()
         
         ///
         self.liveStat = AWLiveStat()
@@ -64,10 +65,8 @@ public class AWLiveBase {
                 object: nil)
     }
     deinit {
-        /// 关闭直播
-        self.stopLive()
         /// 关闭连接
-        self.push?.disconnect()
+        self.stopLive()
         /// 关闭采集和编码
         self.stopCapture()
         NotificationCenter.default.removeObserver(self)
@@ -133,22 +132,14 @@ extension AWLiveBase {
         guard self.isConnected else {
             self.push?.connectURL(completionBlock: { 
                 [weak self] in
-                /// 开始推流
-                self?.push?.start()
                 /// 开始状态数据检测
                 self?.liveStat?.start()
             })
             return
         }
-        /// 已经连接的话，直接开始推流
-        /// 开始推流
-        self.push?.start()
-        /// 开始状态数据检测
-        self.liveStat?.start()   
+
     }
     public func stopLive() {
-        /// 结束推流
-        self.push?.stop()
         /// 断开连接
         self.push?.disconnect()
         /// 停止状态数据检测

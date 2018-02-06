@@ -41,6 +41,8 @@ int aw_rtmp_connection(const char *url) {
     
     aw_m_pRtmp = RTMP_Alloc();
     RTMP_Init(aw_m_pRtmp);
+    aw_m_pRtmp->Link.timeout = 15;
+    aw_m_pRtmp->Link.lFlags |= RTMP_LF_LIVE;
     /*设置URL*/
     if (RTMP_SetupURL(aw_m_pRtmp,(char*)url) == FALSE)
     {

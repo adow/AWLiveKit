@@ -180,13 +180,13 @@ int aw_push_video_samplebuffer(CMSampleBufferRef sample_buffer,
     }
     return 0;
 }
-int is_audio_header_sent = 0;
+//int is_audio_header_sent = 0;
 int aw_push_audio_bufferlist(AudioBufferList buffer_list,
-                             double time_offset) {
+                             double time_offset,int *is_audio_header_sent) {
     /// 第一次发送一个音频头
-    if (!is_audio_header_sent) {
+    if (!(*is_audio_header_sent)) {
         aw_rtmp_send_audio_header();
-        is_audio_header_sent = 1;
+        *is_audio_header_sent = 1;
     }
     AudioBuffer buffer = buffer_list.mBuffers[0];
     uint32_t audio_data_length = buffer.mDataByteSize;
