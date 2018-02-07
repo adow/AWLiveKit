@@ -30,7 +30,13 @@
 }
 +(NSString*)signalStrength {
     UIApplication *app = [UIApplication sharedApplication];
-    NSArray *subviews = [[[app valueForKey:@"statusBar"]     valueForKey:@"foregroundView"] subviews];
+    id statusBar = [app valueForKey:@"statusBar"];
+    NSArray *subviews = @[];
+    if ([statusBar isKindOfClass:NSClassFromString(@"UIStatusBar_Modern")]) {
+        subviews = [[[statusBar valueForKey:@"statusBar"] valueForKey:@"foregroundView"] subviews];
+    } else {
+        subviews = [[statusBar valueForKey:@"foregroundView"] subviews];
+    }
     int signalStrength = 0,wifiStrengthBars = 0;
     for (id subview in subviews) {
         if([subview isKindOfClass:[NSClassFromString(@"UIStatusBarDataNetworkItemView") class]])

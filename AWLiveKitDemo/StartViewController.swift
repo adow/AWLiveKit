@@ -44,8 +44,8 @@ class StartViewController: UIViewController {
         let (_,_,app_version,app_build) = app_info()
         let (_,_,live_version, live_build) = app_info(forClass: AWLiveBase.self)
         self.versionLabel.text = "app:\(app_version)(build \(app_build))\nsdk:\(live_version)(build \(live_build))"
-        //self.urlTextField.text = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
-        self.urlTextField.text = pushUrl ?? "rtmp://m.push.wifiwx.com:1935/live?adow=adow/wifiwx-84"
+//        self.urlTextField.text = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
+        self.urlTextField.text = pushUrl ?? "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
         self.qualityPicker.selectRow(1, inComponent: 0, animated: false)
         AWLiveBase.requestCapture { [weak self](succeed, message) in
             self?.isCaptureAuthorized = succeed
