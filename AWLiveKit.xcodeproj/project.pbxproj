@@ -10,7 +10,6 @@
 		680380231F1DD1BF00038491 /* GPUImageBeautifyFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 680380201F1DD1BF00038491 /* GPUImageBeautifyFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		680380241F1DD1BF00038491 /* GPUImageBeautifyFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 680380211F1DD1BF00038491 /* GPUImageBeautifyFilter.m */; };
 		680380251F1DD1BF00038491 /* AWGPUImageOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680380221F1DD1BF00038491 /* AWGPUImageOutput.swift */; };
-		680380281F1DD24C00038491 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 680380271F1DD24C00038491 /* GPUImage.framework */; };
 		6803802A1F1DD29000038491 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 680380271F1DD24C00038491 /* GPUImage.framework */; };
 		6803802C1F1DD35C00038491 /* AWGPUImageCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6803802B1F1DD35C00038491 /* AWGPUImageCapture.swift */; };
 		680380301F1DEE8000038491 /* GPUImage.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680380271F1DD24C00038491 /* GPUImage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -166,7 +165,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				680380281F1DD24C00038491 /* GPUImage.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -653,7 +651,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = mh_dylib;
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -691,7 +689,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = mh_dylib;
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = adow.AWLiveKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
