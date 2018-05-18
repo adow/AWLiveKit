@@ -61,8 +61,13 @@ public class AWLivePushC {
             }
         }
     }
-    var videoTimeStamp : Double = 0.0;
-    var audioTimeStamp : Double = 0.0;
+   
+    /// 开始推流时的时间戳
+    var startVideoTimeStamp : Double = 0.0
+    var startAudioTimeStamp : Double = 0.0
+    /// 最近一个推流的时间戳
+    var lastVideoTimeStamp : Double = 0.0
+    var lastAudioTimeStamp : Double = 0.0
     public init(url:String) {
         self.rtmpUrl = url
 //        self.connectURL(url)
@@ -155,10 +160,10 @@ extension AWLivePushC {
         }
         rtmp_queue.async {
 //            debugPrint("run video")
-            if self.videoTimeStamp == 0.0 {
-                self.videoTimeStamp = abs_timeStamp
+            if self.startVideoTimeStamp == 0.0 {
+                self.startVideoTimeStamp = abs_timeStamp
             }
-            let timeStamp = (abs_timeStamp - self.videoTimeStamp) * 1000.0
+            let timeStamp = (abs_timeStamp - self.startVideoTimeStamp) * 1000.0
             /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
                 self.reconnect()
@@ -181,6 +186,7 @@ extension AWLivePushC {
                 }
             }
             else {
+                self.lastVideoTimeStamp = timeStamp
                 self.resetPushFailed()
                 DispatchQueue.main.async {
                     self.delegate?.resetPushError()
@@ -205,10 +211,10 @@ extension AWLivePushC {
         }
         rtmp_queue.async {
 //            debugPrint("run audio")
-            if self.audioTimeStamp == 0.0 {
-                self.audioTimeStamp = abs_timeStamp
+            if self.startAudioTimeStamp == 0.0 {
+                self.startAudioTimeStamp = abs_timeStamp
             }
-            let timeStamp = (abs_timeStamp - self.audioTimeStamp) * 1000.0
+            let timeStamp = (abs_timeStamp - self.startAudioTimeStamp) * 1000.0
             /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
                 aw_audio_release(audioList)
@@ -233,6 +239,7 @@ extension AWLivePushC {
                 }
             }
             else {
+                self.lastAudioTimeStamp = timeStamp
                 self.resetPushFailed()
                 DispatchQueue.main.async {
                     self.delegate?.resetPushError()

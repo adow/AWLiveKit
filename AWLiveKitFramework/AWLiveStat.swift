@@ -58,6 +58,11 @@ public class AWLiveStat {
     public var pushError : String? = nil
     /// 计时器更新后回调
     public weak var delegate : AWLiveStatDelegate? = nil
+    
+    /// 最近一个推流的时间戳
+    var lastVideoTimeStamp : Double = 0.0
+    var lastAudioTimeStamp : Double = 0.0
+    
     public init() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(onNotificationRouteChange(_:)),
@@ -108,8 +113,10 @@ public class AWLiveStat {
         if let _error = self.pushError {
             error_msg += "\(_error)\n"
         }
-        
-        return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkType) \(self.networkSignalStrgenth) 网络\n \(self.microphone)\n \(error_msg)\n"
+       
+        let video_timestamp = NSString(format: "%.3f", self.lastVideoTimeStamp / 1000.0) as String
+        let audio_timestamp = NSString(format: "%.3f", self.lastAudioTimeStamp / 1000.0) as String
+        return "\(self.liveTimeStr) 播出\n \(self.nowTimeStr) 时间\n \(self.networkCostsMB_str) 流量\n \(self.networkSpeedKB_str) 网速\n \(self.battery ?? 0)% 电池\n \(self.networkType) \(self.networkSignalStrgenth) 网络\n \(self.microphone)\n 推流: \(video_timestamp),\(audio_timestamp)\n \(error_msg)\n"
     }
 }
 extension AWLiveStat {

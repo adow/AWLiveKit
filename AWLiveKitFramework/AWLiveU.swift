@@ -34,6 +34,18 @@ public class AWLiveBase {
     /// 状态监控
     public var liveStat : AWLiveStat!
     
+    /// 最后的推流时间戳
+    public var lastPushVideoStamp : Double {
+        get {
+            return self.push?.lastVideoTimeStamp ?? 0.0
+        }
+    }
+    public var lastPushAudioStamp : Double {
+        get {
+            return self.push?.lastAudioTimeStamp ?? 0.0
+        }
+    }
+    
     public required init?(url:String,
                  withQuality videoQuality : AWLiveCaptureVideoQuality = ._720,
                  atOrientation orientation: AVCaptureVideoOrientation = .portrait) {
@@ -248,7 +260,10 @@ public class AWLiveSimple : AWLiveBase {
             else {
                 self?.liveStat?.videoEncoderError = nil
             }
-            
+
+            /// 更新最后的时间戳显示
+            self?.liveStat.lastVideoTimeStamp = self?.push.lastVideoTimeStamp ?? 0.0
+
         }
         capture.onAudioSampleBuffer = {
             [weak self](sampleBuffer) -> () in
@@ -267,6 +282,7 @@ public class AWLiveSimple : AWLiveBase {
                 if let _live = _self.push?.isLive, _live {
                     /// 进入异步推流队列，一定要在推送完之后在释放他，否则会出现杂音，ssr 解码音频的警告， hls 不同步等现象
                     _self.push?.pushAudioBufferList(_buffer_list, abs_timeStamp:CMTimeGetSeconds(timeStamp))
+                    
                 }
                 else {
                     /// 如果没有推流就直接释放
@@ -278,6 +294,9 @@ public class AWLiveSimple : AWLiveBase {
                 debugPrint("audio not encoded")
                 _self.liveStat?.audioEncoderError = "音频编码错误"
             }
+           
+            /// 更新最后的音频时间戳输出
+            self?.liveStat.lastAudioTimeStamp = self?.push.lastAudioTimeStamp ?? 0.0
             
         }
     }
