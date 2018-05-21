@@ -110,6 +110,22 @@ public enum AWLiveCaptureVideoQuality :Int,CustomStringConvertible, CustomDebugS
     }
 }
 
+// MARK: AVCaptureVideoStabilizationMode
+extension AVCaptureVideoStabilizationMode : CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case .auto:
+            return "auto"
+        case .cinematic:
+            return "cinematic"
+        case .off:
+            return "off"
+        case .standard:
+            return "standard"
+        }
+    }
+}
+
 // MARK: - Capture
 public typealias AWLiveCaptureSampleBufferCallback = (CMSampleBuffer) -> ()
 public typealias AWLiveCaptureReadyCallback = () -> ()
@@ -217,6 +233,20 @@ public class AWLiveCapture : NSObject{
             else {
                 debugPrint("Can not add Video Output")
                 return
+            }
+            /// videoStabilization
+            if let connection = self.videoOutput.connection(with: .video) {
+                connection.addObserver(self, forKeyPath: "activeVideoStabilizationMode", options: .new, context: nil)
+                if connection.isVideoStabilizationSupported {
+                    connection.preferredVideoStabilizationMode = .auto
+                    debugPrint("videoStabilization enabled")
+                }
+                else {
+                    debugPrint("videoStabilization not supported")
+                }
+            }
+            else {
+                debugPrint("no videoOutput connection")
             }
     //        self.videoOrientation = .Portrait
             self.audioOutput = AVCaptureAudioDataOutput()
@@ -378,6 +408,11 @@ public class AWLiveCapture : NSObject{
         }
         
     }
+    deinit {
+        self.videoOutput.connection(with: .video)?
+            .removeObserver(self, forKeyPath: "activeVideoStabilizationMode")
+        debugPrint("AWCapture released")
+    }
 }
 // MARK: start and stop
 extension AWLiveCapture {
@@ -441,6 +476,19 @@ extension AWLiveCapture {
             debugPrint("\(k):\(result)")
         }
         
+    }
+    
+    override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard let path = keyPath else {
+            return
+        }
+        if path == "activeVideoStabilizationMode" {
+            if let _change = change, let value = _change[.newKey] as? Int {
+                if let mode = AVCaptureVideoStabilizationMode(rawValue: value) {
+                    debugPrint("videoStabilizationMode:\(mode)")
+                }
+            }
+        }
     }
 }
 // MARK: Video and Audio SampleBuffer
