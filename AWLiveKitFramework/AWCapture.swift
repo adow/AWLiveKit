@@ -110,22 +110,6 @@ public enum AWLiveCaptureVideoQuality :Int,CustomStringConvertible, CustomDebugS
     }
 }
 
-// MARK: AVCaptureVideoStabilizationMode
-extension AVCaptureVideoStabilizationMode : CustomDebugStringConvertible {
-    public var debugDescription: String {
-        switch self {
-        case .auto:
-            return "auto"
-        case .cinematic:
-            return "cinematic"
-        case .off:
-            return "off"
-        case .standard:
-            return "standard"
-        }
-    }
-}
-
 // MARK: - Capture
 public typealias AWLiveCaptureSampleBufferCallback = (CMSampleBuffer) -> ()
 public typealias AWLiveCaptureReadyCallback = () -> ()
