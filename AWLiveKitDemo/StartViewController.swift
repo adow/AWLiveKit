@@ -81,7 +81,6 @@ class StartViewController: UIViewController {
     }
 
     // MARK: - Navigation
-    
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if identifier == "segue_start_to_live" {
             guard let url = urlTextField.text, url != "" else {
@@ -128,6 +127,7 @@ class StartViewController: UIViewController {
             _f(.beauty)
         }
     }
+    
     @IBAction func onButtonStart(sender:UIButton) {
         guard self.isCaptureAuthorized else {
             return
@@ -150,6 +150,7 @@ class StartViewController: UIViewController {
         self.present(alert, animated: true) {
         }
     }
+    
     @IBAction func onButtonStartGPUImage(sender:UIButton) {
         guard self.isCaptureAuthorized else {
             return
@@ -182,9 +183,11 @@ extension StartViewController : UIPickerViewDataSource, UIPickerViewDelegate {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
+    
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return videoQualities.count
     }
+    
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return videoQualities[row].description
     }

@@ -83,7 +83,7 @@ public class AWLivePushC {
             self.connectState = .Connecting
             let result = aw_rtmp_connection(self.rtmpUrl!);
             if result == 1 {
-                debugPrint("Live Push Connected")
+                debugPrint("Live Push Connected:",self.rtmpUrl ?? "")
                 self.start_time = Date()
                 self.connectState = .Connected
                 self.isLive = true
@@ -92,7 +92,7 @@ public class AWLivePushC {
                 completion?()
             }
             else {
-                debugPrint("RTMP Connect Failed:\(result)")
+                debugPrint("RTMP Connect Failed:\(result)",self.rtmpUrl ?? "")
                 self.connectState = .NotConnect
                 aw_rtmp_close()
                 /// 3秒后重新连接, 这里不调用 reconnect

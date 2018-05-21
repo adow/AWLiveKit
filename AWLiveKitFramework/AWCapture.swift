@@ -367,6 +367,9 @@ public class AWLiveCapture : NSObject{
             }
             do {
                 self.captureSession.beginConfiguration()
+                if let connection = videoOutput.connection(with: .video) {
+                    connection.removeObserver(self, forKeyPath: "activeVideoStabilizationMode")
+                }
                 /// remove
                 try self.videoDevice.lockForConfiguration()
                 self.captureSession.removeInput(self.videoInput)
@@ -381,9 +384,12 @@ public class AWLiveCapture : NSObject{
                 /// 对前置摄像头开启屏幕镜像
                 if let connection = videoOutput.connection(with: .video) {
                     connection.isVideoMirrored = newValue
+                    /// 重新注册
+                    connection.addObserver(self, forKeyPath: "activeVideoStabilizationMode", options: .new, context: nil)
                 }
 
                 self.videoDevice.unlockForConfiguration()
+               
                 ///
                 self.captureSession.commitConfiguration()
             
@@ -401,6 +407,7 @@ public class AWLiveCapture : NSObject{
     deinit {
         self.videoOutput.connection(with: .video)?
             .removeObserver(self, forKeyPath: "activeVideoStabilizationMode")
+        
         debugPrint("AWCapture released")
     }
 }
