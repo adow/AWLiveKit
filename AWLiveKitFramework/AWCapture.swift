@@ -377,6 +377,12 @@ public class AWLiveCapture : NSObject{
                 try self.videoDevice.lockForConfiguration()
                 videoInput = try AVCaptureDeviceInput(device: self.videoDevice)
                 self.captureSession.addInput(videoInput)
+              
+                /// 对前置摄像头开启屏幕镜像
+                if let connection = videoOutput.connection(with: .video) {
+                    connection.isVideoMirrored = newValue
+                }
+
                 self.videoDevice.unlockForConfiguration()
                 ///
                 self.captureSession.commitConfiguration()
