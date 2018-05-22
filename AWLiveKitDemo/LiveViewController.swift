@@ -69,6 +69,8 @@ class LiveViewController: UIViewController {
        
         if self.live is AWLiveSimple {
             self.focusView.installGesture(onView: self.touchView, withFocusDelegate: self)
+            let zoomPinGesture = UIPinchGestureRecognizer(target: self, action: #selector(onZoomPinGesture(recoginzer:)))
+            self.touchView.addGestureRecognizer(zoomPinGesture)
         }
         /// tap
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGesture(_:)))
@@ -109,6 +111,9 @@ class LiveViewController: UIViewController {
     }
     
     deinit {
+        if self.live is AWLiveSimple {
+            self.focusView.removeGesture(onView: self.touchView)
+        }
         debugPrint("LiveViewController release")
     }
     
@@ -193,9 +198,26 @@ extension LiveViewController : UIGestureRecognizerDelegate{
         
     }
     
+    @objc func onZoomPinGesture(recoginzer : UIPinchGestureRecognizer) {
+//        debugPrint(recoginzer.scale)
+        guard let capture = (self.live as? AWLiveSimple)?.capture else {
+            return
+        }
+        if recoginzer.state == .began {
+            capture.startZoom()
+        }
+        else if recoginzer.state == .ended || recoginzer.state == .cancelled {
+            capture.endZoom()
+        }
+        else if recoginzer.state == .changed {
+            capture.zoom(scaleAdd: recoginzer.scale)
+        }
+    }
+    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
+    
 }
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
     func pushError(_ code: Int, withMessage message: String) {
@@ -222,10 +244,10 @@ extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
 
 extension LiveViewController : AWLiveFocusDelegate {
     func continuousFocus(at point: CGPoint) {
+        debugPrint("point",point)
         guard let capture = (self.live as? AWLiveSimple)?.capture else {
             return
         }
-        debugPrint("point",point)
         capture.continuousFocusBegin()
         capture.continuousFocusUpdate(at: point)
         capture.continuousFocusEnd()

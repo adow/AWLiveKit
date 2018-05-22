@@ -142,6 +142,7 @@ public class AWLiveCapture : NSObject{
     /// 准备好后发出回调
     public var onReady : AWLiveCaptureReadyCallback? = nil
     public var ready : Bool = false
+    fileprivate var scale : CGFloat = 1.0
     /// 文件输出
     fileprivate var fileOutput_1 : AVCaptureMovieFileOutput!
     fileprivate var fileOutput_2 : AVAssetWriter!
@@ -525,6 +526,41 @@ extension AWLiveCapture {
         guard let device = self.videoDevice else {
             return
         }
+        device.unlockForConfiguration()
+    }
+}
+
+// MARK: - Zoom
+extension AWLiveCapture {
+    public func startZoom() {
+        guard let device = self.videoDevice else {
+            return
+        }
+       
+        do {
+            try device.lockForConfiguration()
+        }
+        catch let error as NSError {
+            debugPrint("startZoom error",error.localizedDescription)
+        }
+    }
+    /// 设置缩放
+    public func zoom(scaleAdd:CGFloat = 1.0) {
+        guard let device = self.videoDevice else {
+            return
+        }
+        
+        var s = self.scale + (scaleAdd - 1.0)
+        s = min(s, device.activeFormat.videoMaxZoomFactor)
+        s = max(s, 1.0)
+        device.videoZoomFactor = s
+    }
+    
+    public func endZoom() {
+        guard let device = self.videoDevice else {
+            return
+        }
+        self.scale = device.videoZoomFactor
         device.unlockForConfiguration()
     }
 }

@@ -17,7 +17,7 @@ public class AWFocusView: UIView {
     private let whiteColor = UIColor.white
     private let clearColor = UIColor.clear
     
-    public var focusDelegate : AWLiveFocusDelegate? = nil
+    public weak var focusDelegate : AWLiveFocusDelegate? = nil
     public var focusTapGesture : UITapGestureRecognizer? = nil
     public var focusPanGesture : UIPanGestureRecognizer? = nil
     
@@ -86,9 +86,9 @@ public class AWFocusView: UIView {
 // MARK: - TapGesture, PanGesture
 extension AWFocusView {
     public func installGesture(onView view: UIView, withFocusDelegate focusDelegate : AWLiveFocusDelegate) {
-        self.focusTapGesture = UITapGestureRecognizer(target: self, action: #selector(onFocusTapGesture(recognizer:)))
+        focusTapGesture = UITapGestureRecognizer(target: self, action: #selector(onFocusTapGesture(recognizer:)))
         view.addGestureRecognizer(focusTapGesture!)
-        
+
         self.focusPanGesture = UIPanGestureRecognizer(target: self, action: #selector(onFocusPanGesture(recognizer:)))
         self.addGestureRecognizer(focusPanGesture!)
         
