@@ -68,14 +68,28 @@ class LiveViewController: UIViewController {
         }
        
         if self.live is AWLiveSimple {
-            self.focusView.installGesture(onView: self.touchView, withFocusDelegate: self)
+            let focusTapGesture = UITapGestureRecognizer(target: self, action: #selector(onFocusTapGesture(recognizer:)))
+            focusTapGesture.delegate = self
+            self.touchView.addGestureRecognizer(focusTapGesture)
+            
+            let focusPanGesture = UIPanGestureRecognizer(target: self, action: #selector(onFocusPanGesture(recognizer:)))
+            focusPanGesture.delegate = self
+            self.focusView.addGestureRecognizer(focusPanGesture)
+            
             let zoomPinGesture = UIPinchGestureRecognizer(target: self, action: #selector(onZoomPinGesture(recoginzer:)))
+            zoomPinGesture.delegate = self
             self.touchView.addGestureRecognizer(zoomPinGesture)
         }
         /// tap
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGesture(_:)))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onUITapGesture))
         tapGesture.delegate = self
         self.touchView.addGestureRecognizer(tapGesture)
+        
+//        let zoomTapGesture = UITapGestureRecognizer(target: self, action: #selector(onZoomTapGesture(recognzier:)))
+//        zoomTapGesture.numberOfTapsRequired = 2
+//        zoomTapGesture.delegate = self
+//        self.touchView.addGestureRecognizer(zoomTapGesture)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -178,8 +192,16 @@ extension LiveViewController : UIGestureRecognizerDelegate{
     @IBAction func onBeautySegment(_ sender:UISegmentedControl!) {
         self.live?.beauty = sender.selectedSegmentIndex
     }
-    @objc func onTapGesture(_ recognizer:UITapGestureRecognizer) {
+    
+    // MARK: Gesture
+    @objc func onUITapGesture(_ recognizer:UITapGestureRecognizer) {
         self.toggleUI()
+        guard let capture = (self.live as? AWLiveSimple)?.capture else {
+            return
+        }
+        capture.startZoom()
+        capture.resetZoom()
+        capture.endZoom()
     }
     fileprivate func toggleUI() {
         let ui : [UIView] = [self.switchCameraButton,self.beautySegment, self.liveStatLabel]
@@ -214,11 +236,55 @@ extension LiveViewController : UIGestureRecognizerDelegate{
         }
     }
     
+    @objc func onZoomTapGesture(recognzier : UITapGestureRecognizer) {
+        guard let capture = (self.live as? AWLiveSimple)?.capture else {
+            return
+        }
+        capture.startZoom()
+        capture.resetZoom()
+        capture.endZoom()
+    }
+    
+    @objc func onFocusTapGesture(recognizer : UITapGestureRecognizer) {
+        guard let view = recognizer.view else {
+            return
+        }
+        let center = recognizer.location(in: view)
+        self.focusView.center = center
+        self.focusView.isHidden = false
+        let focusPoint = CGPoint(x: center.x / view.bounds.width ,
+                                 y: center.y  / view.bounds.height)
+        //self.focusDelegate?.continuousFocus?(at: focusPoint)
+        self.continuousFocus(at: focusPoint)
+    }
+    
+    @objc func onFocusPanGesture(recognizer : UIPanGestureRecognizer) {
+        if recognizer.state == .began {
+        }
+        else if recognizer.state == .ended || recognizer.state == .cancelled {
+            let center = recognizer.location(in: self.touchView)
+            self.focusView.center = center
+            self.focusView.isHidden = false
+            let focusPoint = CGPoint(x: center.x / view.bounds.width ,
+                                     y: center.y / view.bounds.height)
+//            self.focusDelegate?.continuousFocus?(at: focusPoint)
+            self.continuousFocus(at: focusPoint)
+        }
+        else if recognizer.state == .changed {
+            let center = recognizer.location(in: self.touchView)
+            self.focusView.center = center
+            self.focusView.isHidden = false
+        }
+    }
+    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        debugPrint(gestureRecognizer,otherGestureRecognizer)
         return true
     }
     
 }
+
+// MARK: - push
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
     func pushError(_ code: Int, withMessage message: String) {
         self.live?.liveStat?.pushError = "\(code):\(message)"
@@ -242,6 +308,7 @@ extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
     }
 }
 
+// MARK: - Focus
 extension LiveViewController : AWLiveFocusDelegate {
     func continuousFocus(at point: CGPoint) {
         debugPrint("point",point)

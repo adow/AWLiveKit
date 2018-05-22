@@ -83,7 +83,7 @@ public class AWFocusView: UIView {
     }
 }
 
-// MARK: - TapGesture, PanGesture
+// MARK: - DEPRECATED, TapGesture, PanGesture
 extension AWFocusView {
     public func installGesture(onView view: UIView, withFocusDelegate focusDelegate : AWLiveFocusDelegate) {
         focusTapGesture = UITapGestureRecognizer(target: self, action: #selector(onFocusTapGesture(recognizer:)))

@@ -555,6 +555,17 @@ extension AWLiveCapture {
         s = max(s, 1.0)
         device.videoZoomFactor = s
     }
+   
+    /// 还原到 1.0
+    public func resetZoom() {
+        guard let device = self.videoDevice else {
+            return
+        }
+        self.scale = 1.0
+        device.videoZoomFactor = 1.0
+//        device.ramp(toVideoZoomFactor: 1.0, withRate: 1.0)
+        
+    }
     
     public func endZoom() {
         guard let device = self.videoDevice else {
@@ -563,6 +574,8 @@ extension AWLiveCapture {
         self.scale = device.videoZoomFactor
         device.unlockForConfiguration()
     }
+    
+    
 }
 // MARK: -  Video and Audio SampleBuffer
 extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate {
