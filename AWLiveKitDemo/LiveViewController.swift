@@ -23,6 +23,8 @@ class LiveViewController: UIViewController {
     @IBOutlet var closeButton : UIButton!
     @IBOutlet var switchCameraButton : UIButton!
     @IBOutlet var beautySegment : UISegmentedControl!
+    @IBOutlet var touchView : UIView!
+    @IBOutlet var focusView : AWFocusView!
     var push_url : String! = "rtmp://m.push.wifiwx.com:1935/live?ukey=bcr63eydi&pub=f0b7331b420e3621e01d012642f0a355/wifiwx-84"
     var orientation : UIInterfaceOrientation! = .portrait
     var videoQuality : AWLiveCaptureVideoQuality = ._720
@@ -50,6 +52,7 @@ class LiveViewController: UIViewController {
         preview.backgroundColor = UIColor.darkGray
         preview.translatesAutoresizingMaskIntoConstraints = false
         preview.contentMode = .scaleAspectFill
+        preview.isUserInteractionEnabled = false
         self.view.insertSubview(preview, at: 0)
         let d_preview = ["preview":preview]
         let preview_constraintsH = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(0.0)-[preview]-(0.0)-|", options: .alignAllCenterX, metrics: nil, views: d_preview)
@@ -63,9 +66,14 @@ class LiveViewController: UIViewController {
         if self.liveType == .simple {
             self.beautySegment.isHidden = true
         }
+       
+        if self.live is AWLiveSimple {
+            self.focusView.installGesture(onView: self.touchView, withFocusDelegate: self)
+        }
         /// tap
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGesture(_:)))
-        self.view.addGestureRecognizer(tapGesture)
+        tapGesture.delegate = self
+        self.touchView.addGestureRecognizer(tapGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -106,7 +114,7 @@ class LiveViewController: UIViewController {
     
 }
 
-extension LiveViewController {
+extension LiveViewController : UIGestureRecognizerDelegate{
     fileprivate func showInfo(_ info:String, duration : TimeInterval = 0.0) {
         self.infoLabel.text = info
         self.infoLabel.alpha = 1.0
@@ -184,6 +192,10 @@ extension LiveViewController {
         })
         
     }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }
 extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
     func pushError(_ code: Int, withMessage message: String) {
@@ -205,5 +217,18 @@ extension LiveViewController : AWLivePushDeletate,AWLiveStatDelegate {
     
     func updateLiveStat(stat: AWLiveStat) {
         self.liveStatLabel.text = stat.outputDescription
+    }
+}
+
+extension LiveViewController : AWLiveFocusDelegate {
+    func continuousFocus(at point: CGPoint) {
+        guard let capture = (self.live as? AWLiveSimple)?.capture else {
+            return
+        }
+        debugPrint("point",point)
+        capture.continuousFocusBegin()
+        capture.continuousFocusUpdate(at: point)
+        capture.continuousFocusEnd()
+        
     }
 }

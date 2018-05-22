@@ -11,6 +11,14 @@ import AVFoundation
 
 public class AWLivePreview: UIView {
 
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     public class override var layerClass:(AnyClass){
         return AVCaptureVideoPreviewLayer.self
     }
@@ -25,6 +33,7 @@ public class AWLivePreview: UIView {
             layer.session=newValue
         }
     }
+    
     public var connection : AVCaptureConnection? {
         if let connection = (self.layer as? AVCaptureVideoPreviewLayer)?.connection {
             return connection
@@ -33,6 +42,7 @@ public class AWLivePreview: UIView {
             return nil
         }
     }
+    
     public var mirror : Bool {
         get {
             return self.connection?.isVideoMirrored ?? false
@@ -45,6 +55,7 @@ public class AWLivePreview: UIView {
         }
         
     }
+    
     public var videoOrientation : AVCaptureVideoOrientation? {
         get {
             return self.connection?.videoOrientation

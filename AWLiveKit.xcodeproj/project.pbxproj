@@ -58,6 +58,7 @@
 		68AF1AC41E597DB600C01141 /* aw_audio_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		68B7C8D41F21EF92003967F8 /* AWGPUImageVideoCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B7C8D31F21EF92003967F8 /* AWGPUImageVideoCamera.swift */; };
 		68C0E0E41F258CAE00403067 /* AWLiveU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C0E0E31F258CAE00403067 /* AWLiveU.swift */; };
+		68EC88A720B3BCA900BE9D26 /* AWFocusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EC88A620B3BCA900BE9D26 /* AWFocusView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -149,6 +150,7 @@
 		68B7C8D31F21EF92003967F8 /* AWGPUImageVideoCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageVideoCamera.swift; sourceTree = "<group>"; };
 		68C0E0E31F258CAE00403067 /* AWLiveU.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveU.swift; sourceTree = "<group>"; };
 		68C0E0E51F27125E00403067 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		68EC88A620B3BCA900BE9D26 /* AWFocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWFocusView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -244,6 +246,7 @@
 				684DE65C1E5690EC000C6C92 /* AWLivePush.swift */,
 				684DE65D1E5690EC000C6C92 /* AWLivePushC.swift */,
 				68C0E0E31F258CAE00403067 /* AWLiveU.swift */,
+				68EC88A620B3BCA900BE9D26 /* AWFocusView.swift */,
 				684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */,
 				684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */,
 				684DE65F1E5690EC000C6C92 /* network */,
@@ -457,6 +460,7 @@
 				684DE68D1E5690EC000C6C92 /* log.c in Sources */,
 				684DE67D1E5690EC000C6C92 /* AWLivePushC.swift in Sources */,
 				68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */,
+				68EC88A720B3BCA900BE9D26 /* AWFocusView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

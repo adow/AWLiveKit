@@ -488,7 +488,47 @@ extension AWLiveCapture {
         }
     }
 }
-// MARK: Video and Audio SampleBuffer
+
+// MARK: - FocusView
+extension AWLiveCapture {
+    public func continuousFocusBegin() {
+        guard let device = self.videoDevice else {
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            if device.isFocusModeSupported(.continuousAutoFocus) {
+                device.focusMode = .continuousAutoFocus
+            }
+            else {
+                debugPrint("continuous focus not supported")
+                if device.isFocusModeSupported(.autoFocus) {
+                    device.focusMode = .autoFocus
+                }
+                else {
+                    debugPrint("auto focus not supported")
+                }
+            }
+        }
+        catch let error as NSError {
+            debugPrint("continuousFocusBegin Error",error.localizedDescription)
+        }
+    }
+    public func continuousFocusUpdate(at point : CGPoint) {
+        guard let device = self.videoDevice, device.isFocusPointOfInterestSupported else {
+            return
+        }
+        device.focusPointOfInterest = point
+    }
+    
+    public func continuousFocusEnd() {
+        guard let device = self.videoDevice else {
+            return
+        }
+        device.unlockForConfiguration()
+    }
+}
+// MARK: -  Video and Audio SampleBuffer
 extension AWLiveCapture : AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate {
     public func captureOutput(_ captureOutput: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if captureOutput == self.videoOutput {

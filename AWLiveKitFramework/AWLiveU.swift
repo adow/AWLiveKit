@@ -145,7 +145,9 @@ extension AWLiveBase {
             self.push?.connectURL(completionBlock: { 
                 [weak self] in
                 /// 开始状态数据检测
-                self?.liveStat?.start()
+                DispatchQueue.main.async {
+                    self?.liveStat?.start()
+                }
             })
             return
         }

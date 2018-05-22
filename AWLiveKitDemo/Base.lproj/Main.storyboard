@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="S0V-ZS-9eU">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="S0V-ZS-9eU">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -25,6 +25,9 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VAJ-OE-gCN">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4II-hF-dgh">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                    </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vaF-IK-jY8">
                                         <rect key="frame" x="15" y="30" width="62" height="30"/>
                                         <constraints>
@@ -70,6 +73,10 @@
                                             <action selector="onButtonSwitchCameraWith_sender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="q6a-Ig-LwJ"/>
                                         </connections>
                                     </button>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cus-nc-xbl" customClass="AWFocusView" customModule="AWLiveKit">
+                                        <rect key="frame" x="67" y="269" width="60" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </view>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="qbx-8o-tZb">
                                         <rect key="frame" x="202" y="623" width="165" height="29"/>
                                         <constraints>
@@ -88,17 +95,21 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="pff-xf-Gq1" secondAttribute="trailing" constant="8" id="CI8-Ds-SwL"/>
+                                    <constraint firstItem="4II-hF-dgh" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" id="CuJ-aB-8c7"/>
                                     <constraint firstItem="4tN-e5-Xwo" firstAttribute="top" secondItem="vaF-IK-jY8" secondAttribute="bottom" constant="18" id="Eic-MJ-jVS"/>
                                     <constraint firstAttribute="trailing" secondItem="O6I-8P-BFP" secondAttribute="trailing" constant="16" id="FeA-W8-qZb"/>
                                     <constraint firstAttribute="bottom" secondItem="9p4-Lc-HtW" secondAttribute="bottom" constant="16" id="IuW-tC-6fS"/>
                                     <constraint firstItem="vaF-IK-jY8" firstAttribute="top" secondItem="VAJ-OE-gCN" secondAttribute="top" constant="30" id="Mc8-ZX-9nd"/>
                                     <constraint firstItem="vaF-IK-jY8" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="15" id="ONp-Iv-Ez9"/>
                                     <constraint firstItem="4tN-e5-Xwo" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" id="WvN-5x-jjZ"/>
+                                    <constraint firstAttribute="trailing" secondItem="4II-hF-dgh" secondAttribute="trailing" id="Yd7-Nq-rjX"/>
+                                    <constraint firstAttribute="bottom" secondItem="4II-hF-dgh" secondAttribute="bottom" id="aC6-tM-ehC"/>
                                     <constraint firstItem="O6I-8P-BFP" firstAttribute="centerY" secondItem="vaF-IK-jY8" secondAttribute="centerY" id="eJS-7e-G3T"/>
                                     <constraint firstAttribute="bottom" secondItem="qbx-8o-tZb" secondAttribute="bottom" constant="16" id="evB-L4-G8F"/>
                                     <constraint firstItem="pff-xf-Gq1" firstAttribute="centerY" secondItem="VAJ-OE-gCN" secondAttribute="centerY" id="f0O-83-ZIc"/>
                                     <constraint firstAttribute="trailing" secondItem="4tN-e5-Xwo" secondAttribute="trailing" id="fyv-Hd-tIS"/>
                                     <constraint firstItem="pff-xf-Gq1" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="8" id="ktt-RL-veQ"/>
+                                    <constraint firstItem="4II-hF-dgh" firstAttribute="top" secondItem="VAJ-OE-gCN" secondAttribute="top" id="ngj-BV-ULI"/>
                                     <constraint firstItem="9p4-Lc-HtW" firstAttribute="leading" secondItem="VAJ-OE-gCN" secondAttribute="leading" constant="8" id="tik-oF-Ick"/>
                                     <constraint firstAttribute="trailing" secondItem="qbx-8o-tZb" secondAttribute="trailing" constant="8" id="x08-ZU-2Q5"/>
                                 </constraints>
@@ -116,10 +127,12 @@
                     <connections>
                         <outlet property="beautySegment" destination="qbx-8o-tZb" id="SWu-UG-Bzw"/>
                         <outlet property="closeButton" destination="O6I-8P-BFP" id="Dg7-mA-m4W"/>
+                        <outlet property="focusView" destination="cus-nc-xbl" id="kJL-An-5fX"/>
                         <outlet property="infoLabel" destination="4tN-e5-Xwo" id="bBp-0a-Erm"/>
                         <outlet property="liveStatLabel" destination="pff-xf-Gq1" id="fmC-S4-kyD"/>
                         <outlet property="startButton" destination="vaF-IK-jY8" id="d17-90-J0u"/>
                         <outlet property="switchCameraButton" destination="9p4-Lc-HtW" id="Zet-Ia-EXc"/>
+                        <outlet property="touchView" destination="4II-hF-dgh" id="Zf0-xm-yT1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
