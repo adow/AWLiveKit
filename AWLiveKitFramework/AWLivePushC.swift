@@ -14,13 +14,17 @@ import VideoToolbox
 import AudioToolbox
 
 public enum AWLiveConnectState : Int ,CustomStringConvertible{
-    case NotConnect = 0, Connecting = 1, Connected = 2
+    case NotConnect = 0,
+        Connecting = 1,
+        Connected = 2,
+        Released = 3 /// 用来标记连接已经释放了
     
     public var description: String {
         let d : [AWLiveConnectState:String] =
             [.NotConnect:"未连接",
              .Connecting : "正在连接",
-             .Connected : "已连接"]
+             .Connected : "已连接",
+             .Released : "已释放"]
         return d[self] ?? "Unknown"
     }
 }
@@ -44,7 +48,6 @@ public class AWLivePushC {
     /// 累计 push 出错的次数
     fileprivate var pushFailedCounter : Int = 0
     var rtmpUrl : String!
-    var reconnectTimer : Timer?
     public weak var delegate : AWLivePushDeletate? = nil
     public var connectState : AWLiveConnectState = .NotConnect {
         didSet {
@@ -68,106 +71,129 @@ public class AWLivePushC {
     /// 最近一个推流的时间戳
     var lastVideoTimeStamp : Double = 0.0
     var lastAudioTimeStamp : Double = 0.0
+   
     public init(url:String) {
         self.rtmpUrl = url
 //        self.connectURL(url)
     }
+  
+    public enum ConnectResult : Int {
+        case Succeed = 0 , Ignored = 1, Failed = 2
+    }
     
-    public func connectURL(completionBlock completion:(()->())? = nil) {
-//        debugPrint("push connect")
-        rtmp_queue.sync {
-//            debugPrint("run connect")
-            guard self.connectState == .NotConnect else {
-                return
-            }
-            self.connectState = .Connecting
-            let result = aw_rtmp_connection(self.rtmpUrl!);
-            if result == 1 {
-                debugPrint("Live Push Connected:",self.rtmpUrl ?? "")
-                self.start_time = Date()
-                self.connectState = .Connected
-                self.isLive = true
-                self.sps_pps_sent = 0; /// 重设 sps_pps
-                self.audio_header_sent = 0; /// 重新发送 audio header
-                completion?()
-            }
-            else {
-                debugPrint("RTMP Connect Failed:\(result)",self.rtmpUrl ?? "")
-                self.connectState = .NotConnect
-                aw_rtmp_close()
-                /// 3秒后重新连接, 这里不调用 reconnect
-//                self.reconnect()
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
-                    self.connectURL(completionBlock: completion)
-                }
-            }
+    /// 同步连接, 失败不会重新连接
+    @discardableResult public func connectURLSync() -> ConnectResult{
+        guard self.connectState == .NotConnect else {
+            return .Ignored
+        }
+        self.connectState = .Connecting
+        
+        let result = aw_rtmp_connection(self.rtmpUrl!);
+        /// 连接完成就重置错误计数，不管有没有连接成功
+        self.pushFailedCounter = 0
+        if result == 1 {
+            debugPrint("Live Push Connected:",self.rtmpUrl ?? "")
+            self.start_time = Date()
+            self.connectState = .Connected
+            self.isLive = true
+            self.sps_pps_sent = 0; /// 重设 sps_pps
+            self.audio_header_sent = 0; /// 重新发送 audio header
+            return .Succeed
+        }
+        else {
+            return .Failed
         }
     }
-    /// 关闭 rtmp 连接
-    public func disconnect() {
-//        debugPrint("push disconnect")
-        self.rtmp_queue.sync {
+    
+    /// 异步连接，连接失败就重新连接
+    public func connectURL(completionBlock completion:(()->())? = nil) {
+//        debugPrint("push connect")
+        rtmp_queue.async {
             [weak self] in
-//            debugPrint("run disconnect")
-            guard let _self = self, _self.connectState == .Connected else {
-                debugPrint("not connected")
+            guard let _self = self else {
                 return
             }
-            _self.isLive = false
+            let result = _self.connectURLSync()
+            if result == .Succeed {
+                completion?()
+            }
+            else if result == .Ignored {
+                
+            }
+            else if result == .Failed {
+                /// 开始重连
+                self?.reconnect()
+            }
+
+        }
+    }
+  
+    /// 同步的断开连接方法
+    private func disconnectSync() {
+        if self.connectState == .Connected {
+            self.isLive = false
             aw_rtmp_close()
-            _self.connectState = .NotConnect
+        }
+        self.connectState = .NotConnect
+    }
+    
+    /// 异步关闭 rtmp 连接
+    public func disconnect(completionBlock:(()->())? = nil) {
+//        debugPrint("push disconnect")
+        self.rtmp_queue.async {
+            [weak self] in
+//            debugPrint("run disconnect")
+            self?.disconnectSync()
+            completionBlock?()
         }
 
     }
-    /// 在推流错误时，主动断开，重新连接
+    
+    /// 同步重连，两个方法都不等待，这个方法应该在异步的 reconnect 中调用
     fileprivate func reconnect() {
-        self.disconnect()
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(3.0 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
-            self.connectURL()
-            
+        self.rtmp_queue.asyncAfter(deadline: DispatchTime.now() + Double(Int64(3.0 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) {[weak self] () -> Void in
+            guard let _self = self else {
+                return
+            }
+            _self.disconnectSync()
+            let result = _self.connectURLSync()
+            if result == .Failed {
+                _self.reconnect()
+            }
         }
+    }
+    fileprivate func counterPushFailed() {
+        /// 累计30次发送错误，就断开连接
+        self.pushFailedCounter += 1
+        debugPrint("push failed:\(self.pushFailedCounter)")
+        if (self.pushFailedCounter == 30) {
+            self.reconnect()
+        }
+
+    }
+
+    deinit {
+        self.connectState = .Released
+        debugPrint("AWLivePushC Released")
+        
     }
 
 }
 extension AWLivePushC {
-    fileprivate func counterPushFailed() {
-        /// 超过30次发送错误，就断开连接
-        self.pushFailedCounter += 1
-        debugPrint("push failed:\(self.pushFailedCounter)")
-        if (self.pushFailedCounter >= 30) {
-            self.disconnect()
-        }
-        
-    }
-    fileprivate func resetPushFailed() {
-        self.pushFailedCounter = 0
-    }
     public var timeOffset : Double {
         return abs(self.start_time?.timeIntervalSinceNow ?? 0.0) * 1000;
     }
+    
+    /// 当连接断开的时候，不做后续处理，直接结束；当发送错误超过30次的时候，就重新连接
     public func pushVideoSampleBuffer(_ sampleBuffer : CMSampleBuffer, abs_timeStamp : Double) {
 //        debugPrint("push video")
-        /// 没有连接的情况下，自动连接
-        guard self.connectState == .Connected else {
-            self.reconnect()
-            self.delegate?.pushError(-2, withMessage: "正在重新连接")
-            return
-        }
-        /// 开始直播了才推流
-        guard self.isLive else {
-            self.delegate?.pushError(-1, withMessage: "未开始推流")
-            return
-        }
         rtmp_queue.async {
-//            debugPrint("run video")
             if self.startVideoTimeStamp == 0.0 {
                 self.startVideoTimeStamp = abs_timeStamp
             }
             let timeStamp = (abs_timeStamp - self.startVideoTimeStamp) * 1000.0
-            /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
-                self.reconnect()
-                self.delegate?.pushError(-2, withMessage: "正在重新连接")
+                self.delegate?.pushError(-2, withMessage: "未连接")
                 return
             }
             /// 开始直播了才推流
@@ -187,7 +213,6 @@ extension AWLivePushC {
             }
             else {
                 self.lastVideoTimeStamp = timeStamp
-                self.resetPushFailed()
                 DispatchQueue.main.async {
                     self.delegate?.resetPushError()
                 }
@@ -196,30 +221,14 @@ extension AWLivePushC {
     }
     public func pushAudioBufferList(_ audioList : UnsafeMutablePointer<AudioBufferList>, abs_timeStamp : Double) {
 //        debugPrint("push audio")
-        /// 没有连接的情况下，自动连接
-        guard self.connectState == .Connected else {
-            aw_audio_release(audioList)
-            self.reconnect()
-            self.delegate?.pushError(-2, withMessage: "正在重新连接")
-            return
-        }
-        /// 开始直播了才推流
-        guard self.isLive else {
-            aw_audio_release(audioList)
-            self.delegate?.pushError(-1, withMessage: "未开始推流")
-            return
-        }
         rtmp_queue.async {
-//            debugPrint("run audio")
             if self.startAudioTimeStamp == 0.0 {
                 self.startAudioTimeStamp = abs_timeStamp
             }
             let timeStamp = (abs_timeStamp - self.startAudioTimeStamp) * 1000.0
-            /// 没有连接的情况下，自动连接
             guard self.connectState == .Connected else {
                 aw_audio_release(audioList)
-                self.reconnect()
-                self.delegate?.pushError(-2, withMessage: "正在重新连接")
+                self.delegate?.pushError(-2, withMessage: "未连接")
                 return
             }
             /// 开始直播了才推流
@@ -229,8 +238,7 @@ extension AWLivePushC {
                 return
             }
             
-            let push_result = aw_push_audio_bufferlist(audioList.pointee,
-                                                        timeStamp,&self.audio_header_sent)
+            let push_result = aw_push_audio_bufferlist(audioList.pointee, timeStamp,&self.audio_header_sent)
             aw_audio_release(audioList)
             if (push_result != 0) {
                 self.counterPushFailed()
@@ -240,12 +248,10 @@ extension AWLivePushC {
             }
             else {
                 self.lastAudioTimeStamp = timeStamp
-                self.resetPushFailed()
                 DispatchQueue.main.async {
                     self.delegate?.resetPushError()
                 }
             }
         }
     }
-    
 }
