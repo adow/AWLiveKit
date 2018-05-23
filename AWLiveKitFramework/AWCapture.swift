@@ -10,6 +10,130 @@ import Foundation
 import AVFoundation
 import UIKit
 
+// MARK: Bitrate
+public enum AWVideoEncoderBitrate : Int, CustomStringConvertible {
+    case _450kbs = 0, _500kbs,_600kbs, _800kbs, _1000kbs, _1200kbs, _1500kbs, _2000kbs, _2500kbs, _3000kbs, _4000kbs
+    public var bitrates : Int {
+        switch self {
+        case ._450kbs:
+            return 450 * 1024
+        case ._500kbs:
+            return 500 * 1024
+        case ._600kbs:
+            return 600 * 1024
+        case ._800kbs:
+            return 800 * 1024
+        case ._1000kbs:
+            return 1000 * 1024
+        case ._1200kbs:
+            return 1200 * 1024
+        case ._1500kbs:
+            return 1500 * 1024
+        case ._2000kbs:
+            return 2000 * 1024
+        case ._2500kbs:
+            return 2500 * 1024
+        case ._3000kbs:
+            return 3000 * 1024
+        case ._4000kbs:
+            return 4000 * 1024
+        }
+    }
+    /// 相关的 fps
+    public var recommandedFPS : AWVideoEncoderFPS {
+        switch self {
+        case ._450kbs:
+            return AWVideoEncoderFPS._15
+        case ._500kbs:
+            return AWVideoEncoderFPS._20
+        case ._600kbs,._800kbs:
+            return AWVideoEncoderFPS._25
+        default:
+            return AWVideoEncoderFPS._30
+        }
+    }
+    /// 相关的 profile
+    public var recommandedProfile : AWVideoEncoderProfile {
+        switch self {
+        case ._450kbs, ._500kbs:
+            //            return AWVideoEncoderProfile.baseline
+            return AWVideoEncoderProfile.high
+        case ._600kbs, ._800kbs, ._1000kbs:
+            return AWVideoEncoderProfile.main
+        case ._1200kbs, ._1500kbs, ._2000kbs, ._2500kbs, ._3000kbs, ._4000kbs:
+            return AWVideoEncoderProfile.high
+        }
+    }
+    public var description: String {
+        switch self {
+        case ._450kbs:
+            return "450kbs"
+        case ._500kbs:
+            return "500kbs"
+        case ._600kbs:
+            return "600kbs"
+        case ._800kbs:
+            return "800kbs"
+        case ._1000kbs:
+            return "1000kbs"
+        case ._1200kbs:
+            return "1200kbs"
+        case ._1500kbs:
+            return "1500kbs"
+        case ._2000kbs:
+            return "2000kbs"
+        case ._2500kbs:
+            return "2500kbs"
+        case ._3000kbs:
+            return "3000kbs"
+        case ._4000kbs:
+            return "4000kbs"
+        }
+    }
+}
+// MARK: fps
+public enum AWVideoEncoderFPS : Int , CustomStringConvertible{
+    case _15 = 15,_20 = 20, _25 = 25, _30 = 30
+    public var fps : Int {
+        switch self {
+        case ._15:
+            return 15
+        case ._20:
+            return 20
+        case ._25:
+            return 25
+        case ._30:
+            return 30
+        }
+    }
+    public var description: String {
+        return String(self.rawValue)
+    }
+}
+// MARK: profile
+public enum AWVideoEncoderProfile : Int , CustomStringConvertible{
+    case baseline = 0, main, high
+    public var profile : CFString {
+        switch self {
+        case .baseline:
+            return kVTProfileLevel_H264_Baseline_AutoLevel
+        case .main:
+            return kVTProfileLevel_H264_Main_AutoLevel
+        case .high:
+            return kVTProfileLevel_H264_High_AutoLevel
+        }
+    }
+    public var description: String {
+        switch self {
+        case .baseline:
+            return "kVTProfileLevel_H264_Baseline_AutoLevel"
+        case .main:
+            return "kVTProfileLevel_H264_Main_AutoLevel"
+        case .high:
+            return "kVTProfileLevel_H264_High_AutoLevel"
+        }
+    }
+}
 // MARK: - VideoQuality
 public enum AWLiveCaptureVideoQuality :Int,CustomStringConvertible, CustomDebugStringConvertible{
     case _480 = 0,_540i, _720, _720i, _1080, _4k

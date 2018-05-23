@@ -11,7 +11,6 @@
 		680380241F1DD1BF00038491 /* GPUImageBeautifyFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 680380211F1DD1BF00038491 /* GPUImageBeautifyFilter.m */; };
 		680380251F1DD1BF00038491 /* AWGPUImageOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680380221F1DD1BF00038491 /* AWGPUImageOutput.swift */; };
 		6803802A1F1DD29000038491 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 680380271F1DD24C00038491 /* GPUImage.framework */; };
-		6803802C1F1DD35C00038491 /* AWGPUImageCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6803802B1F1DD35C00038491 /* AWGPUImageCapture.swift */; };
 		680380301F1DEE8000038491 /* GPUImage.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 680380271F1DD24C00038491 /* GPUImage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		684DE6101E56901D000C6C92 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE5C51E56901C000C6C92 /* AppDelegate.swift */; };
 		684DE6111E56901D000C6C92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 684DE5C61E56901C000C6C92 /* Assets.xcassets */; };
@@ -26,10 +25,8 @@
 		684DE6751E5690EC000C6C92 /* aw_live_push.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6551E5690EC000C6C92 /* aw_live_push.c */; };
 		684DE6761E5690EC000C6C92 /* aw_live_push.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6561E5690EC000C6C92 /* aw_live_push.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		684DE6771E5690EC000C6C92 /* AWCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6571E5690EC000C6C92 /* AWCapture.swift */; };
-		684DE6781E5690EC000C6C92 /* AWEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6581E5690EC000C6C92 /* AWEncoder.swift */; };
 		684DE67A1E5690EC000C6C92 /* AWLiveExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */; };
 		684DE67B1E5690EC000C6C92 /* AWLivePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */; };
-		684DE67C1E5690EC000C6C92 /* AWLivePush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65C1E5690EC000C6C92 /* AWLivePush.swift */; };
 		684DE67D1E5690EC000C6C92 /* AWLivePushC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65D1E5690EC000C6C92 /* AWLivePushC.swift */; };
 		684DE67E1E5690EC000C6C92 /* AWLiveStat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */; };
 		684DE67F1E5690EC000C6C92 /* NetworkHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6601E5690EC000C6C92 /* NetworkHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -52,6 +49,7 @@
 		684DE6901E5690EC000C6C92 /* rtmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 684DE6721E5690EC000C6C92 /* rtmp.c */; };
 		684DE6921E5690EC000C6C92 /* rtmp_sys.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6741E5690EC000C6C92 /* rtmp_sys.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		684DE6951E5693D2000C6C92 /* rtmp.h in Headers */ = {isa = PBXBuildFile; fileRef = 684DE6731E5690EC000C6C92 /* rtmp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		685471B120B50075007B539A /* AWGPUImageCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685471AF20B50070007B539A /* AWGPUImageCapture.swift */; };
 		688BDA751F15F11B00F600CB /* aw_video_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 688BDA721F15F11B00F600CB /* aw_video_encoder.c */; };
 		688BDA761F15F11B00F600CB /* aw_video_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 688BDA731F15F11B00F600CB /* aw_video_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */; };
@@ -100,7 +98,6 @@
 		680380211F1DD1BF00038491 /* GPUImageBeautifyFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPUImageBeautifyFilter.m; sourceTree = "<group>"; };
 		680380221F1DD1BF00038491 /* AWGPUImageOutput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageOutput.swift; sourceTree = "<group>"; };
 		680380271F1DD24C00038491 /* GPUImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GPUImage.framework; path = Carthage/Build/iOS/GPUImage.framework; sourceTree = "<group>"; };
-		6803802B1F1DD35C00038491 /* AWGPUImageCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageCapture.swift; sourceTree = "<group>"; };
 		68348FF81D58692E00C2A72E /* AWLiveKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWLiveKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		684DE5C51E56901C000C6C92 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		684DE5C61E56901C000C6C92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -117,10 +114,8 @@
 		684DE6551E5690EC000C6C92 /* aw_live_push.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_live_push.c; sourceTree = "<group>"; };
 		684DE6561E5690EC000C6C92 /* aw_live_push.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_live_push.h; sourceTree = "<group>"; };
 		684DE6571E5690EC000C6C92 /* AWCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWCapture.swift; sourceTree = "<group>"; };
-		684DE6581E5690EC000C6C92 /* AWEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWEncoder.swift; sourceTree = "<group>"; };
 		684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveExtension.swift; sourceTree = "<group>"; };
 		684DE65B1E5690EC000C6C92 /* AWLivePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePreview.swift; sourceTree = "<group>"; };
-		684DE65C1E5690EC000C6C92 /* AWLivePush.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePush.swift; sourceTree = "<group>"; };
 		684DE65D1E5690EC000C6C92 /* AWLivePushC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLivePushC.swift; sourceTree = "<group>"; };
 		684DE65E1E5690EC000C6C92 /* AWLiveStat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWLiveStat.swift; sourceTree = "<group>"; };
 		684DE6601E5690EC000C6C92 /* NetworkHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkHelper.h; sourceTree = "<group>"; };
@@ -143,6 +138,7 @@
 		684DE6721E5690EC000C6C92 /* rtmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtmp.c; sourceTree = "<group>"; };
 		684DE6731E5690EC000C6C92 /* rtmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp.h; sourceTree = "<group>"; };
 		684DE6741E5690EC000C6C92 /* rtmp_sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtmp_sys.h; sourceTree = "<group>"; };
+		685471AF20B50070007B539A /* AWGPUImageCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageCapture.swift; sourceTree = "<group>"; };
 		688BDA721F15F11B00F600CB /* aw_video_encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_video_encoder.c; sourceTree = "<group>"; };
 		688BDA731F15F11B00F600CB /* aw_video_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_video_encoder.h; sourceTree = "<group>"; };
 		68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_audio_encoder.c; sourceTree = "<group>"; };
@@ -176,6 +172,7 @@
 		6803801F1F1DD1BF00038491 /* AWGPUImage */ = {
 			isa = PBXGroup;
 			children = (
+				685471AF20B50070007B539A /* AWGPUImageCapture.swift */,
 				680380201F1DD1BF00038491 /* GPUImageBeautifyFilter.h */,
 				680380211F1DD1BF00038491 /* GPUImageBeautifyFilter.m */,
 				680380221F1DD1BF00038491 /* AWGPUImageOutput.swift */,
@@ -235,15 +232,12 @@
 				684DE64B1E569070000C6C92 /* AWLiveKit.h */,
 				684DE65A1E5690EC000C6C92 /* AWLiveExtension.swift */,
 				684DE6571E5690EC000C6C92 /* AWCapture.swift */,
-				6803802B1F1DD35C00038491 /* AWGPUImageCapture.swift */,
-				684DE6581E5690EC000C6C92 /* AWEncoder.swift */,
 				68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */,
 				68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */,
 				688BDA721F15F11B00F600CB /* aw_video_encoder.c */,
 				688BDA731F15F11B00F600CB /* aw_video_encoder.h */,
 				684DE6551E5690EC000C6C92 /* aw_live_push.c */,
 				684DE6561E5690EC000C6C92 /* aw_live_push.h */,
-				684DE65C1E5690EC000C6C92 /* AWLivePush.swift */,
 				684DE65D1E5690EC000C6C92 /* AWLivePushC.swift */,
 				68C0E0E31F258CAE00403067 /* AWLiveU.swift */,
 				68EC88A620B3BCA900BE9D26 /* AWFocusView.swift */,
@@ -437,12 +431,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				684DE6781E5690EC000C6C92 /* AWEncoder.swift in Sources */,
 				680380251F1DD1BF00038491 /* AWGPUImageOutput.swift in Sources */,
 				68C0E0E41F258CAE00403067 /* AWLiveU.swift in Sources */,
 				684DE67A1E5690EC000C6C92 /* AWLiveExtension.swift in Sources */,
 				680380241F1DD1BF00038491 /* GPUImageBeautifyFilter.m in Sources */,
-				684DE67C1E5690EC000C6C92 /* AWLivePush.swift in Sources */,
 				684DE6851E5690EC000C6C92 /* aw_rtmp.c in Sources */,
 				688BDA751F15F11B00F600CB /* aw_video_encoder.c in Sources */,
 				684DE68B1E5690EC000C6C92 /* hashswf.c in Sources */,
@@ -450,13 +442,13 @@
 				684DE6801E5690EC000C6C92 /* NetworkHelper.m in Sources */,
 				684DE67E1E5690EC000C6C92 /* AWLiveStat.swift in Sources */,
 				68B7C8D41F21EF92003967F8 /* AWGPUImageVideoCamera.swift in Sources */,
+				685471B120B50075007B539A /* AWGPUImageCapture.swift in Sources */,
 				684DE6831E5690EC000C6C92 /* amf.c in Sources */,
 				684DE6901E5690EC000C6C92 /* rtmp.c in Sources */,
 				684DE68F1E5690EC000C6C92 /* parseurl.c in Sources */,
 				684DE6811E5690EC000C6C92 /* NetworkInterface.c in Sources */,
 				684DE6751E5690EC000C6C92 /* aw_live_push.c in Sources */,
 				684DE67B1E5690EC000C6C92 /* AWLivePreview.swift in Sources */,
-				6803802C1F1DD35C00038491 /* AWGPUImageCapture.swift in Sources */,
 				684DE68D1E5690EC000C6C92 /* log.c in Sources */,
 				684DE67D1E5690EC000C6C92 /* AWLivePushC.swift in Sources */,
 				68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */,
