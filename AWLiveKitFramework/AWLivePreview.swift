@@ -30,12 +30,13 @@ public class AWLivePreview: UIView {
         }
         set{
             let layer=self.layer as! AVCaptureVideoPreviewLayer
+            layer.videoGravity = .resizeAspectFill
             layer.session=newValue
         }
     }
     
     public var connection : AVCaptureConnection? {
-        if let connection = (self.layer as? AVCaptureVideoPreviewLayer)?.connection {
+        if let _layer = (self.layer as? AVCaptureVideoPreviewLayer), let connection = _layer.connection {
             return connection
         }
         else {
