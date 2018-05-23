@@ -9,6 +9,6 @@
 #ifndef NetworkInterface_h
 #define NetworkInterface_h
 
-long long get_interface_bytes();
+long long get_interface_bytes(void);
 
 #endif /* NetworkInterface_h */

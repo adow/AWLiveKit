@@ -18,7 +18,7 @@
 typedef void (*AWVideoEncoderCallback)( CM_NULLABLE CMSampleBufferRef sampleBuffer, void * _Nullable callback_context );
 
 int aw_video_encoder_init(int width, int height, int bitrate, int fps, CFStringRef _Nullable profile);
-void aw_video_encoder_close();
+void aw_video_encoder_close(void);
 
 int aw_video_encode_samplebuffer(CMSampleBufferRef _Nullable sample_buffer,
     AWVideoEncoderCallback _Nullable callback,

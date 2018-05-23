@@ -16,15 +16,15 @@
 #include "rtmp.h"
 
 void flv_file_open(const char *filename);
-void flv_file_close();
+//void flv_file_close();
 int aw_rtmp_connection(const char *url);
-void aw_rtmp_close();
+void aw_rtmp_close(void);
 int aw_rtmp_send_sps_pps(unsigned char *sps, int sps_length,
                          unsigned char *pps, int pps_length);
 int aw_rtmp_send_h264_video(unsigned char *data,
                             unsigned int size,
                             int bIsKeyFrame, unsigned int nTimeStamp);
-int aw_rtmp_send_audio_header();
+int aw_rtmp_send_audio_header(void);
 int aw_rtmp_send_audio(unsigned char *data, 
 		unsigned int size,
 		unsigned int nTimeStamp);
