@@ -67,7 +67,9 @@ int aw_audio_encoder_setup() {
         return 2;
     }
 }
+
 AudioBufferList _g_input_buffer_list;
+
 OSStatus aw_audio_data_proc(
         AudioConverterRef audio_converter,
         UInt32 *io_number_data_packets,
