@@ -16,6 +16,38 @@ cpu: 38% - 49%
 memory: 65 - 65.8
 energy impact: Low/VeryHigh - VeryHigh/VeryHigh overhead: 100%
 
+## 使用 AVPreviewLayer 和 CIContext.createCGImage 实现预览的差别
+
+### 在 iPhone 7 下面
+
+使用 CIContext.createCGImage 
+
+- cpu: 20% - 22%
+- memory: 27 - 28 MB
+
+使用 AVPreviewLayer 
+
+- cpu: 20% - 23%
+- memory: 18.7MB
+
+Energy Impact 无法测量
+
+### 在 iPhone 6 下面
+
+使用 CIContext.createCGImage
+
+- cpu: 25% - 30%
+- memory: 15.4 MB
+- Energy Impact: Low
+
+使用 AVPreviewLayer
+
+- cpu: 19%
+- memory: 11.6 MB
+- Energy Impact: Low
+
+所以在 iPhone 6 下面，使用 CIContext 比使用 AVPreviewLayer 要多消耗 10% 左右的 CPU，但是在 iPhone 7 下面其实差不多。
+
 ## 各函数时间消耗
 
 AWLivePushC 耗能

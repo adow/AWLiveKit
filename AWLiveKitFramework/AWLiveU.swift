@@ -216,6 +216,13 @@ extension AWLiveBase {
 public class AWLiveSimple : AWLiveBase {
     public var capture : AWLiveCapture!
     public var preview: AWLivePreview!
+    private let context : CIContext = {
+        let eaglContext = EAGLContext(api: EAGLRenderingAPI.openGLES2)
+        
+        let options = [kCIContextWorkingColorSpace : NSNull()]
+        
+        return CIContext(eaglContext: eaglContext!, options: options)
+    }()
     public required init?(url:String,
                  withQuality videoQuality : AWLiveCaptureVideoQuality = ._720,
                  atOrientation orientation: AVCaptureVideoOrientation = .portrait) {
@@ -238,6 +245,23 @@ public class AWLiveSimple : AWLiveBase {
 //            let timeStamp = sampleBuffer.presentationTimeStamp
 //            let duration = sampleBuffer.duration
 //            debugPrint("video encoding: timeStamp \(CMTimeGetSeconds(timeStamp)),duration \(CMTimeGetSeconds(duration))")
+            
+            /// preview
+            if #available(iOS 9.0, *) {
+                if let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
+                    let ciimage = CIImage(cvImageBuffer: imageBuffer)
+                    if let cgimage = _self.context.createCGImage(ciimage, from: ciimage.extent) {
+                        DispatchQueue.main.async {
+                            self?.preview.layer.contents = cgimage
+                        }
+                    }
+                }
+            }
+            else {
+                // Fallback on earlier versions
+            }
+           
+            /// encode
             let ret = aw_video_encode_samplebuffer(sampleBuffer, { (sample_buffer_encoded, context) in
                 if let sp = sample_buffer_encoded {
                     //debugPrint("video encoded:\(sp)")
@@ -334,17 +358,18 @@ public class AWLiveSimple : AWLiveBase {
         guard let _capture = self.capture,!_capture.captureSession.isRunning else {
             return
         }
+        /// 这里不在使用 AVPreviewLayer 直接预览，而是使用 `CIContext.createCGImage` 创建图形后显示在 AVPreviewLayer 上
         if _capture.ready {
-            _capture.connectPreView(self.preview)
+//            _capture.connectPreView(self.preview)
             _capture.start()
         }
         else {
             _capture.onReady = {
-                [weak self] in
-                guard let _self = self else {
-                    return
-                }
-                _capture.connectPreView(_self.preview)
+//                [weak self] in
+//                guard let _self = self else {
+//                    return
+//                }
+//                _capture.connectPreView(_self.preview)
                 _capture.start()
             }
         }
