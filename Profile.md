@@ -48,6 +48,16 @@ Energy Impact 无法测量
 
 所以在 iPhone 6 下面，使用 CIContext 比使用 AVPreviewLayer 要多消耗 10% 左右的 CPU，但是在 iPhone 7 下面其实差不多。
 
+## GPUImage 美颜滤镜的消耗 
+
+GPUImageBeautyFilter 
+
+并没有给性能带来太多的影响，而且发现关闭滤镜后会消耗更多的内存（没有研究），打开滤镜并没消耗更多的 CPU,GPU,电池，因为本身的消耗就比 AVFoundation 的要高一点。不管修改什么参数，对于性能总没有太大的变化，开在第二档会比较好点。
+
+YUGPUImageHighPassSkinSmoothingFilter
+
+他的美颜效果还不如 GPUImageBeauthFilter，而且修改参数后可以看到在 iPhone 6 上有明显的丢帧现象。虽然看上去 CPU, GPU,内存并没有明显的消耗。
+
 ## 各函数时间消耗
 
 AWLivePushC 耗能

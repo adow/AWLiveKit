@@ -107,19 +107,19 @@ NSString *const kGPUImageBeautifyFragmentShaderString = SHADER_STRING
     else if (beauty == 1) {
         [hsbFilter reset];
         self.intensity = 0.5;
-        self.brightness = 1.2;
+        self.brightness = 1.0;
         self.saturation = 1.0;
     }
     else if (beauty == 2) {
         [hsbFilter reset];
         self.intensity = 1.0;
-        self.brightness = 1.3;
+        self.brightness = 1.1;
         self.saturation = 1.0;
     }
     else if (beauty == 3) {
         [hsbFilter reset];
         self.intensity = 1.2;
-        self.brightness = 1.5;
+        self.brightness = 1.2;
         self.saturation = 1.0;
     }
     

@@ -18,6 +18,9 @@ FOUNDATION_EXPORT const unsigned char AWLiveKitFrameworkVersionString[];
 
 #import <GPUImage/GPUImageFramework.h>
 #import "GPUImageBeautifyFilter.h"
+#import "YUGPUImageDefines.h"
+#import "YUGPUImageStillImageHighPassFilter.h"
+#import "YUGPUImageHighPassSkinSmoothingFilter.h"
 #include "rtmp_sys.h"
 #include "aw_rtmp.h"
 #include "aw_live_push.h"

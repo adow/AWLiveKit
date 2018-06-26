@@ -52,6 +52,11 @@
 		685471B120B50075007B539A /* AWGPUImageCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685471AF20B50070007B539A /* AWGPUImageCapture.swift */; };
 		688BDA751F15F11B00F600CB /* aw_video_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 688BDA721F15F11B00F600CB /* aw_video_encoder.c */; };
 		688BDA761F15F11B00F600CB /* aw_video_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 688BDA731F15F11B00F600CB /* aw_video_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		689F834620E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 689F834120E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		689F834720E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 689F834220E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		689F834820E0CFE3007CEF7A /* YUGPUImageDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 689F834320E0CFE3007CEF7A /* YUGPUImageDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		689F834920E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 689F834420E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.m */; };
+		689F834A20E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 689F834520E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.m */; };
 		68AF1AC31E597DB600C01141 /* aw_audio_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */; };
 		68AF1AC41E597DB600C01141 /* aw_audio_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		68B7C8D41F21EF92003967F8 /* AWGPUImageVideoCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B7C8D31F21EF92003967F8 /* AWGPUImageVideoCamera.swift */; };
@@ -141,6 +146,11 @@
 		685471AF20B50070007B539A /* AWGPUImageCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageCapture.swift; sourceTree = "<group>"; };
 		688BDA721F15F11B00F600CB /* aw_video_encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_video_encoder.c; sourceTree = "<group>"; };
 		688BDA731F15F11B00F600CB /* aw_video_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_video_encoder.h; sourceTree = "<group>"; };
+		689F834120E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YUGPUImageHighPassSkinSmoothingFilter.h; sourceTree = "<group>"; };
+		689F834220E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YUGPUImageStillImageHighPassFilter.h; sourceTree = "<group>"; };
+		689F834320E0CFE3007CEF7A /* YUGPUImageDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YUGPUImageDefines.h; sourceTree = "<group>"; };
+		689F834420E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YUGPUImageHighPassSkinSmoothingFilter.m; sourceTree = "<group>"; };
+		689F834520E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YUGPUImageStillImageHighPassFilter.m; sourceTree = "<group>"; };
 		68AF1AC11E597DB600C01141 /* aw_audio_encoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aw_audio_encoder.c; sourceTree = "<group>"; };
 		68AF1AC21E597DB600C01141 /* aw_audio_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aw_audio_encoder.h; sourceTree = "<group>"; };
 		68B7C8D31F21EF92003967F8 /* AWGPUImageVideoCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWGPUImageVideoCamera.swift; sourceTree = "<group>"; };
@@ -172,6 +182,7 @@
 		6803801F1F1DD1BF00038491 /* AWGPUImage */ = {
 			isa = PBXGroup;
 			children = (
+				689F834020E0CFE3007CEF7A /* YUCPUImage */,
 				685471AF20B50070007B539A /* AWGPUImageCapture.swift */,
 				680380201F1DD1BF00038491 /* GPUImageBeautifyFilter.h */,
 				680380211F1DD1BF00038491 /* GPUImageBeautifyFilter.m */,
@@ -284,6 +295,18 @@
 			path = rtmp;
 			sourceTree = "<group>";
 		};
+		689F834020E0CFE3007CEF7A /* YUCPUImage */ = {
+			isa = PBXGroup;
+			children = (
+				689F834320E0CFE3007CEF7A /* YUGPUImageDefines.h */,
+				689F834220E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.h */,
+				689F834520E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.m */,
+				689F834120E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.h */,
+				689F834420E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.m */,
+			);
+			path = YUCPUImage;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -303,7 +326,10 @@
 				684DE68E1E5690EC000C6C92 /* log.h in Headers */,
 				688BDA761F15F11B00F600CB /* aw_video_encoder.h in Headers */,
 				684DE6841E5690EC000C6C92 /* amf.h in Headers */,
+				689F834620E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.h in Headers */,
 				680380231F1DD1BF00038491 /* GPUImageBeautifyFilter.h in Headers */,
+				689F834720E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.h in Headers */,
+				689F834820E0CFE3007CEF7A /* YUGPUImageDefines.h in Headers */,
 				684DE6891E5690EC000C6C92 /* dhgroups.h in Headers */,
 				684DE68A1E5690EC000C6C92 /* handshake.h in Headers */,
 				684DE6871E5690EC000C6C92 /* bytes.h in Headers */,
@@ -434,6 +460,7 @@
 				680380251F1DD1BF00038491 /* AWGPUImageOutput.swift in Sources */,
 				68C0E0E41F258CAE00403067 /* AWLiveU.swift in Sources */,
 				684DE67A1E5690EC000C6C92 /* AWLiveExtension.swift in Sources */,
+				689F834920E0CFE3007CEF7A /* YUGPUImageHighPassSkinSmoothingFilter.m in Sources */,
 				680380241F1DD1BF00038491 /* GPUImageBeautifyFilter.m in Sources */,
 				684DE6851E5690EC000C6C92 /* aw_rtmp.c in Sources */,
 				688BDA751F15F11B00F600CB /* aw_video_encoder.c in Sources */,
@@ -442,6 +469,7 @@
 				684DE6801E5690EC000C6C92 /* NetworkHelper.m in Sources */,
 				684DE67E1E5690EC000C6C92 /* AWLiveStat.swift in Sources */,
 				68B7C8D41F21EF92003967F8 /* AWGPUImageVideoCamera.swift in Sources */,
+				689F834A20E0CFE3007CEF7A /* YUGPUImageStillImageHighPassFilter.m in Sources */,
 				685471B120B50075007B539A /* AWGPUImageCapture.swift in Sources */,
 				684DE6831E5690EC000C6C92 /* amf.c in Sources */,
 				684DE6901E5690EC000C6C92 /* rtmp.c in Sources */,

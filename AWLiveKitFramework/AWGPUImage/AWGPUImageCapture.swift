@@ -35,6 +35,14 @@ open class AWGPUImageCapture: NSObject {
                     beauty_filter.setBeauty(Int32(_beauty))
                 }
             }
+//            if let _beauty = beauty,let beauty_filter = self.filter as? YUGPUImageHighPassSkinSmoothingFilter {
+//                if _beauty == 0 {
+//                    self.closeFilter()
+//                }
+//                else {
+//                    self.openFilter()
+//                }
+//            }
         }
     }
     open var onAudioSampleBuffer : AWGPUImageCaptureSampleBufferCallback? = nil {
@@ -91,10 +99,11 @@ open class AWGPUImageCapture: NSObject {
             
             /// filter
             self.filter = GPUImageBeautifyFilter()
-            
+//            self.filter = YUGPUImageHighPassSkinSmoothingFilter()
+
             /// 默认不使用美颜滤镜
             self.closeFilter()
-           
+
             /// 音频输出到 MovieWriter
             //_camera.audioEncodingTarget = self.audioOutput
             
