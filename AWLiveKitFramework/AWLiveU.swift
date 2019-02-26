@@ -65,15 +65,15 @@ public class AWLiveBase {
         /// notification
         NotificationCenter.default.addObserver(self,
                 selector: #selector(onNotificationResign(_:)),
-                name: NSNotification.Name.UIApplicationWillResignActive,
+                name: UIApplication.willResignActiveNotification,
                 object: nil)
         NotificationCenter.default.addObserver(self,
                 selector: #selector(onNotificationEnterForeground(_:)),
-                name: NSNotification.Name.UIApplicationDidBecomeActive,
+                name: UIApplication.didBecomeActiveNotification,
                 object: nil)
         NotificationCenter.default.addObserver(self,
                 selector: #selector(onNotificationTerminate(_:)),
-                name: NSNotification.Name.UIApplicationWillTerminate,
+                name: UIApplication.willTerminateNotification,
                 object: nil)
     }
     deinit {
@@ -219,7 +219,7 @@ public class AWLiveSimple : AWLiveBase {
     private let context : CIContext = {
         let eaglContext = EAGLContext(api: EAGLRenderingAPI.openGLES2)
         
-        let options = [kCIContextWorkingColorSpace : NSNull()]
+        let options = [CIContextOption.workingColorSpace : NSNull()]
         
         return CIContext(eaglContext: eaglContext!, options: options)
     }()

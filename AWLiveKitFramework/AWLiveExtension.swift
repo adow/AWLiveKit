@@ -13,7 +13,7 @@ import VideoToolbox
 extension CMSampleBuffer {
     
     public var isKeyFrame: Bool? {
-        let attachments = CMSampleBufferGetSampleAttachmentsArray(self, true)
+        let attachments = CMSampleBufferGetSampleAttachmentsArray(self, createIfNecessary: true)
         guard attachments != nil else { return nil }
         
         let unsafePointer = CFArrayGetValueAtIndex(attachments, 0)
@@ -30,7 +30,7 @@ extension CMSampleBuffer {
     
     public var dependsOnOthers: Bool {
         guard let
-            attachments = CMSampleBufferGetSampleAttachmentsArray(self, false),
+            attachments = CMSampleBufferGetSampleAttachmentsArray(self, createIfNecessary: false),
             let attachment = unsafeBitCast(CFArrayGetValueAtIndex(attachments, 0), to: NSDictionary.self) as? Dictionary<String,AnyObject>
             else { return false }
         
@@ -45,7 +45,7 @@ extension CMSampleBuffer {
             guard let dataBuffer = newValue else {
                 return
             }
-            CMSampleBufferSetDataBuffer(self, dataBuffer)
+            CMSampleBufferSetDataBuffer(self, newValue: dataBuffer)
         }
     }
     
@@ -62,7 +62,7 @@ extension CMSampleBuffer {
     
     public var decodeTimeStamp: CMTime {
         let decodeTimestamp = CMSampleBufferGetDecodeTimeStamp(self)
-        return decodeTimestamp == kCMTimeInvalid ? presentationTimeStamp : decodeTimestamp
+        return decodeTimestamp == CMTime.invalid ? presentationTimeStamp : decodeTimestamp
     }
     
     public var presentationTimeStamp: CMTime {
@@ -92,11 +92,11 @@ extension CMSampleBuffer {
         
         
         let status = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(format!,
-                                                                        paraSetIndex,
-                                                                        &paramSetPtr,
-                                                                        &paraSetSize,
-                                                                        &paraSetCount,
-                                                                        &naluHeadLen)
+                                                                        parameterSetIndex: paraSetIndex,
+                                                                        parameterSetPointerOut: &paramSetPtr,
+                                                                        parameterSetSizeOut: &paraSetSize,
+                                                                        parameterSetCountOut: &paraSetCount,
+                                                                        nalUnitHeaderLengthOut: &naluHeadLen)
         if status == noErr {
             // choice: true means sps. false means pps
             let paraData = Data(bytes: UnsafePointer<UInt8>(paramSetPtr!), count: paraSetSize)

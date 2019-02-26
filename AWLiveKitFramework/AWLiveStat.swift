@@ -66,7 +66,7 @@ public class AWLiveStat {
     public init() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(onNotificationRouteChange(_:)),
-                                               name: NSNotification.Name.AVAudioSessionRouteChange,
+                                               name: AVAudioSession.routeChangeNotification,
                                                object: nil)
     }
     deinit {

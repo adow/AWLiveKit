@@ -124,7 +124,7 @@ class StartAnimationView: UIView {
         }
         
         let delay = self.animationIndex == 1 ? 0.0 : 0.7
-        UIView.animate(withDuration: 0.3, delay: delay, options: UIViewAnimationOptions.curveEaseOut, animations: {
+        UIView.animate(withDuration: 0.3, delay: delay, options: UIView.AnimationOptions.curveEaseOut, animations: {
             let target_y = -1.0 * CGFloat(self.animationIndex) * self.itemHeight
             self.animationView.transform = CGAffineTransform(translationX: 0.0, y: target_y)
             

@@ -49,7 +49,7 @@ class AWGPUImageRawDataOutput: GPUImageRawDataOutput {
 //        debugPrint("video output pixel buffer:\(ret)/\(success),\(bytes_per_row),\(frameTime)")
 //        debugPrint("video pixel buffer:\(success),\(bytes_per_row)")
         if ret == 0, let _f = self.onVideoPixelBuffer, let _pixel_buffer = pixel_buffer {
-            _f(_pixel_buffer,frameTime, kCMTimeInvalid)
+            _f(_pixel_buffer,frameTime, CMTime.invalid)
         }
         
     }
