@@ -344,19 +344,19 @@ public class AWLiveCapture : NSObject{
                 return
             }
             /// videoStabilization
-            if let connection = self.videoOutput.connection(with: .video) {
-                connection.addObserver(self, forKeyPath: "activeVideoStabilizationMode", options: .new, context: nil)
-                if connection.isVideoStabilizationSupported {
-                    connection.preferredVideoStabilizationMode = .auto
-                    debugPrint("videoStabilization enabled")
-                }
-                else {
-                    debugPrint("videoStabilization not supported")
-                }
-            }
-            else {
-                debugPrint("no videoOutput connection")
-            }
+//            if let connection = self.videoOutput.connection(with: .video) {
+//                connection.addObserver(self, forKeyPath: "activeVideoStabilizationMode", options: .new, context: nil)
+//                if connection.isVideoStabilizationSupported {
+//                    connection.preferredVideoStabilizationMode = .auto
+//                    debugPrint("videoStabilization enabled")
+//                }
+//                else {
+//                    debugPrint("videoStabilization not supported")
+//                }
+//            }
+//            else {
+//                debugPrint("no videoOutput connection")
+//            }
     //        self.videoOrientation = .Portrait
             self.audioOutput = AVCaptureAudioDataOutput()
             self.audioOutput.setSampleBufferDelegate(self, queue: self.audioQueue)
@@ -545,9 +545,9 @@ extension AWLiveCapture {
         }
         self.captureSession.startRunning()
         /// output_1
-        let output_1 = cache_dir.appending("/output_1.mov")
-        let output_1_url = URL(fileURLWithPath: output_1)
-        self.fileOutput_1?.startRecording(to: output_1_url, recordingDelegate: self)
+//        let output_1 = cache_dir.appending("/output_1.mov")
+//        let output_1_url = URL(fileURLWithPath: output_1)
+//        self.fileOutput_1?.startRecording(to: output_1_url, recordingDelegate: self)
         /// output_2
 //        self.fileOutput_2?.startWriting()
     }
@@ -557,13 +557,13 @@ extension AWLiveCapture {
         }
         self.captureSession.stopRunning()
         /// output_1
-        self.fileOutput_1?.stopRecording()
-        /// output_2
-        self.fileOutput_2_video?.markAsFinished()
-        self.fileOutput_2_audio?.markAsFinished()
-        self.fileOutput_2?.finishWriting {
-            debugPrint("finish output_2")
-        }
+//        self.fileOutput_1?.stopRecording()
+//        /// output_2
+//        self.fileOutput_2_video?.markAsFinished()
+//        self.fileOutput_2_audio?.markAsFinished()
+//        self.fileOutput_2?.finishWriting {
+//            debugPrint("finish output_2")
+//        }
     }
     /// 测试可以使用哪些 session_preset
     func testSessionPreset() {
